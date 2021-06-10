@@ -12,4 +12,5 @@ setup(
     license='MIT',
     description='python client to interact with Aleph Alpha api endpoints',
     long_description=open('README.md').read(),
+    long_description_content_type="text/markdown",
 )
