@@ -267,7 +267,6 @@ Pooling operations include:
 * max: aggregate token embeddings across the sequence dimension using a maximum
 * last_token: just use the last token
 * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
-* sbert wk for decoders: tbd
 
 #### Return value
 
