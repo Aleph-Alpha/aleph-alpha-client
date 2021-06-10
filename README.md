@@ -131,7 +131,7 @@ The return value of a completion contains the following fields:
             "finish_reason": null,
             "message": null
         },
-        ...
+        "..."
     ]
 }
 ```
@@ -283,34 +283,34 @@ The return value of an evaluation contains the following fields:
 
 example for no pooling
 ```json
-{"
-    "id": e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
+{
+    "id": "e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
     "model_version": "EleutherAI/gpt-neo-2.7B",
     "message": null,
     "embeddings": {
        "layer_0": [
-            [1,0, 2.0, ...] // embeding for a
-            ..
-            [1,0, 2.0, ...] // embedding for z
+            [1,0, 2.0, "..."] // embeding for a
+            "..."
+            [1,0, 2.0, "..."] // embedding for z
         ]
     } ,
-    "tokens": ["a", ...,  "z"]
+    "tokens": ["a", "...",  "z"]
 }
 ```
 
 example for pooling
 ```json
-{"
-    "id": e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
+{
+    "id": "e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
     "model_version": "EleutherAI/gpt-neo-2.7B",
     "message": null,
     "embeddings": {
        "layer_0": {
-           "max": [1,0, 2.0, ...],
-           "mean": [1,0, 2.0, ...],
+           "max": [1,0, 2.0, "..."],
+           "mean": [1,0, 2.0, "..."],
        }
     },
-    "tokens": ["a", ...,  "z"]
+    "tokens": ["a", "...",  "z"]
 }
 ```
 
