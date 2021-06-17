@@ -8,6 +8,9 @@ setup(
     packages=['AlephAlphaClient'],
     install_requires=['requests'],
     tests_require=['pytest', 'pytest-cov', 'python-dotenv'],
+    extras_require={
+        'test':  ['pytest', 'pytest-cov', 'python-dotenv'],
+    },
     version='0.0.1',
     license='MIT',
     description='python client to interact with Aleph Alpha api endpoints',

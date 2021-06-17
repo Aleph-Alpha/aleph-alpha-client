@@ -2,7 +2,7 @@ import pytest
 from AlephAlphaClient import AlephAlphaClient
 from dotenv import dotenv_values
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def client():
     config = dotenv_values(".env")
 
