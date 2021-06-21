@@ -151,7 +151,7 @@ class AlephAlphaClient:
         if not (log_probs is None or isinstance(log_probs, int)):
             raise ValueError("log_probs must be an int or None")
         if not (stop_sequences is None or isinstance(stop_sequences, list)):
-            raise ValueError("log_probs must be an list of strings or None")
+            raise ValueError("stop_sequences must be an list of strings or None")
         if stop_sequences is not None:
             for stop_sequence in stop_sequences:
                 if not isinstance(stop_sequence, str):
