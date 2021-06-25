@@ -382,6 +382,16 @@ TEST_MODEL=EleutherAI/gpt-neo-2.7B
 TEST_TOKEN=your_token
 ```
 
+Instead of a token username and password can be used.
+
+```
+# test settings
+TEST_API_URL=https://api.aleph-alpha.de
+TEST_MODEL=EleutherAI/gpt-neo-2.7B
+TEST_USERNAME=your_username
+TEST_PASSWORD=your_password
+```
+
 * A coverage report can be created using the optional arguments --cov-report and --cov (see pytest documentation)
 * A subset of tests can be selected by pointing to the module within tests
 
