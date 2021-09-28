@@ -1,19 +1,33 @@
-import requests
 from typing import List, Optional, Dict
 
+import requests
+
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
+
 
 class QuotaError(Exception):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
 
 class AlephAlphaClient:
     def __init__(self, host, token=None, email=None, password=None):
         if host[-1] != "/": host += "/"
         self.host = host
 
+        # check server version
+        expect_release = "1"
+        version = self.get_version()
+        assert version.startswith(expect_release), \
+            f"Expected API version {expect_release}.x.x, got {version}. Please update client."
+
         assert (token is not None or (email is not None and password is not None))
         self.token = token or self.get_token(email, password)
+
+    def get_version(self):
+        response = requests.get(self.host + "version")
+        response.raise_for_status()
+        return response.text
 
     def get_token(self, email, password):
         response = requests.post(self.host + "get_token", json={
