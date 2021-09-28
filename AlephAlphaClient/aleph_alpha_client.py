@@ -4,9 +4,9 @@ from typing import List, Optional, Dict
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
 class QuotaError(Exception):
-    def __init__(self, *args, **kwargs):            
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-            
+
 class AlephAlphaClient:
     def __init__(self, host, token=None, email=None, password=None):
         if host[-1] != "/": host += "/"
@@ -29,6 +29,37 @@ class AlephAlphaClient:
     @property
     def request_headers(self):
         return {'Authorization': 'Bearer ' + self.token}
+
+    def available_models(self):
+        """
+        Queries all models which are currently available.
+        """
+        response = requests.get(self.host + "models_available", headers=self.request_headers)
+        return self._parse_response(response)
+
+    def tokenize(self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True):
+        """
+        Tokenizes the given prompt for the given model.
+        """
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "tokens": tokens,
+            "token_ids": token_ids
+        }
+        response = requests.post(self.host + "tokenize", headers=self.request_headers, json=payload, timeout=None)
+        return self._parse_response(response)
+
+    def detokenize(self, model: str, token_ids: List[int]):
+        """
+        Detokenizes the given tokens.
+        """
+        payload = {
+            "model": model,
+            "token_ids": token_ids
+        }
+        response = requests.post(self.host + "detokenize", headers=self.request_headers, json=payload, timeout=None)
+        return self._parse_response(response)
 
     def complete(self,
                    model: str,
@@ -106,7 +137,7 @@ class AlephAlphaClient:
             tokens (bool, optional, default False)
                 return tokens of completion
         """
-        
+
         # validate data types
         if not isinstance(model, str):
             raise ValueError("model must be a string")
@@ -175,7 +206,7 @@ class AlephAlphaClient:
         if n is not None:
             if n <= 0:
                 raise ValueError("top_k must be a positive integer")
-        
+
         if best_of is not None:
             if best_of == n:
                 raise ValueError("With best_of equal to n no best completions are choses because only n are computed.")
@@ -241,13 +272,13 @@ class AlephAlphaClient:
 
         if not isinstance(prompt, str):
             raise ValueError("prompt must be a string")
-        
+
         if len(prompt) == 0:
             raise ValueError("prompt must contain at least one character")
 
         if not isinstance(layers, list):
             raise ValueError("layers must be a list")
-        
+
         if len(layers) == 0:
             raise ValueError("layers must contain at least one layer")
 
