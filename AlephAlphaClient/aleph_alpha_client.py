@@ -12,8 +12,19 @@ class AlephAlphaClient:
         if host[-1] != "/": host += "/"
         self.host = host
 
+        # check server version
+        expect_release = "0"
+        version = self.get_version()
+        assert version.startswith(expect_release), f"Expected API version {expect_release}.x.x, got {version}"
+
         assert (token is not None or (email is not None and password is not None))
         self.token = token or self.get_token(email, password)
+
+    def get_version(self):
+        response = requests.get(self.host + "version")
+        if response.status_code != 200:
+            raise RuntimeError(f"Expected status 200, got {response.status_code}")
+        return response.text
 
     def get_token(self, email, password):
         response = requests.post(self.host + "get_token", json={
