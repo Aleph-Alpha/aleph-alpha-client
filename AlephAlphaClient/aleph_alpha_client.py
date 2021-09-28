@@ -13,7 +13,7 @@ class AlephAlphaClient:
         self.host = host
 
         # check server version
-        expect_release = "0"
+        expect_release = "1"
         version = self.get_version()
         assert version.startswith(expect_release), f"Expected API version {expect_release}.x.x, got {version}"
 
@@ -22,8 +22,7 @@ class AlephAlphaClient:
 
     def get_version(self):
         response = requests.get(self.host + "version")
-        if response.status_code != 200:
-            raise RuntimeError(f"Expected status 200, got {response.status_code}")
+        response.raise_for_status()
         return response.text
 
     def get_token(self, email, password):
