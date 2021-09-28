@@ -30,7 +30,7 @@ class AlephAlphaClient:
     def request_headers(self):
         return {'Authorization': 'Bearer ' + self.token}
 
-    def get_available_models(self):
+    def available_models(self):
         """
         Queries all models which are currently available.
         """
