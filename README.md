@@ -305,7 +305,7 @@ Check available_models() for available hostings.
 
 Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
 
-**pooling** (List[str] optional, default ["mean"])
+**pooling** (List[str])
 
 Pooling operation to use. 
 
@@ -326,8 +326,7 @@ The return value of an embed contains the following fields:
 **message**: an optional message by the system. This may contain warnings or hints.
 
 **embeddings**: 
- * no pooling: a dict with layer names as keys and a list of embeddings of size hidden-dim with one entry for each token as values
- * pooling: a dict with layer names as keys and and pooling output as values. A pooling output is a dict with pooling operation as key and a pooled embedding (list of floats) as values
+a dict with layer names as keys and and pooling output as values. A pooling output is a dict with pooling operation as key and a pooled embedding (list of floats) as values
   
 **tokens**: a list of tokens
 
