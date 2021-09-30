@@ -107,7 +107,7 @@ def validate_embedding_task_output(task, output):
         ("complete", {"model": "test_model", "prompt":"", "maximum_tokens": 7, "tokens": True, "log_probs": 0}),
         ("complete", {"model": "test_model", "prompt":"", "maximum_tokens": 7, "tokens": True, "log_probs": 2}),
         ("evaluate", {"model": "test_model", "prompt": "", "completion_expected": "abc"}),
-        ("embed", {"model": "test_model", "prompt": "abc", "layers": [-1], "pooling": None}),
+        ("embed", {"model": "test_model", "prompt": "abc", "layers": [-1], "pooling": ["mean"]}),
         ("embed", {"model": "test_model", "prompt": "abc", "layers": [-1], "pooling": ["mean", "max"]}),
     ])
 def test_task(client, endpoint, task_definition):
