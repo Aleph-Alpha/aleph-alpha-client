@@ -305,9 +305,9 @@ Check available_models() for available hostings.
 
 Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
 
-**pooling** (List[str] optional, default None)
+**pooling** (List[str] optional, default ["mean"])
 
-Pooling operation to use. No pooling is used (an embedding per input token is returned) if None. 
+Pooling operation to use. 
 
 Pooling operations include:
 * mean: aggregate token embeddings across the sequence dimension using an average
@@ -330,23 +330,6 @@ The return value of an embed contains the following fields:
  * pooling: a dict with layer names as keys and and pooling output as values. A pooling output is a dict with pooling operation as key and a pooled embedding (list of floats) as values
   
 **tokens**: a list of tokens
-
-example for no pooling
-```json
-{
-    "id": "e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
-    "model_version": "EleutherAI/gpt-neo-2.7B",
-    "message": null,
-    "embeddings": {
-       "layer_0": [
-            [1,0, 2.0, "..."] // embeding for a
-            "..."
-            [1,0, 2.0, "..."] // embedding for z
-        ]
-    } ,
-    "tokens": ["a", "...",  "z"]
-}
-```
 
 example for pooling
 ```json
