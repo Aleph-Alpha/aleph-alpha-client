@@ -25,11 +25,18 @@ generate completions from a prompt
 
 **model** (str, required)
 
-Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
+Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.  
+see `available_models()`
 
 **prompt** (str, optional, default "")
 
 The text to be completed. Unconditional completion can be started with an empty string (default). The prompt may contain a zero shot or few shot task.
+
+**hosting** (str, optional, default "cloud"):
+    
+Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+executed on any of our servers. An error will be returned if the specified hosting is not available. 
+Check available_models() for available hostings.
 
 **maximum_tokens** (int, optional, default 64)
 
@@ -178,6 +185,7 @@ Evaluates the model's likelihood to produce a completion given a prompt.
 **model** (str, required)
 
 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
+see `available_models()`
 
 **completion_expected** (str, required)
 
@@ -187,6 +195,11 @@ The ground truth completion expected to be produced given the prompt.
 
 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
 
+**hosting** (str, optional, default "cloud"):
+
+Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+executed on any of our servers. An error will be returned if the specified hosting is not available.
+Check available_models() for available hostings.
 
 #### Return value
 
@@ -265,6 +278,7 @@ Embeds a text and returns vectors that can be used for downstream tasks (e.g. se
 **model** (str, required)
 
 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
+see `available_models()`
 
 **prompt** (str, required)
 
@@ -276,6 +290,12 @@ A list of layer indices from which to return embeddings.
 * Index 0 corresponds to the word embeddings used as input to the first transformer layer
 * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc. 
 * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
+
+**hosting** (str, optional, default "cloud"):
+
+Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+executed on any of our servers. An error will be returned if the specified hosting is not available.
+Check available_models() for available hostings.
 
 **tokens** (bool, optional, default False)
 

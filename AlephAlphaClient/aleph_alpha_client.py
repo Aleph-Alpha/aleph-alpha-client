@@ -76,22 +76,23 @@ class AlephAlphaClient:
         return self._parse_response(response)
 
     def complete(self,
-                   model: str,
-                   prompt: str = "",
-                   maximum_tokens: Optional[int] = 64,
-                   temperature: Optional[float] = 0.0,
-                   top_k: Optional[int] = 0,
-                   top_p: Optional[float] = 0.0,
-                   presence_penalty: Optional[float] = 0.0,
-                   frequency_penalty: Optional[float] = 0.0,
-                   repetition_penalties_include_prompt: Optional[bool] = False,
-                   use_multiplicative_presence_penalty: Optional[bool] = False,
-                   best_of: Optional[int] = None,
-                   n: Optional[int] = 1,
-                   logit_bias: Optional[Dict[int, float]] = None,
-                   log_probs: Optional[int] = None,
-                   stop_sequences: Optional[List[str]] = None,
-                   tokens: Optional[bool] = False):
+                 model: str,
+                 prompt: str = "",
+                 hosting: str = "cloud",
+                 maximum_tokens: Optional[int] = 64,
+                 temperature: Optional[float] = 0.0,
+                 top_k: Optional[int] = 0,
+                 top_p: Optional[float] = 0.0,
+                 presence_penalty: Optional[float] = 0.0,
+                 frequency_penalty: Optional[float] = 0.0,
+                 repetition_penalties_include_prompt: Optional[bool] = False,
+                 use_multiplicative_presence_penalty: Optional[bool] = False,
+                 best_of: Optional[int] = None,
+                 n: Optional[int] = 1,
+                 logit_bias: Optional[Dict[int, float]] = None,
+                 log_probs: Optional[int] = None,
+                 stop_sequences: Optional[List[str]] = None,
+                 tokens: Optional[bool] = False):
         """
         Generates samples from a prompt.
 
@@ -101,6 +102,11 @@ class AlephAlphaClient:
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be started with an empty string (default). The prompt may contain a zero shot or few shot task.
+
+            hosting (str, optional, default "cloud"):
+                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+                executed on any of our servers. An error will be returned if the specified hosting is not available.
+                Check available_models() for available hostings.
 
             maximum_tokens (int, optional, default 64):
                 The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for EleutherAI/gpt-neo-2.7B, it may not exceed 2048 tokens).
@@ -231,6 +237,7 @@ class AlephAlphaClient:
         payload = {
             "model": model,
             "prompt": prompt,
+            "hosting": hosting,
             "maximum_tokens": maximum_tokens,
             "temperature": temperature,
             "top_k": top_k,
@@ -251,7 +258,8 @@ class AlephAlphaClient:
                                  timeout=None)
         return self._parse_response(response)
 
-    def embed(self, model, prompt: str, layers: List[int], tokens: Optional[bool] = False, pooling: List[str] = None):
+    def embed(self, model, prompt: str, layers: List[int], hosting: str = "cloud", tokens: Optional[bool] = False,
+              pooling: List[str] = None):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -267,7 +275,12 @@ class AlephAlphaClient:
                     * Index 0 corresponds to the word embeddings used as input to the first transformer layer
                     * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc. 
                     * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
-        
+
+            hosting (str, optional, default "cloud"):
+                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+                executed on any of our servers. An error will be returned if the specified hosting is not available.
+                Check available_models() for available hostings.
+
             tokens (bool, optional, default False)
                 Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
 
@@ -316,6 +329,7 @@ class AlephAlphaClient:
         payload = {
             "model": model,
             "prompt": prompt,
+            "hosting": hosting,
             "layers": layers,
             "tokens": tokens,
             "pooling": pooling,
@@ -323,7 +337,7 @@ class AlephAlphaClient:
         response = requests.post(self.host + "embed", headers=self.request_headers, json=payload)
         return self._parse_response(response)
 
-    def evaluate(self, model, completion_expected, prompt=""):
+    def evaluate(self, model, completion_expected, hosting: str = "cloud", prompt=""):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
 
@@ -332,7 +346,12 @@ class AlephAlphaClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
             completion_expected (str, required):
-                The ground truth completion expected to be produced given the prompt. 
+                The ground truth completion expected to be produced given the prompt.
+
+            hosting (str, optional, default "cloud"):
+                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+                executed on any of our servers. An error will be returned if the specified hosting is not available.
+                Check available_models() for available hostings.
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
@@ -353,6 +372,7 @@ class AlephAlphaClient:
         payload = {
             "model": model,
             "prompt": prompt,
+            "hosting": hosting,
             "completion_expected": completion_expected,
         }
         response = requests.post(self.host + "evaluate", headers=self.request_headers, json=payload)
