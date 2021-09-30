@@ -258,8 +258,8 @@ class AlephAlphaClient:
                                  timeout=None)
         return self._parse_response(response)
 
-    def embed(self, model, prompt: str, layers: List[int], hosting: str = "cloud", tokens: Optional[bool] = False,
-              pooling: List[str] = None):
+    def embed(self, model, prompt: str, pooling: List[str], layers: List[int], hosting: str = "cloud",
+              tokens: Optional[bool] = False):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -276,6 +276,14 @@ class AlephAlphaClient:
                     * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc. 
                     * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
 
+            pooling (List[str])
+                Pooling operation to use.
+                Pooling operations include:
+                    * mean: aggregate token embeddings across the sequence dimension using an average
+                    * max: aggregate token embeddings across the sequence dimension using a maximum
+                    * last_token: just use the last token
+                    * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
+
             hosting (str, optional, default "cloud"):
                 Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
@@ -283,15 +291,6 @@ class AlephAlphaClient:
 
             tokens (bool, optional, default False)
                 Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
-
-            pooling (List[str] optional, default None)
-                Pooling operation to use. No pooling is used (an embedding per input token is returned) if None. 
-
-                Pooling operations include:
-                    * mean: aggregate token embeddings across the sequence dimension using an average
-                    * max: aggregate token embeddings across the sequence dimension using a maximum
-                    * last_token: just use the last token
-                    * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
         """
 
         if not isinstance(model, str):
