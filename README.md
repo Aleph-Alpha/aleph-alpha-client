@@ -2,6 +2,8 @@
 
 python client to interact with Aleph Alpha api endpoints
 
+> [Documentation of the HTTP API can be found here](API_Docs.md)
+
 ## Installation via pip
 
 ```
