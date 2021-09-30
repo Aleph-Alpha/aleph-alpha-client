@@ -259,7 +259,7 @@ class AlephAlphaClient:
         return self._parse_response(response)
 
     def embed(self, model, prompt: str, layers: List[int], hosting: str = "cloud", tokens: Optional[bool] = False,
-              pooling: List[str] = None):
+              pooling: List[str] = ["mean"]):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -284,7 +284,7 @@ class AlephAlphaClient:
             tokens (bool, optional, default False)
                 Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
 
-            pooling (List[str] optional, default None)
+            pooling (List[str] optional, default ["mean"])
                 Pooling operation to use. No pooling is used (an embedding per input token is returned) if None. 
 
                 Pooling operations include:
