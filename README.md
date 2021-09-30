@@ -8,7 +8,7 @@ python client to interact with Aleph Alpha api endpoints
 
 ```
 # latest released version on pypi
-pip install aleph_alpha_client
+pip install aleph-alpha-client
 
 # latest main branch
 pip install --upgrade git+https://github.com/Aleph-Alpha/aleph-alpha-client
