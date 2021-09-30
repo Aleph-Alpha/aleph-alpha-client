@@ -1,5 +1,5 @@
 import pytest
-from AlephAlphaClient import AlephAlphaClient
+from aleph_alpha_client import AlephAlphaClient
 from dotenv import dotenv_values
 
 @pytest.fixture(scope="session")

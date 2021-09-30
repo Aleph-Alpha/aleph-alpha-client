@@ -159,8 +159,9 @@ The return value of a completion contains the following fields:
 
 
 #### Usage
+
 ```python
-from AlephAlphaClient import AlephAlphaClient
+from aleph_alpha_client import AlephAlphaClient
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.de/",
@@ -252,8 +253,9 @@ completion_expected: " well."
 ```
 
 #### Usage
+
 ```python
-from AlephAlphaClient import AlephAlphaClient
+from aleph_alpha_client import AlephAlphaClient
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.de/",
@@ -363,9 +365,10 @@ example for pooling
 ```
 
 #### Usage
+
 ```python
 
-from AlephAlphaClient import AlephAlphaClient
+from aleph_alpha_client import AlephAlphaClient
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.de/",
@@ -418,8 +421,8 @@ TEST_PASSWORD=your_password
 * A subset of tests can be selected by pointing to the module within tests
 
 ```bash
-# run all tests, output coverage report of AlephAlphaClient module in terminal
-pytest --cov-report term --cov=AlephAlphaClient tests
+# run all tests, output coverage report of aleph_alpha_client module in terminal
+pytest --cov-report term --cov=aleph_alpha_client tests
 pytest tests -v # start verbose
 ```
 

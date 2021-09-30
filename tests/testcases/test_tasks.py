@@ -1,7 +1,7 @@
 import pytest
 import time
 import requests
-from AlephAlphaClient import QuotaError, POOLING_OPTIONS
+from aleph_alpha_client import QuotaError, POOLING_OPTIONS
 from tests.common import client
 
 def validate_completion_task_output(task, output):
