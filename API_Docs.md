@@ -131,10 +131,6 @@
 >>   // Flag indicating whether individual tokens of the completion are to be returned (True) or whether solely the 
 >>   // generated text (i.e. the completion) is sufficient (False).
 >>   tokens: boolean | null;
->>   param_desired: number | null;
->>   desired: string[] | null;
->>   param_undesired: number | null;
->>   undesired: string[] | null;
 >> }
 >> ```
 >
