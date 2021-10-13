@@ -30,7 +30,7 @@ generate completions from a prompt
 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.  
 see `available_models()`
 
-**prompt** (str, optional, default "")
+**prompt** (str or multimodal list*, optional, default "")
 
 The text to be completed. Unconditional completion can be started with an empty string (default). The prompt may contain a zero shot or few shot task.
 
@@ -177,6 +177,11 @@ client = AlephAlphaClient(
 # )
 
 result = client.complete(model="EleutherAI/gpt-neo-2.7B", **kwargs)
+
+result = client.complete(model="MultimodalModel", prompt=[
+            {"type": "image", "data": load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")},
+            {"type": "text", "data": "Q: What is the name of the store?\nA:"}
+        ])
 ```
 
 ### Evaluate
@@ -194,7 +199,7 @@ see `available_models()`
 
 The ground truth completion expected to be produced given the prompt. 
 
-**prompt** (str, optional, default "")
+**prompt** (str or multimodal list*, optional, default "")
 
 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
 
@@ -271,6 +276,11 @@ client = AlephAlphaClient(
 # )
 
 result = client.evaluate(model="EleutherAI/gpt-neo-2.7B", prompt="The api works", completion_expected=" well.")
+
+result = client.evaluate(model="MultimodalModel", prompt=[
+            {"type": "image", "data": load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")},
+            {"type": "text", "data": "Q: What is the name of the store?\nA:"}
+        ], completion_expected=" Blockbuster Video")
 ```
 
 ### Embed
@@ -284,7 +294,7 @@ Embeds a text and returns vectors that can be used for downstream tasks (e.g. se
 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 see `available_models()`
 
-**prompt** (str, required)
+**prompt** (str or multimodal list*, required)
 
 The text to be embedded.
 
@@ -366,8 +376,46 @@ client = AlephAlphaClient(
 # )
 
 result = client.embed(model="EleutherAI/gpt-neo-2.7B", prompt="This is an example.", layers=[-1], pooling=["mean"])
+
+result = client.embed(model="MultimodalModel", prompt=[
+            {"type": "image", "data": load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")},
+            {"type": "text", "data": "Q: What is the name of the store?\nA:"}
+        ], layers=[-1], pooling=["last_token"])
 ```
 
+
+## *Multimodal prompts
+
+Any task type accepts a multimodal prompt. **Requirement is that the model allows multimodality**, to be verified by viewing properties of available models.
+
+The following requirements must be fulfilled:
+* A multimodal prompt must be an ordered list containing dictionaries
+* Each dictionary requires the keys 'type' and 'data'
+* The type property can be either one of 'text' or 'image'
+* The data property must be a string; images are expected to be base64 encoded
+
+example
+```json
+[
+    {"type": "image", "data": "/9j/2wBDAAQDAwQDAwQEAwQFBAQFBgoHBgYGBg0JCggKDw0QEA8ND [...]"},
+    {"type": "text", "data": "Q: What is the name of the store?\nA:"}
+]
+``` 
+
+To load base64 encoded images the helper functions load_base64_from_url and load_base64_from_file may be used.
+
+```python
+from aleph_alpha_client import load_base64_from_url, load_base64_from_file
+
+base_64_encoded_image = load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")
+base_64_encoded_image = load_base64_from_file("/path/to/your/image_file.jpg")
+
+
+prompt = [
+            {"type": "image", "data": load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")},
+            {"type": "text", "data": "Q: What is the name of the store?\nA:"}
+        ]
+```
 
 ## Testing
 
