@@ -173,7 +173,7 @@ client = AlephAlphaClient(
 # the client with the token directly
 # client = AlephAlphaClient(
 #     host="https://api.aleph-alpha.de/",
-#     token="you_token"
+#     token="your_token"
 # )
 
 result = client.complete(model="EleutherAI/gpt-neo-2.7B", **kwargs)
@@ -267,7 +267,7 @@ client = AlephAlphaClient(
 # the client with the token directly
 # client = AlephAlphaClient(
 #     host="https://api.aleph-alpha.de/",
-#     token="you_token"
+#     token="your_token"
 # )
 
 result = client.evaluate(model="EleutherAI/gpt-neo-2.7B", prompt="The api works", completion_expected=" well.")
@@ -362,7 +362,7 @@ client = AlephAlphaClient(
 # the client with the token directly
 # client = AlephAlphaClient(
 #     host="https://api.aleph-alpha.de/",
-#     token="you_token"
+#     token="your_token"
 # )
 
 result = client.embed(model="EleutherAI/gpt-neo-2.7B", prompt="This is an example.", layers=[-1], pooling=["mean"])
