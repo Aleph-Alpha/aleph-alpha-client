@@ -4,6 +4,33 @@ import requests
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
+PROMPT_LIST_VALID_TYPES = ["text", "image"]
+VALIDATE_PROMPT_LIST_ERROR = "each item in the prompt list must be a dictionary containing the key 'type' with any value of ['text', 'image'] and the key 'data' and a string value (either text or a base64 encoded image)"
+
+def validate_prompt(prompt, at_least_one_token=False):
+    """
+    validates that a prompt is either a string or matches the multimodal format
+    """
+    if isinstance(prompt, str):
+        if at_least_one_token:
+            if len(prompt) == 0:
+                raise ValueError("prompt must contain at least one character")
+
+    elif isinstance(prompt, list):
+        # check that all entries of the prompt list are valid
+        content_count = 0
+        for prompt_item in prompt:
+            if not isinstance(prompt_item, dict):
+                raise ValueError(VALIDATE_PROMPT_LIST_ERROR)
+            for k in ["type", "data"]:
+                if k not in prompt_item:
+                    raise ValueError(VALIDATE_PROMPT_LIST_ERROR)
+            if prompt_item["type"] not in PROMPT_LIST_VALID_TYPES:
+                raise ValueError(VALIDATE_PROMPT_LIST_ERROR)
+            if not isinstance(prompt_item["data"], str):
+                raise ValueError(VALIDATE_PROMPT_LIST_ERROR)
+    else:
+        raise ValueError("prompt must be a string or a list containing multimodal input as described in the readme")
 
 class QuotaError(Exception):
     def __init__(self, *args, **kwargs):
@@ -161,8 +188,10 @@ class AlephAlphaClient:
         # validate data types
         if not isinstance(model, str):
             raise ValueError("model must be a string")
-        if not isinstance(prompt, str):
-            raise ValueError("prompt must be a string")
+        
+        
+        validate_prompt(prompt=prompt)
+        
         if not (maximum_tokens is None or isinstance(maximum_tokens, int)):
             raise ValueError("maximum_tokens must be an int or None")
         if isinstance(temperature, int):
@@ -296,11 +325,7 @@ class AlephAlphaClient:
         if not isinstance(model, str):
             raise ValueError("model must be a string")
 
-        if not isinstance(prompt, str):
-            raise ValueError("prompt must be a string")
-
-        if len(prompt) == 0:
-            raise ValueError("prompt must contain at least one character")
+        validate_prompt(prompt=prompt, at_least_one_token=True)
 
         if not isinstance(layers, list):
             raise ValueError("layers must be a list")
@@ -359,8 +384,7 @@ class AlephAlphaClient:
         if not isinstance(model, str):
             raise ValueError("model must be a string")
 
-        if not isinstance(prompt, str):
-            raise ValueError("prompt must be a string")
+        validate_prompt(prompt=prompt)
 
         if not isinstance(completion_expected, str):
             raise ValueError("completion_expected must be a string")
