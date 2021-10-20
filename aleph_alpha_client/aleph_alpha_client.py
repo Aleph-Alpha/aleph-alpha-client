@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 
 import requests
 
@@ -6,6 +6,7 @@ POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
 PROMPT_LIST_VALID_TYPES = ["text", "image"]
 VALIDATE_PROMPT_LIST_ERROR = "each item in the prompt list must be a dictionary containing the key 'type' with any value of ['text', 'image'] and the key 'data' and a string value (either text or a base64 encoded image)"
+
 
 def validate_prompt(prompt, at_least_one_token=False):
     """
@@ -32,6 +33,7 @@ def validate_prompt(prompt, at_least_one_token=False):
     else:
         raise ValueError("prompt must be a string or a list containing multimodal input as described in the readme")
 
+
 class QuotaError(Exception):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,7 +41,8 @@ class QuotaError(Exception):
 
 class AlephAlphaClient:
     def __init__(self, host, token=None, email=None, password=None):
-        if host[-1] != "/": host += "/"
+        if host[-1] != "/":
+            host += "/"
         self.host = host
 
         # check server version
@@ -104,7 +107,7 @@ class AlephAlphaClient:
 
     def complete(self,
                  model: str,
-                 prompt: str = "",
+                 prompt: Union[str, List[Dict[str, str]]] = "",
                  hosting: str = "cloud",
                  maximum_tokens: Optional[int] = 64,
                  temperature: Optional[float] = 0.0,
@@ -137,7 +140,7 @@ class AlephAlphaClient:
 
             maximum_tokens (int, optional, default 64):
                 The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for EleutherAI/gpt-neo-2.7B, it may not exceed 2048 tokens).
-                
+
             temperature (float, optional, default 0.0)
                 A higher sampling temperature encourages the model to produce less probable outputs ("be more creative"). Values are expected in a range from 0.0 to 1.0. Try high values (e.g. 0.9) for a more "creative" response and the default 0.0 for a well defined and repeatable answer.
 
@@ -166,7 +169,7 @@ class AlephAlphaClient:
             best_of (int, optional, default None)
                 Generates best_of completions server-side and returns the "best" (the one with the highest log probability per token). Results cannot be streamed.
                 When used with n, best_of controls the number of candidate completions and n specifies how many to return – best_of must be greater than n.
-            
+
             n (int, optional, default 1)
                 How many completions to generate for each prompt.
 
@@ -188,10 +191,9 @@ class AlephAlphaClient:
         # validate data types
         if not isinstance(model, str):
             raise ValueError("model must be a string")
-        
-        
+
         validate_prompt(prompt=prompt)
-        
+
         if not (maximum_tokens is None or isinstance(maximum_tokens, int)):
             raise ValueError("maximum_tokens must be an int or None")
         if isinstance(temperature, int):
