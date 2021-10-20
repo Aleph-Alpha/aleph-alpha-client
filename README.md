@@ -15,7 +15,10 @@ pip install --upgrade git+https://github.com/Aleph-Alpha/aleph-alpha-client
 ```
 
 or add the following line to the requirements:
-git+<https://github.com/Aleph-Alpha/aleph-alpha-client#egg=aleph_alpha_client>
+
+```sh
+git+https://github.com/Aleph-Alpha/aleph-alpha-client#egg=aleph_alpha_client
+```
 
 ## Endpoints
 
