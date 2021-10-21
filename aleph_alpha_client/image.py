@@ -2,7 +2,7 @@ import base64
 from typing import Dict
 import requests
 
-class Image:
+class ImagePrompt:
     """
     An image send as part of a prompt to a model. The image is represented as
     base64.

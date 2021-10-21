@@ -2,11 +2,11 @@ from typing import List, Optional, Dict, Union
 
 import requests
 
-from aleph_alpha_client.image import Image
+from aleph_alpha_client.image import ImagePrompt
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
-def _to_prompt_item(item: Union[str, Image]) -> Dict[str, str]:
+def _to_prompt_item(item: Union[str, ImagePrompt]) -> Dict[str, str]:
     if isinstance(item, str):
         return {"type": "text", "data": item }
     if hasattr(item, "_to_prompt_item"):
