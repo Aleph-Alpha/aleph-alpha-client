@@ -389,38 +389,26 @@ result = client.embed(model="MultimodalModel", prompt=[
         ], layers=[-1], pooling=["last_token"])
 ```
 
-## *Multimodal prompts
+## Sending images in prompts
 
-Any task type accepts a multimodal prompt. **Requirement is that the model allows multimodality**, to be verified by viewing properties of available models.
-
-The following requirements must be fulfilled:
-
-* A multimodal prompt must be an ordered list containing dictionaries
-* Each dictionary requires the keys 'type' and 'data'
-* The type property can be either one of 'text' or 'image'
-* The data property must be a string; images are expected to be base64 encoded
-
-example
-
-```json
-[
-    {"type": "image", "data": "/9j/2wBDAAQDAwQDAwQEAwQFBAQFBgoHBgYGBg0JCggKDw0QEA8ND [...]"},
-    {"type": "text", "data": "Q: What is the name of the store?\nA:"}
-]
-```
-
-To load base64 encoded images the helper functions load_base64_from_url and load_base64_from_file may be used.
+Should you choose a model which supports multimodality you can send images in propmts.
 
 ```python
-from aleph_alpha_client import load_base64_from_url, load_base64_from_file
+from aleph_alpha_client import Client, ImagePrompt
 
-base_64_encoded_image = load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")
-base_64_encoded_image = load_base64_from_file("/path/to/your/image_file.jpg")
+def ask_for_store_name(client: AlephAlphaClient, image_url: str) -> str:
 
-prompt = [
-    {"type": "image", "data": base_64_encoded_image},
-    {"type": "text", "data": "Q: What is the name of the store?\nA:"}
-]
+    prompt = [
+        ImagePrompt::from_url(image_url),
+        {"Q: What is the name of the store?\nA:"}
+    ]
+
+    result = client.complete(model="any-multimodal-model",
+                             prompt=prompt,
+                             maximum_tokens=64,
+                             tokens=False)
+
+    return result["completions"][0]["completion"]
 ```
 
 ## Testing

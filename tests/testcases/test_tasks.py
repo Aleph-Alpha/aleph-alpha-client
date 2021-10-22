@@ -227,7 +227,7 @@ def test_should_answer_question_about_image(client):
         return
 
     prompt = [
-        "Q: What shop can be seen in the picture?",
+        "Q: What shop can be seen in the picture? A:",
         ImagePrompt.from_file("./tests/image_example.jpg")
     ]
 
