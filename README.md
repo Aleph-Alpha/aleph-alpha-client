@@ -1,23 +1,125 @@
 # Aleph Alpha Client
 
-python client to interact with Aleph Alpha api endpoints
+Interact with the Aleph Alpha API via Python
 
 > [Documentation of the HTTP API can be found here](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/master/API_Docs.md)
 
-## Installation via pip
+## Installation
+
+The latest stable version is deployed to PyPi so you can install this package via pip.
 
 ```sh
-# latest released version on pypi
 pip install aleph-alpha-client
-
-# latest main branch
-pip install --upgrade git+https://github.com/Aleph-Alpha/aleph-alpha-client
 ```
 
-or add the following line to the requirements:
+## Usage
 
-```sh
-git+https://github.com/Aleph-Alpha/aleph-alpha-client#egg=aleph_alpha_client
+### Completion Multimodal
+
+```python
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.de",
+    token="<your token>
+)
+
+# You need to choose a model with multimodal capabilities for this example.
+model = "EUTranMultimodal"
+url = "https://cdn-images-1.medium.com/max/1200/1*HunNdlTmoPj8EKpl-jqvBA.png"
+
+image = ImagePrompt.from_url(url)
+prompt = [
+    image,
+    "Q: What does the picture show? A:",
+]
+result = client.complete(model, prompt=prompt, maximum_tokens=20)
+
+print(result["completions"][0]["completion"])
+```
+
+### Evaluation text prompt
+
+```python
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.de",
+    token="<your token>
+)
+
+# You need to choose a model with multimodal capabilities for this example.
+model = "EleutherAI/gpt-neo-2.7B"
+prompt = "The api works"
+result = client.evaluate(model, prompt=prompt, completion_expected=" well")
+
+print(result)
+```
+
+### Evaluation Multimodal
+
+```python
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.de",
+    token="<your token>
+)
+
+# You need to choose a model with multimodal capabilities for this example.
+model = "EUTranMultimodal"
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
+image = ImagePrompt.from_url(url)
+prompt = [
+    image,
+    "Q: What is the name of the store?\nA:",
+]
+
+result = client.evaluate(model, prompt=prompt, completion_expected=" Blockbuster Video")
+
+print(result)
+```
+
+### Embedding text prompt
+
+```python
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.de",
+    token="<your token>
+)
+
+model = "EleutherAI/gpt-neo-2.7B"
+prompt = "This is an example."
+result = client.embed(model, prompt=prompt, layers=[-1], pooling=["mean"])
+
+print(result)
+```
+
+### Embedding multimodal prompt
+
+```python
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.de",
+    token="<your token>
+)
+
+model = "EUTranMultimodal"
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
+image = ImagePrompt.from_url(url)
+prompt = [
+    image,
+    "Q: What is the name of the store?\nA:",
+]
+
+result = client.embed(model, prompt=prompt, layers=[-1], pooling=["mean"])
+
+print(result)
 ```
 
 ## Endpoints
@@ -160,32 +262,6 @@ The return value of a completion contains the following fields:
 }
 ```
 
-#### Usage
-
-```python
-from aleph_alpha_client import AlephAlphaClient
-
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.de/",
-    email="your_email",
-    password="your_password"
-)
-
-# in order avoid requesting a token you can also instantiate
-# the client with the token directly
-# client = AlephAlphaClient(
-#     host="https://api.aleph-alpha.de/",
-#     token="your_token"
-# )
-
-result = client.complete(model="EleutherAI/gpt-neo-2.7B", **kwargs)
-
-result = client.complete(model="MultimodalModel", prompt=[
-            {"type": "image", "data": load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")},
-            {"type": "text", "data": "Q: What is the name of the store?\nA:"}
-        ])
-```
-
 ### Evaluate
 
 Evaluates the model's likelihood to produce a completion given a prompt.
@@ -258,32 +334,6 @@ completion_expected: " well."
         "completion": " fine,"
     }
 }
-```
-
-#### Usage
-
-```python
-from aleph_alpha_client import AlephAlphaClient
-
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.de/",
-    email="your_email",
-    password="your_password"
-)
-
-# in order avoid requesting a token you can also instantiate
-# the client with the token directly
-# client = AlephAlphaClient(
-#     host="https://api.aleph-alpha.de/",
-#     token="your_token"
-# )
-
-result = client.evaluate(model="EleutherAI/gpt-neo-2.7B", prompt="The api works", completion_expected=" well.")
-
-result = client.evaluate(model="MultimodalModel", prompt=[
-            {"type": "image", "data": load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")},
-            {"type": "text", "data": "Q: What is the name of the store?\nA:"}
-        ], completion_expected=" Blockbuster Video")
 ```
 
 ### Embed
@@ -360,55 +410,6 @@ example for pooling
     },
     "tokens": ["a", "...",  "z"]
 }
-```
-
-#### Usage
-
-```python
-
-from aleph_alpha_client import AlephAlphaClient
-
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.de/",
-    email="your_email",
-    password="your_password"
-)
-
-# in order avoid requesting a token you can also instantiate
-# the client with the token directly
-# client = AlephAlphaClient(
-#     host="https://api.aleph-alpha.de/",
-#     token="your_token"
-# )
-
-result = client.embed(model="EleutherAI/gpt-neo-2.7B", prompt="This is an example.", layers=[-1], pooling=["mean"])
-
-result = client.embed(model="MultimodalModel", prompt=[
-            {"type": "image", "data": load_base64_from_url("https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg")},
-            {"type": "text", "data": "Q: What is the name of the store?\nA:"}
-        ], layers=[-1], pooling=["last_token"])
-```
-
-## Sending images in prompts
-
-Should you choose a model which supports multimodality you can send images in propmts.
-
-```python
-from aleph_alpha_client import Client, ImagePrompt
-
-def ask_for_store_name(client: AlephAlphaClient, image_url: str) -> str:
-
-    prompt = [
-        ImagePrompt::from_url(image_url),
-        {"Q: What is the name of the store?\nA:"}
-    ]
-
-    result = client.complete(model="any-multimodal-model",
-                             prompt=prompt,
-                             maximum_tokens=64,
-                             tokens=False)
-
-    return result["completions"][0]["completion"]
 ```
 
 ## Testing
