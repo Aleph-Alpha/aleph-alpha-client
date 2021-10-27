@@ -34,6 +34,10 @@ def _to_serializable_prompt(
     elif isinstance(prompt, list):
         return [_to_prompt_item(item) for item in prompt]
 
+    raise ValueError(
+        "Invalid prompt. Prompt must either be a string, or a list of valid multimodal propmt items."
+    )
+
 
 class QuotaError(Exception):
     def __init__(self, *args, **kwargs):
@@ -120,7 +124,7 @@ class AlephAlphaClient:
     def complete(
         self,
         model: str,
-        prompt: Union[str, List[Dict[str, str]]] = "",
+        prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
         hosting: str = "cloud",
         maximum_tokens: Optional[int] = 64,
         temperature: Optional[float] = 0.0,
@@ -325,7 +329,7 @@ class AlephAlphaClient:
     def embed(
         self,
         model,
-        prompt: str,
+        prompt: Union[str, List[Union[str, ImagePrompt]]],
         pooling: List[str],
         layers: List[int],
         hosting: str = "cloud",
@@ -367,7 +371,9 @@ class AlephAlphaClient:
         if not isinstance(model, str):
             raise ValueError("model must be a string")
 
-        prompt = _to_serializable_prompt(prompt=prompt, at_least_one_token=True)
+        serializable_prompt = _to_serializable_prompt(
+            prompt=prompt, at_least_one_token=True
+        )
 
         if not isinstance(layers, list):
             raise ValueError("layers must be a list")
@@ -401,7 +407,7 @@ class AlephAlphaClient:
 
         payload = {
             "model": model,
-            "prompt": prompt,
+            "prompt": serializable_prompt,
             "hosting": hosting,
             "layers": layers,
             "tokens": tokens,
@@ -412,7 +418,13 @@ class AlephAlphaClient:
         )
         return self._parse_response(response)
 
-    def evaluate(self, model, completion_expected, hosting: str = "cloud", prompt=""):
+    def evaluate(
+        self,
+        model,
+        completion_expected,
+        hosting: str = "cloud",
+        prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
+    ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
 
@@ -435,7 +447,7 @@ class AlephAlphaClient:
         if not isinstance(model, str):
             raise ValueError("model must be a string")
 
-        prompt = _to_serializable_prompt(prompt=prompt)
+        serializable_prompt = _to_serializable_prompt(prompt=prompt)
 
         if not isinstance(completion_expected, str):
             raise ValueError("completion_expected must be a string")
@@ -445,7 +457,7 @@ class AlephAlphaClient:
 
         payload = {
             "model": model,
-            "prompt": prompt,
+            "prompt": serializable_prompt,
             "hosting": hosting,
             "completion_expected": completion_expected,
         }
