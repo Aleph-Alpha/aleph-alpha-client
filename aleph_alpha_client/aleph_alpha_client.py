@@ -1,8 +1,42 @@
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 
 import requests
 
+from aleph_alpha_client.image import ImagePrompt
+
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
+
+
+def _to_prompt_item(item: Union[str, ImagePrompt]) -> Dict[str, str]:
+    if isinstance(item, str):
+        return {"type": "text", "data": item}
+    if hasattr(item, "_to_prompt_item"):
+        return item._to_prompt_item()
+    else:
+        raise ValueError(
+            "The item in the prompt is not valid. Try either a string or an Image."
+        )
+
+
+def _to_serializable_prompt(
+    prompt, at_least_one_token=False
+) -> Union[str, List[Dict[str, str]]]:
+    """
+    Validates that a prompt and emits the format suitable for serialization as JSON
+    """
+    if isinstance(prompt, str):
+        if at_least_one_token:
+            if len(prompt) == 0:
+                raise ValueError("prompt must contain at least one character")
+        # Just pass the string through as is.
+        return prompt
+
+    elif isinstance(prompt, list):
+        return [_to_prompt_item(item) for item in prompt]
+
+    raise ValueError(
+        "Invalid prompt. Prompt must either be a string, or a list of valid multimodal propmt items."
+    )
 
 
 class QuotaError(Exception):
@@ -12,16 +46,18 @@ class QuotaError(Exception):
 
 class AlephAlphaClient:
     def __init__(self, host, token=None, email=None, password=None):
-        if host[-1] != "/": host += "/"
+        if host[-1] != "/":
+            host += "/"
         self.host = host
 
         # check server version
         expect_release = "1"
         version = self.get_version()
-        assert version.startswith(expect_release), \
-            f"Expected API version {expect_release}.x.x, got {version}. Please update client."
+        assert version.startswith(
+            expect_release
+        ), f"Expected API version {expect_release}.x.x, got {version}. Please update client."
 
-        assert (token is not None or (email is not None and password is not None))
+        assert token is not None or (email is not None and password is not None)
         self.token = token or self.get_token(email, password)
 
     def get_version(self):
@@ -30,10 +66,9 @@ class AlephAlphaClient:
         return response.text
 
     def get_token(self, email, password):
-        response = requests.post(self.host + "get_token", json={
-            "email": email,
-            "password": password
-        })
+        response = requests.post(
+            self.host + "get_token", json={"email": email, "password": password}
+        )
         if response.status_code == 200:
             response_json = response.json()
             return response_json["token"]
@@ -42,16 +77,20 @@ class AlephAlphaClient:
 
     @property
     def request_headers(self):
-        return {'Authorization': 'Bearer ' + self.token}
+        return {"Authorization": "Bearer " + self.token}
 
     def available_models(self):
         """
         Queries all models which are currently available.
         """
-        response = requests.get(self.host + "models_available", headers=self.request_headers)
+        response = requests.get(
+            self.host + "models_available", headers=self.request_headers
+        )
         return self._parse_response(response)
 
-    def tokenize(self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True):
+    def tokenize(
+        self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True
+    ):
         """
         Tokenizes the given prompt for the given model.
         """
@@ -59,40 +98,49 @@ class AlephAlphaClient:
             "model": model,
             "prompt": prompt,
             "tokens": tokens,
-            "token_ids": token_ids
+            "token_ids": token_ids,
         }
-        response = requests.post(self.host + "tokenize", headers=self.request_headers, json=payload, timeout=None)
+        response = requests.post(
+            self.host + "tokenize",
+            headers=self.request_headers,
+            json=payload,
+            timeout=None,
+        )
         return self._parse_response(response)
 
     def detokenize(self, model: str, token_ids: List[int]):
         """
         Detokenizes the given tokens.
         """
-        payload = {
-            "model": model,
-            "token_ids": token_ids
-        }
-        response = requests.post(self.host + "detokenize", headers=self.request_headers, json=payload, timeout=None)
+        payload = {"model": model, "token_ids": token_ids}
+        response = requests.post(
+            self.host + "detokenize",
+            headers=self.request_headers,
+            json=payload,
+            timeout=None,
+        )
         return self._parse_response(response)
 
-    def complete(self,
-                 model: str,
-                 prompt: str = "",
-                 hosting: str = "cloud",
-                 maximum_tokens: Optional[int] = 64,
-                 temperature: Optional[float] = 0.0,
-                 top_k: Optional[int] = 0,
-                 top_p: Optional[float] = 0.0,
-                 presence_penalty: Optional[float] = 0.0,
-                 frequency_penalty: Optional[float] = 0.0,
-                 repetition_penalties_include_prompt: Optional[bool] = False,
-                 use_multiplicative_presence_penalty: Optional[bool] = False,
-                 best_of: Optional[int] = None,
-                 n: Optional[int] = 1,
-                 logit_bias: Optional[Dict[int, float]] = None,
-                 log_probs: Optional[int] = None,
-                 stop_sequences: Optional[List[str]] = None,
-                 tokens: Optional[bool] = False):
+    def complete(
+        self,
+        model: str,
+        prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
+        hosting: str = "cloud",
+        maximum_tokens: Optional[int] = 64,
+        temperature: Optional[float] = 0.0,
+        top_k: Optional[int] = 0,
+        top_p: Optional[float] = 0.0,
+        presence_penalty: Optional[float] = 0.0,
+        frequency_penalty: Optional[float] = 0.0,
+        repetition_penalties_include_prompt: Optional[bool] = False,
+        use_multiplicative_presence_penalty: Optional[bool] = False,
+        best_of: Optional[int] = None,
+        n: Optional[int] = 1,
+        logit_bias: Optional[Dict[int, float]] = None,
+        log_probs: Optional[int] = None,
+        stop_sequences: Optional[List[str]] = None,
+        tokens: Optional[bool] = False,
+    ):
         """
         Generates samples from a prompt.
 
@@ -110,7 +158,7 @@ class AlephAlphaClient:
 
             maximum_tokens (int, optional, default 64):
                 The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for EleutherAI/gpt-neo-2.7B, it may not exceed 2048 tokens).
-                
+
             temperature (float, optional, default 0.0)
                 A higher sampling temperature encourages the model to produce less probable outputs ("be more creative"). Values are expected in a range from 0.0 to 1.0. Try high values (e.g. 0.9) for a more "creative" response and the default 0.0 for a well defined and repeatable answer.
 
@@ -134,17 +182,17 @@ class AlephAlphaClient:
                 Flag deciding whether presence penalty or frequency penalty are applied to the prompt and completion (True) or only the completion (False)
 
             use_multiplicative_presence_penalty (bool, optional, default True)
-                Flag deciding whether presence penalty is applied multiplicatively (True) or additively (False). This changes the formula stated for presence and frequency penalty. 
+                Flag deciding whether presence penalty is applied multiplicatively (True) or additively (False). This changes the formula stated for presence and frequency penalty.
 
             best_of (int, optional, default None)
                 Generates best_of completions server-side and returns the "best" (the one with the highest log probability per token). Results cannot be streamed.
                 When used with n, best_of controls the number of candidate completions and n specifies how many to return – best_of must be greater than n.
-            
+
             n (int, optional, default 1)
                 How many completions to generate for each prompt.
 
             logit_bias (dict mapping token ids to score, optional, default None)
-                The logit bias allows to influence the likelihood of generating tokens. A dictionary mapping token ids (int) to a bias (float) can be provided. Such bias is added to the logits as generated by the model. 
+                The logit bias allows to influence the likelihood of generating tokens. A dictionary mapping token ids (int) to a bias (float) can be provided. Such bias is added to the logits as generated by the model.
 
             log_probs (int, optional, default None)
                 Number of top log probabilities to be returned for each generated token. Log probabilities may be used in downstream tasks or to assess the model's certainty when producing tokens.
@@ -161,8 +209,9 @@ class AlephAlphaClient:
         # validate data types
         if not isinstance(model, str):
             raise ValueError("model must be a string")
-        if not isinstance(prompt, str):
-            raise ValueError("prompt must be a string")
+
+        prompt = _to_serializable_prompt(prompt=prompt)
+
         if not (maximum_tokens is None or isinstance(maximum_tokens, int)):
             raise ValueError("maximum_tokens must be an int or None")
         if isinstance(temperature, int):
@@ -183,10 +232,20 @@ class AlephAlphaClient:
             frequency_penalty = float(frequency_penalty)
         if not (frequency_penalty is None or isinstance(frequency_penalty, float)):
             raise ValueError("frequency_penalty must be a float or None")
-        if not (repetition_penalties_include_prompt is None or isinstance(repetition_penalties_include_prompt, bool)):
-            raise ValueError("repetition_penalties_include_prompt must be a bool or None")
-        if not (use_multiplicative_presence_penalty is None or isinstance(use_multiplicative_presence_penalty, bool)):
-            raise ValueError("use_multiplicative_presence_penalty must be a bool or None")
+        if not (
+            repetition_penalties_include_prompt is None
+            or isinstance(repetition_penalties_include_prompt, bool)
+        ):
+            raise ValueError(
+                "repetition_penalties_include_prompt must be a bool or None"
+            )
+        if not (
+            use_multiplicative_presence_penalty is None
+            or isinstance(use_multiplicative_presence_penalty, bool)
+        ):
+            raise ValueError(
+                "use_multiplicative_presence_penalty must be a bool or None"
+            )
         if not (best_of is None or isinstance(best_of, int)):
             raise ValueError("best_of must be an int or None")
         if not (n is None or isinstance(n, int)):
@@ -206,7 +265,9 @@ class AlephAlphaClient:
         if stop_sequences is not None:
             for stop_sequence in stop_sequences:
                 if not isinstance(stop_sequence, str):
-                    raise ValueError("each item in the stop_sequences list must be a string")
+                    raise ValueError(
+                        "each item in the stop_sequences list must be a string"
+                    )
         if not (tokens is None or isinstance(tokens, bool)):
             raise ValueError("tokens must be a bool or None")
 
@@ -229,10 +290,13 @@ class AlephAlphaClient:
 
         if best_of is not None:
             if best_of == n:
-                raise ValueError("With best_of equal to n no best completions are choses because only n are computed.")
+                raise ValueError(
+                    "With best_of equal to n no best completions are choses because only n are computed."
+                )
             if best_of < n:
                 raise ValueError(
-                    "best_of needs to be bigger than n. The model cannot return more completions (n) than were computed (best_of).")
+                    "best_of needs to be bigger than n. The model cannot return more completions (n) than were computed (best_of)."
+                )
 
         payload = {
             "model": model,
@@ -254,12 +318,23 @@ class AlephAlphaClient:
             "tokens": tokens,
         }
 
-        response = requests.post(self.host + "complete", headers=self.request_headers, json=payload,
-                                 timeout=None)
+        response = requests.post(
+            self.host + "complete",
+            headers=self.request_headers,
+            json=payload,
+            timeout=None,
+        )
         return self._parse_response(response)
 
-    def embed(self, model, prompt: str, pooling: List[str], layers: List[int], hosting: str = "cloud",
-              tokens: Optional[bool] = False):
+    def embed(
+        self,
+        model,
+        prompt: Union[str, List[Union[str, ImagePrompt]]],
+        pooling: List[str],
+        layers: List[int],
+        hosting: str = "cloud",
+        tokens: Optional[bool] = False,
+    ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -271,9 +346,9 @@ class AlephAlphaClient:
                The text to be embedded.
 
             layers (List[int], required):
-               A list of layer indices from which to return embeddings. 
+               A list of layer indices from which to return embeddings.
                     * Index 0 corresponds to the word embeddings used as input to the first transformer layer
-                    * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc. 
+                    * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
                     * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
 
             pooling (List[str])
@@ -296,11 +371,9 @@ class AlephAlphaClient:
         if not isinstance(model, str):
             raise ValueError("model must be a string")
 
-        if not isinstance(prompt, str):
-            raise ValueError("prompt must be a string")
-
-        if len(prompt) == 0:
-            raise ValueError("prompt must contain at least one character")
+        serializable_prompt = _to_serializable_prompt(
+            prompt=prompt, at_least_one_token=True
+        )
 
         if not isinstance(layers, list):
             raise ValueError("layers must be a list")
@@ -310,7 +383,9 @@ class AlephAlphaClient:
 
         for layer in layers:
             if not isinstance(layer, int):
-                raise ValueError("each item in the layers list must be an integer; got "+str(layer))
+                raise ValueError(
+                    "each item in the layers list must be an integer; got " + str(layer)
+                )
 
         if tokens is None:
             tokens = False
@@ -323,20 +398,33 @@ class AlephAlphaClient:
         if pooling is not None:
             for pooling_option in pooling:
                 if pooling_option not in POOLING_OPTIONS:
-                    raise ValueError("each item in the pooling list must be either one of "+str(POOLING_OPTIONS)+"; got "+str(pooling_option))
+                    raise ValueError(
+                        "each item in the pooling list must be either one of "
+                        + str(POOLING_OPTIONS)
+                        + "; got "
+                        + str(pooling_option)
+                    )
 
         payload = {
             "model": model,
-            "prompt": prompt,
+            "prompt": serializable_prompt,
             "hosting": hosting,
             "layers": layers,
             "tokens": tokens,
             "pooling": pooling,
         }
-        response = requests.post(self.host + "embed", headers=self.request_headers, json=payload)
+        response = requests.post(
+            self.host + "embed", headers=self.request_headers, json=payload
+        )
         return self._parse_response(response)
 
-    def evaluate(self, model, completion_expected, hosting: str = "cloud", prompt=""):
+    def evaluate(
+        self,
+        model,
+        completion_expected,
+        hosting: str = "cloud",
+        prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
+    ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
 
@@ -359,8 +447,7 @@ class AlephAlphaClient:
         if not isinstance(model, str):
             raise ValueError("model must be a string")
 
-        if not isinstance(prompt, str):
-            raise ValueError("prompt must be a string")
+        serializable_prompt = _to_serializable_prompt(prompt=prompt)
 
         if not isinstance(completion_expected, str):
             raise ValueError("completion_expected must be a string")
@@ -370,11 +457,13 @@ class AlephAlphaClient:
 
         payload = {
             "model": model,
-            "prompt": prompt,
+            "prompt": serializable_prompt,
             "hosting": hosting,
             "completion_expected": completion_expected,
         }
-        response = requests.post(self.host + "evaluate", headers=self.request_headers, json=payload)
+        response = requests.post(
+            self.host + "evaluate", headers=self.request_headers, json=payload
+        )
         return self._parse_response(response)
 
     @staticmethod
