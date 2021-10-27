@@ -48,7 +48,6 @@ client = AlephAlphaClient(
     token="<your token>
 )
 
-# You need to choose a model with multimodal capabilities for this example.
 model = "EleutherAI/gpt-neo-2.7B"
 prompt = "The api works"
 result = client.evaluate(model, prompt=prompt, completion_expected=" well")
@@ -108,6 +107,7 @@ client = AlephAlphaClient(
     token="<your token>
 )
 
+# You need to choose a model with multimodal capabilities for this example.
 model = "EUTranMultimodal"
 
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
