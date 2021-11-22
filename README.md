@@ -1,5 +1,7 @@
 # Aleph Alpha Client
 
+[![PyPI version](https://badge.fury.io/py/aleph-alpha-client.svg)](https://pypi.org/project/aleph-alpha-client/)
+
 Interact with the Aleph Alpha API via Python
 
 > [Documentation of the HTTP API can be found here](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/master/API_Docs.md)
