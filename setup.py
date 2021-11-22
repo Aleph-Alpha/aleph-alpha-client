@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(
-    name="aleph_alpha_client",
+    name="aleph-alpha-client",
     url="https://github.com/Aleph-Alpha/aleph-alpha-client",
     author="Aleph Alpha",
     author_email="support@aleph-alpha.de",
