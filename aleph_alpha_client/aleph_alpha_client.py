@@ -256,7 +256,7 @@ class AlephAlphaClient:
             for k, v in logit_bias.items():
                 if not isinstance(k, int):
                     raise ValueError("a key in the logit_bias dict must be an integer")
-                if not isinstance(k, float):
+                if not isinstance(v, float):
                     raise ValueError("a value in the logit_bias dict must be a float")
         if not (log_probs is None or isinstance(log_probs, int)):
             raise ValueError("log_probs must be an int or None")
