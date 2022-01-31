@@ -293,7 +293,7 @@ def test_should_entertain_image_cropping_params(client):
         return
 
     prompt = [
-        ImagePrompt.from_file("./tests/dog-and-cat-cover.jpg", 0, 0, 630),
+        ImagePrompt.from_file_with_cropping("./tests/dog-and-cat-cover.jpg", 0, 0, 630),
     ]
 
     result = client.complete(
