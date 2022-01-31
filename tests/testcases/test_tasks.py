@@ -282,3 +282,23 @@ def test_should_answer_question_about_image(client):
     print(result)
 
     assert "Blockbuster" in result["completions"][0]["completion"]
+
+
+# pytest tests/testcases/test_tasks.py::test_should_entertain_image_cropping_params -s
+def test_should_entertain_image_cropping_params(client):
+    # Only execute this test if the model has multimodal support
+    models = client.available_models()
+    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    if not model["image_support"]:
+        return
+
+    prompt = [
+        ImagePrompt.from_file("./tests/dog-and-cat-cover.jpg", 0, 0, 630),
+    ]
+
+    result = client.complete(
+        model=client.test_model, prompt=prompt, maximum_tokens=64, tokens=False
+    )
+    print(result)
+
+    assert "dog" in result["completions"][0]["completion"].lower()
