@@ -1,7 +1,7 @@
 import pytest
 import time
 import requests
-from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt
+from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt, ModelQueue
 from tests.common import client
 
 
@@ -242,25 +242,46 @@ def validate_embedding_task_output(task, output):
         ),
     ],
 )
-def test_task(client, endpoint, task_definition):
+def test_task(client, endpoint, task_definition, async_queue = False):
     if "model" in task_definition:
         if task_definition["model"] == "test_model":
             task_definition["model"] = client.test_model
 
     # start a task in a thread in order to run worker in between
-    if endpoint == "complete":
-        result = client.complete(**task_definition)
-    elif endpoint == "embed":
-        result = client.embed(**task_definition)
-    elif endpoint == "evaluate":
-        result = client.evaluate(**task_definition)
+    if async_queue:
+        mq = ModelQueue(client, no_threads=2)
+        if endpoint == "complete":
+            mq.add_complete_task(**task_definition)
+        elif endpoint == "embed":
+            mq.add_embed_task(**task_definition)
+        elif endpoint == "evaluate":
+            mq.add_cevaluate_task(**task_definition) 
 
-    if endpoint == "complete":
-        validate_completion_task_output(task_definition, result)
-    elif endpoint == "evaluate":
-        validate_evaluation_task_output(task_definition, result)
-    elif endpoint == "embed":
-        validate_embedding_task_output(task_definition, result)
+        mq.execute()
+        results = mq.get_results()
+
+        assert len(results)==1, "ModelQueue returns object with incorrect length"
+
+        result = results[0]["result"]
+        assert isinstance(result, dict), "MedelQueue result item not type dict"
+
+        if endpoint == "complete":
+            validate_completion_task_output(task_definition, result)
+        elif endpoint == "embed":
+            validate_embedding_task_output(task_definition, result)
+        elif endpoint == "evaluate":
+            validate_evaluation_task_output(task_definition, result)
+    else:
+        if endpoint == "complete":
+            result = client.complete(**task_definition)
+            validate_completion_task_output(task_definition, result)
+        elif endpoint == "embed":
+            result = client.embed(**task_definition)
+            validate_embedding_task_output(task_definition, result)
+        elif endpoint == "evaluate":
+            result = client.evaluate(**task_definition)
+            validate_evaluation_task_output(task_definition, result)
+        
 
 
 def test_should_answer_question_about_image(client):
@@ -302,3 +323,5 @@ def test_should_entertain_image_cropping_params(client):
     print(result)
 
     assert "dog" in result["completions"][0]["completion"].lower()
+
+
