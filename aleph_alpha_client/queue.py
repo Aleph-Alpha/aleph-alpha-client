@@ -6,14 +6,6 @@ from tqdm.asyncio import tqdm
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Optional, Dict, Union
 
-def serialize(obj):
-    """JSON serializer for objects not serializable by default json code"""
-    if isinstance(obj, ImagePrompt):
-        serial = "||IMAGE||"
-        return serial
-    return obj.__dict__
-
-
 class ModelQueue:
     """
     A async model queue that can be filles with aleph alpha tasks and sent to the API/ models
