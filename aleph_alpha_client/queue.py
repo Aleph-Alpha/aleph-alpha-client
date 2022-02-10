@@ -6,7 +6,7 @@ from tqdm.asyncio import tqdm
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Optional, Dict, Union
 
-class ModelQueue:
+class TaskQueue:
     """
     A async model queue that can be filles with aleph alpha tasks and sent to the API/ models
     """

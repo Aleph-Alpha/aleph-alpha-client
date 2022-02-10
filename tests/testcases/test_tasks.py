@@ -249,7 +249,7 @@ def test_task(client, endpoint, task_definition, async_queue = False):
 
     # start a task in a thread in order to run worker in between
     if async_queue:
-        mq = ModelQueue(client, no_threads=2)
+        mq = TaskQueue(client, no_threads=2)
         if endpoint == "complete":
             mq.add_complete_task(**task_definition)
         elif endpoint == "embed":
@@ -260,7 +260,7 @@ def test_task(client, endpoint, task_definition, async_queue = False):
         mq.execute()
         results = mq.get_results()
 
-        assert len(results)==1, "ModelQueue returns object with incorrect length"
+        assert len(results)==1, "TaskQueue returns object with incorrect length"
 
         result = results[0]["result"]
         assert isinstance(result, dict), "MedelQueue result item not type dict"
