@@ -1,7 +1,7 @@
 import pytest
 import time
 import requests
-from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt, ModelQueue
+from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt, TaskQueue
 from tests.common import client
 
 

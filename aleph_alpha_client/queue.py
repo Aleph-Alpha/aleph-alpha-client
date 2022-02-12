@@ -5,6 +5,7 @@ import asyncio
 from tqdm.asyncio import tqdm
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Optional, Dict, Union
+import shortuuid
 
 class TaskQueue:
     """
@@ -45,7 +46,9 @@ class TaskQueue:
         task = locals()
         task.pop("self")
         task["type"]="complete"
+        task["id"] = shortuuid.uuid()
         self.tasks.append(task)
+        return task["id"]
 
 
     def add_evaluate_task(
@@ -57,8 +60,10 @@ class TaskQueue:
     ):
         task = locals()
         task.pop("self")
-        task["type"]="evaluate"
+        task["type"] = "evaluate"
+        task["id"] = shortuuid.uuid()
         self.tasks.append(task)
+        return task["id"]
 
     def add_embed_task(
         self,
@@ -72,19 +77,22 @@ class TaskQueue:
         task = locals()
         task.pop("self")
         task["type"]="enbed"
+        task["id"] = shortuuid.uuid()
         self.tasks.append(task)
+        return task["id"]
 
     def send_task(self, task):
         model = task.pop("model")
         prompt = task.pop("prompt")
         type = task.pop("type")
+        id = task.pop("id")
         if type == "complete":
-            luminous_out = self.client.complete(model, prompt=prompt, **task)
+            luminous_out = self.client.complete(model, prompt, **task)
         elif type == "embed":
-            luminous_out = self.client.embed(model, prompt=prompt, **task)
+            luminous_out = self.client.embed(model, prompt, **task)
         elif type == "evaluate":
-            luminous_out = self.client.evaluate(model, prompt=prompt, **task)
-        result = {"type":type, "prompt":prompt, "model":model}
+            luminous_out = self.client.evaluate(model, prompt, **task)
+        result = {"type":type, "prompt":prompt, "model":model, "id":id}
         result["result"] = luminous_out
         return result
 
