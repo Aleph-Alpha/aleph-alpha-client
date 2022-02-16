@@ -58,7 +58,6 @@
 >>   // A model name refers to a model architecture (number of parameters among others).  
 >>   // Always the latest version of model is used. The model output contains information as to the model version.
 >>   model: string;
->>   hosting: string;
 >>   // The text to be completed.  
 >>   // Unconditional completion can be started with an empty string (default).  
 >>   // The prompt may contain a zero shot or few shot task.
