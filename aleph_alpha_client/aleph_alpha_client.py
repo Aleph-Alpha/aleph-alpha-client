@@ -335,7 +335,13 @@ class AlephAlphaClient:
             json=payload,
             timeout=None,
         )
-        return self._parse_response(response)
+        response_json = self._parse_response(response)
+        if response_json.get("optimized_prompt") is not None:
+            # Return a message to the user that we optimized their prompt
+            print(
+                'We optimized your prompt before sending it to the model. The optimized prompt is available at result["optimized_prompt"]. If you do not want these optimizations applied, you can pass the disable_optimizations flag to your request.'
+            )
+        return response_json
 
     def embed(
         self,
