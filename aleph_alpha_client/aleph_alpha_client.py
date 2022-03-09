@@ -140,6 +140,7 @@ class AlephAlphaClient:
         log_probs: Optional[int] = None,
         stop_sequences: Optional[List[str]] = None,
         tokens: Optional[bool] = False,
+        disable_optimizations: Optional[bool] = False,
     ):
         """
         Generates samples from a prompt.
@@ -204,6 +205,11 @@ class AlephAlphaClient:
 
             tokens (bool, optional, default False)
                 return tokens of completion
+
+            disable_optimizations  (bool, optional, default False)
+                We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
+
+                Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
         """
 
         # validate data types
@@ -270,6 +276,10 @@ class AlephAlphaClient:
                     )
         if not (tokens is None or isinstance(tokens, bool)):
             raise ValueError("tokens must be a bool or None")
+        if not (
+            disable_optimizations is None or isinstance(disable_optimizations, bool)
+        ):
+            raise ValueError("disable_optimizations must be a bool or None")
 
         # validate values
         if maximum_tokens is not None:
@@ -316,6 +326,7 @@ class AlephAlphaClient:
             "use_multiplicative_presence_penalty": use_multiplicative_presence_penalty,
             "stop_sequences": stop_sequences,
             "tokens": tokens,
+            "disable_optimizations": disable_optimizations,
         }
 
         response = requests.post(
