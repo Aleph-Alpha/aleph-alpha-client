@@ -225,6 +225,12 @@ Example: In a question answering scenario a text may consist of lines starting w
 
 Flag indicating whether individual tokens of the completion are to be returned (True) or whether solely the generated text (i.e. the completion) is sufficient (False).
 
+**disable_optimizations** (bool, optional, default False)
+
+We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and completion for you.
+
+Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
+
 #### Return value
 
 The return value of a completion contains the following fields:

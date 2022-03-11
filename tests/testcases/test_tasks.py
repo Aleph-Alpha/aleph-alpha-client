@@ -8,7 +8,6 @@ from tests.common import client
 def validate_completion_task_output(task, output):
 
     assert isinstance(output, dict), "completion result is a dict"
-    assert "id" in output, "completion result has field id"
     assert "model_version" in output, "model_version in evaluation result"
     assert "completions" in output, "completion result has field completions"
 
@@ -84,7 +83,6 @@ def validate_evaluation_task_output(task, output):
             + str(type(output.get(field_name)))
         )
 
-    assert "id" in output, "id in evaluation result"
     assert "model_version" in output, "model_version in evaluation result"
     assert "result" in output, "result dict in evaluation output"
 
@@ -142,7 +140,6 @@ def validate_embedding_task_output(task, output):
             + str(type(output.get(field_name)))
         )
 
-    assert "id" in output, "id in evaluation result"
     assert "model_version" in output, "model_version in evaluation result"
 
     assert "embeddings" in output, "output contains embeddings"
