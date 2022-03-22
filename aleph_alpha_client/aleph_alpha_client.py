@@ -1,4 +1,5 @@
 from typing import List, Optional, Dict, Union
+from importlib.metadata import version
 
 import requests
 
@@ -77,7 +78,10 @@ class AlephAlphaClient:
 
     @property
     def request_headers(self):
-        return {"Authorization": "Bearer " + self.token}
+        return {
+            "Authorization": "Bearer " + self.token,
+            "Client-Version": "Aleph-Alpha-Python-Client-Version-" + version('aleph-alpha-client'),
+        }
 
     def available_models(self):
         """
