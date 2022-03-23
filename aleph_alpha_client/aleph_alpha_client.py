@@ -80,7 +80,7 @@ class AlephAlphaClient:
     def request_headers(self):
         return {
             "Authorization": "Bearer " + self.token,
-            "Client-Version": "Aleph-Alpha-Python-Client-Version-" + version('aleph-alpha-client'),
+            "User-Agent": "Aleph-Alpha-Python-Client-" + version('aleph-alpha-client'),
         }
 
     def available_models(self):
