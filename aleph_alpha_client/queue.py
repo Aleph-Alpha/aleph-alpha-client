@@ -76,12 +76,14 @@ class TaskQueue:
     ):
         task = locals()
         task.pop("self")
-        task["type"]="enbed"
+        task["type"]="embed"
         task["id"] = shortuuid.uuid()
         self.tasks.append(task)
         return task["id"]
 
     def send_task(self, task):
+        self.tasks.remove(task)
+
         model = task.pop("model")
         prompt = task.pop("prompt")
         type = task.pop("type")
