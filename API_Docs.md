@@ -65,7 +65,7 @@
 >>   // The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is 
 >>   // reached. Increase this value to generate longer texts. A text is split into tokens.  Usually there are more 
 >>   // tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model 
->>   // (for EleutherAI/gpt-neo-2.7B, it may not exceed 2048 tokens).
+>>   // (for luminous-base, it may not exceed 2048 tokens).
 >>   maximum_tokens: number;
 >>   // A higher sampling temperature encourages the model to produce less probable outputs ("be more creative").  
 >>   // Values are expected in a range from 0.0 to 1.0. Try high values (e.g. 0.9) for a more "creative" response and 

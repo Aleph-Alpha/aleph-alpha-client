@@ -4,7 +4,7 @@
 
 Interact with the Aleph Alpha API via Python
 
-> [Documentation of the HTTP API can be found here](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/master/API_Docs.md)
+> [Documentation of the HTTP API can be found here](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/main/API_Docs.md)
 
 ## Installation
 
@@ -23,11 +23,11 @@ from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.de",
-    token="<your token>
+    token="<your token>"
 )
 
 # You need to choose a model with multimodal capabilities for this example.
-model = "EUTranMultimodal"
+model = "luminous-base"
 url = "https://cdn-images-1.medium.com/max/1200/1*HunNdlTmoPj8EKpl-jqvBA.png"
 
 image = ImagePrompt.from_url(url)
@@ -47,10 +47,10 @@ from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.de",
-    token="<your token>
+    token="<your token>"
 )
 
-model = "EleutherAI/gpt-neo-2.7B"
+model = "luminous-base"
 prompt = "The api works"
 result = client.evaluate(model, prompt=prompt, completion_expected=" well")
 
@@ -64,11 +64,11 @@ from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.de",
-    token="<your token>
+    token="<your token>"
 )
 
 # You need to choose a model with multimodal capabilities for this example.
-model = "EUTranMultimodal"
+model = "luminous-base"
 
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
 image = ImagePrompt.from_url(url)
@@ -89,10 +89,10 @@ from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.de",
-    token="<your token>
+    token="<your token>"
 )
 
-model = "EleutherAI/gpt-neo-2.7B"
+model = "luminous-base"
 prompt = "This is an example."
 result = client.embed(model, prompt=prompt, layers=[-1], pooling=["mean"])
 
@@ -106,11 +106,11 @@ from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.de",
-    token="<your token>
+    token="<your token>"
 )
 
 # You need to choose a model with multimodal capabilities for this example.
-model = "EUTranMultimodal"
+model = "luminous-base"
 
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
 image = ImagePrompt.from_url(url)
@@ -149,7 +149,7 @@ Check available_models() for available hostings.
 
 **maximum_tokens** (int, optional, default 64)
 
-The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for EleutherAI/gpt-neo-2.7B, it may not exceed 2048 tokens).
+The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
 
 **temperature** (float, optional, default 0.0)
 
@@ -256,7 +256,7 @@ The return value of a completion contains the following fields:
 ```json
 {
     "id": "6b17dd34-5dc0-4794-aacf-263311965178",
-    "model_version": "EleutherAI/gpt-neo-2.7B",
+    "model_version": "luminous-base",
     "completions": [
         {
             "log_probs": null,
@@ -329,7 +329,7 @@ completion_expected: " well."
 ```json
 {
     "id": "e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
-    "model_version": "EleutherAI/gpt-neo-2.7B",
+    "model_version": "luminous-base",
     "message": null,
     "result": {
         "log_probability": -5.3242188,
@@ -408,7 +408,7 @@ example for pooling
 ```json
 {
     "id": "e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
-    "model_version": "EleutherAI/gpt-neo-2.7B",
+    "model_version": "luminous-base",
     "message": null,
     "embeddings": {
        "layer_0": {
@@ -437,7 +437,7 @@ Tests can be run using pytest. Make sure to create a `.env` file with the follow
 ```env
 # test settings
 TEST_API_URL=https://api.aleph-alpha.de
-TEST_MODEL=EleutherAI/gpt-neo-2.7B
+TEST_MODEL=luminous-base
 TEST_TOKEN=your_token
 ```
 
@@ -446,7 +446,7 @@ Instead of a token username and password can be used.
 ```env
 # test settings
 TEST_API_URL=https://api.aleph-alpha.de
-TEST_MODEL=EleutherAI/gpt-neo-2.7B
+TEST_MODEL=luminous-base
 TEST_USERNAME=your_username
 TEST_PASSWORD=your_password
 ```
