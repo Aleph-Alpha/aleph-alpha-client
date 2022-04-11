@@ -22,7 +22,7 @@ pip install aleph-alpha-client
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
-    host="https://api.aleph-alpha.de",
+    host="https://api.aleph-alpha.com",
     token="<your token>"
 )
 
@@ -46,7 +46,7 @@ print(result["completions"][0]["completion"])
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
-    host="https://api.aleph-alpha.de",
+    host="https://api.aleph-alpha.com",
     token="<your token>"
 )
 
@@ -63,7 +63,7 @@ print(result)
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
-    host="https://api.aleph-alpha.de",
+    host="https://api.aleph-alpha.com",
     token="<your token>"
 )
 
@@ -88,7 +88,7 @@ print(result)
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
-    host="https://api.aleph-alpha.de",
+    host="https://api.aleph-alpha.com",
     token="<your token>"
 )
 
@@ -105,7 +105,7 @@ print(result)
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
 
 client = AlephAlphaClient(
-    host="https://api.aleph-alpha.de",
+    host="https://api.aleph-alpha.com",
     token="<your token>"
 )
 
@@ -436,7 +436,7 @@ Tests can be run using pytest. Make sure to create a `.env` file with the follow
 
 ```env
 # test settings
-TEST_API_URL=https://api.aleph-alpha.de
+TEST_API_URL=https://api.aleph-alpha.com
 TEST_MODEL=luminous-base
 TEST_TOKEN=your_token
 ```
@@ -445,7 +445,7 @@ Instead of a token username and password can be used.
 
 ```env
 # test settings
-TEST_API_URL=https://api.aleph-alpha.de
+TEST_API_URL=https://api.aleph-alpha.com
 TEST_MODEL=luminous-base
 TEST_USERNAME=your_username
 TEST_PASSWORD=your_password

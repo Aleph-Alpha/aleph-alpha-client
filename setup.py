@@ -8,7 +8,7 @@ setup(
     name="aleph-alpha-client",
     url="https://github.com/Aleph-Alpha/aleph-alpha-client",
     author="Aleph Alpha",
-    author_email="support@aleph-alpha.de",
+    author_email="support@aleph-alpha.com",
     packages=["aleph_alpha_client"],
     setup_requires=['setuptools_scm'],
     install_requires=["requests"],
