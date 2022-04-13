@@ -55,7 +55,7 @@ class AlephAlphaClient:
         # check server version
         expect_release = "1"
         version = self.get_version()
-        if version.startswith(expect_release):
+        if not version.startswith(expect_release):
             logging.warning(f"Expected API version {expect_release}.x.x, got {version}. Please update client.")
 
         assert token is not None or (email is not None and password is not None)
