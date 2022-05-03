@@ -280,7 +280,7 @@ class AlephAlphaClient:
         # validate values
         if maximum_tokens is not None:
             if maximum_tokens <= 0:
-                raise ValueError("maxiumum_tokens must be a positive integer")
+                raise ValueError("maximum_tokens must be a positive integer")
         if top_k is not None:
             if top_k < 0:
                 raise ValueError("top_k must be a positive integer, 0 or None")
@@ -499,7 +499,7 @@ class AlephAlphaClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
             query (str, required):
-                The question to be answered about the prompt by the model.
+                The question to be answered about the documents by the model.
 
             documents (List[Document], required):
                 A list of documents. This can be either docx documents or text/image prompts.
@@ -538,15 +538,37 @@ class AlephAlphaClient:
         if not isinstance(model, str):
             raise ValueError("model must be a string")
 
+        if not isinstance(query, str):
+            raise ValueError("query must be a string")
+
+        if not isinstance(documents, list):
+            raise ValueError(
+                "documents must be a list where all elements are of the type Document"
+            )
+
         documents = [document._to_serializable_document() for document in documents]
 
         if not (maximum_tokens is None or isinstance(maximum_tokens, int)):
             raise ValueError("maximum_tokens must be an int or None")
 
+        if not (max_chunk_size is None or isinstance(max_chunk_size, int)):
+            raise ValueError("max_chunk_size must be an int or None")
+
+        if not (max_answers is None or isinstance(max_answers, int)):
+            raise ValueError("max_answers must be an int or None")
+
+        if not (min_score is None or isinstance(min_score, float)):
+            raise ValueError("min_score must be a float or None")
+
+        if not (
+            disable_optimizations is None or isinstance(disable_optimizations, bool)
+        ):
+            raise ValueError("disable_optimizations must be a bool or None")
+
         # validate values
         if maximum_tokens is not None:
             if maximum_tokens <= 0:
-                raise ValueError("maxiumum_tokens must be a positive integer")
+                raise ValueError("maximum_tokens must be a positive integer")
 
         payload = {
             "model": model,

@@ -266,7 +266,7 @@ def validate_qa_task_output(task, output):
             {
                 "model": "test_model",
                 "query": "Who likes to eat pizza?",
-                "documents": [],
+                "documents": [Document.from_docx_file("tests/sample.docx")],
                 "maximum_tokens": 64,
             },
         ),
