@@ -124,7 +124,7 @@ result = client.embed(model, prompt=prompt, layers=[-1], pooling=["mean"])
 print(result)
 ```
 
-### Q&A Docx Document
+### Q&A with an Docx Document
 
 ```python
 from aleph_alpha_client import Document, AlephAlphaClient
@@ -140,6 +140,28 @@ model = "luminous-extended"
 query = "What is a computer program?"
 docx_file = "./sample.docx"
 document = Document.from_docx_file(docx_file)
+documents = [document]
+
+result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
+
+print(result)
+```
+
+### Q&A with a Prompt
+
+```python
+from aleph_alpha_client import Document, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.com",
+    token="<your token>"
+)
+
+# You need to choose a model with multimodal capabilities for this example.
+model = "luminous-extended"
+
+prompt = ["What is a computer program?"]
+document = Document.from_prompt(prompt)
 documents = [document]
 
 result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
