@@ -3,21 +3,11 @@ from importlib.metadata import version
 
 import requests
 import logging
-
+from aleph_alpha_client.document import Document
 from aleph_alpha_client.image import ImagePrompt
+from aleph_alpha_client.prompt_item import _to_prompt_item
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
-
-
-def _to_prompt_item(item: Union[str, ImagePrompt]) -> Dict[str, str]:
-    if isinstance(item, str):
-        return {"type": "text", "data": item}
-    if hasattr(item, "_to_prompt_item"):
-        return item._to_prompt_item()
-    else:
-        raise ValueError(
-            "The item in the prompt is not valid. Try either a string or an Image."
-        )
 
 
 def _to_serializable_prompt(
@@ -56,7 +46,9 @@ class AlephAlphaClient:
         expect_release = "1"
         version = self.get_version()
         if not version.startswith(expect_release):
-            logging.warning(f"Expected API version {expect_release}.x.x, got {version}. Please update client.")
+            logging.warning(
+                f"Expected API version {expect_release}.x.x, got {version}. Please update client."
+            )
 
         assert token is not None or (email is not None and password is not None)
         self.token = token or self.get_token(email, password)
@@ -80,7 +72,7 @@ class AlephAlphaClient:
     def request_headers(self):
         return {
             "Authorization": "Bearer " + self.token,
-            "User-Agent": "Aleph-Alpha-Python-Client-" + version('aleph-alpha-client'),
+            "User-Agent": "Aleph-Alpha-Python-Client-" + version("aleph-alpha-client"),
         }
 
     def available_models(self):
@@ -486,6 +478,96 @@ class AlephAlphaClient:
             self.host + "evaluate", headers=self.request_headers, json=payload
         )
         return self._parse_response(response)
+
+    def qa(
+        self,
+        model: str,
+        query: str,
+        documents: List[Document],
+        hosting: str = "cloud",
+        maximum_tokens: Optional[int] = 64,
+        max_chunk_size: Optional[int] = 175,
+        disable_optimizations: bool = False,
+        max_answers: Optional[int] = 0,
+        min_score: Optional[float] = 0.0,
+    ):
+        """
+        Answers a question about a prompt.
+
+        Parameters:
+            model (str, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
+
+            query (str, required):
+                The question to be answered about the prompt by the model.
+
+            documents (Union[str, List[Union[str, ImagePrompt]]], required):
+                A list of documents. This can be either docx documents or text/image prompts.
+
+            hosting (str, optional, default "cloud"):
+                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+                executed on any of our servers. An error will be returned if the specified hosting is not available.
+                Check available_models() for available hostings.
+
+            maximum_tokens (int, optional, default 64):
+                The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached.
+
+                Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
+
+            max_chunk_size (int, optional, default 175):
+                Long documents will be split into chunks if they exceed max_chunk_size.
+                The splitting will be done along the following boundaries until all chunks are shorter than max_chunk_size or all splitting criteria have been exhausted.
+                The splitting boundaries are, in the given order:
+                1. Split first by double newline
+                (assumed to mark the boundary between 2 paragraphs).
+                2. Split paragraphs that are still too long by their median sentence as long as we can still find multiple sentences in the paragraph.
+                3. Split each remaining chunk of a paragraph or sentence further along white spaces until each chunk is smaller than max_chunk_size or until no whitespace can be found anymore.
+
+            disable_optimizations  (bool, optional, default False)
+                We continually research optimal ways to work with our models. By default, we apply these optimizations to both your query, documents, and answers for you.
+                Our goal is to improve your results while using our API. But you can always pass `disable_optimizations: true` and we will leave your query, documents, and answers untouched.
+
+            max_answers (int, optional, default 0):
+                The upper limit of maximum number of answers.
+
+            min_score (float, optional, default 0.0):
+                The lower limit of minimum score for every answer.
+        """
+
+        # validate data types
+        if not isinstance(model, str):
+            raise ValueError("model must be a string")
+
+        documents = [document._to_serializable_document() for document in documents]
+
+        if not (maximum_tokens is None or isinstance(maximum_tokens, int)):
+            raise ValueError("maximum_tokens must be an int or None")
+
+        # validate values
+        if maximum_tokens is not None:
+            if maximum_tokens <= 0:
+                raise ValueError("maxiumum_tokens must be a positive integer")
+
+        payload = {
+            "model": model,
+            "query": query,
+            "hosting": hosting,
+            "documents": documents,
+            "maximum_tokens": maximum_tokens,
+            "max_answers": max_answers,
+            "min_score": min_score,
+            "max_chunk_size": max_chunk_size,
+            "disable_optimizations": disable_optimizations,
+        }
+
+        response = requests.post(
+            self.host + "qa",
+            headers=self.request_headers,
+            json=payload,
+            timeout=None,
+        )
+        response_json = self._parse_response(response)
+        return response_json
 
     @staticmethod
     def _parse_response(response):

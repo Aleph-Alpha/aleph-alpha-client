@@ -437,7 +437,7 @@ Tests can be run using pytest. Make sure to create a `.env` file with the follow
 ```env
 # test settings
 TEST_API_URL=https://api.aleph-alpha.com
-TEST_MODEL=luminous-base
+TEST_MODEL=luminous-extended
 TEST_TOKEN=your_token
 ```
 
