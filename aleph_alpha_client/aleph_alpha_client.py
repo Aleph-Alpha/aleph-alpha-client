@@ -501,7 +501,7 @@ class AlephAlphaClient:
             query (str, required):
                 The question to be answered about the prompt by the model.
 
-            documents (Union[str, List[Union[str, ImagePrompt]]], required):
+            documents (List[Document], required):
                 A list of documents. This can be either docx documents or text/image prompts.
 
             hosting (str, optional, default "cloud"):
