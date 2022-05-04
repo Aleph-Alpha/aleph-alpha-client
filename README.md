@@ -124,7 +124,7 @@ result = client.embed(model, prompt=prompt, layers=[-1], pooling=["mean"])
 print(result)
 ```
 
-### Q&A with an Docx Document
+### Q&A with a Docx Document
 
 ```python
 from aleph_alpha_client import Document, AlephAlphaClient
@@ -134,7 +134,7 @@ client = AlephAlphaClient(
     token="<your token>"
 )
 
-# You need to choose a model with multimodal capabilities for this example.
+# You need to choose a model with qa support for this example.
 model = "luminous-extended"
 
 query = "What is a computer program?"
@@ -157,7 +157,7 @@ client = AlephAlphaClient(
     token="<your token>"
 )
 
-# You need to choose a model with multimodal capabilities for this example.
+# You need to choose a model with qa support for this example.
 model = "luminous-extended"
 
 prompt = ["What is a computer program?"]
@@ -560,7 +560,7 @@ Tests can be run using pytest. Make sure to create a `.env` file with the follow
 ```env
 # test settings
 TEST_API_URL=https://api.aleph-alpha.com
-TEST_MODEL=luminous-extended
+TEST_MODEL=luminous-base
 TEST_TOKEN=your_token
 ```
 
