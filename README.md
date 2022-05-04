@@ -124,6 +124,51 @@ result = client.embed(model, prompt=prompt, layers=[-1], pooling=["mean"])
 print(result)
 ```
 
+### Q&A with a Docx Document
+
+```python
+from aleph_alpha_client import Document, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.com",
+    token="<your token>"
+)
+
+# You need to choose a model with qa support for this example.
+model = "luminous-extended"
+
+query = "What is a computer program?"
+docx_file = "./sample.docx"
+document = Document.from_docx_file(docx_file)
+documents = [document]
+
+result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
+
+print(result)
+```
+
+### Q&A with a Prompt
+
+```python
+from aleph_alpha_client import Document, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.com",
+    token="<your token>"
+)
+
+# You need to choose a model with qa support for this example.
+model = "luminous-extended"
+
+prompt = ["What is a computer program?"]
+document = Document.from_prompt(prompt)
+documents = [document]
+
+result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
+
+print(result)
+```
+
 ## Endpoints
 
 ### Complete
@@ -417,6 +462,84 @@ example for pooling
        }
     },
     "tokens": ["a", "...",  "z"]
+}
+```
+
+### Q&A
+
+Answers a question based on a list of documents that can be for example prompts or docx files.
+
+#### Parameters
+
+**model** (str, required)
+
+Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.  
+see `available_models()` and verify that your selected model supports Q&A requests via the `qa_support` flag.
+
+**query** (str, required)
+
+The question to be answered about the documents by the model.
+
+**documents** (List[Document], required))
+
+A list of documents. This can be either docx documents or text/image prompts.
+
+**hosting** (str, optional, default "cloud"):
+
+Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+executed on any of our servers. An error will be returned if the specified hosting is not available.
+Check `available_models()` for available hostings.
+
+**maximum_tokens** (int, optional, default 64)
+
+The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached.
+Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
+
+**max_chunk_size** (int, optional, default 175)
+
+Long documents will be split into chunks if they exceed max_chunk_size.
+The splitting will be done along the following boundaries until all chunks are shorter than max_chunk_size or all splitting criteria have been exhausted.
+The splitting boundaries are, in the given order:
+1. Split first by double newline
+(assumed to mark the boundary between 2 paragraphs).
+2. Split paragraphs that are still too long by their median sentence as long as we can still find multiple sentences in the paragraph.
+3. Split each remaining chunk of a paragraph or sentence further along white spaces until each chunk is smaller than max_chunk_size or until no whitespace can be found anymore.
+
+
+**disable_optimizations** (bool, optional, default False)
+
+We continually research optimal ways to work with our models. By default, we apply these optimizations to both your query, documents, and answers for you.
+
+Our goal is to improve your results while using our API. But you can always pass `disable_optimizations: true` and we will leave your query, documents, and answers untouched.
+
+**max_answers** (int, optional, default 0):
+
+The upper limit of maximum number of answers.
+
+**min_score** (float, optional, default 0.0):
+
+The lower limit of minimum score for every answer.
+
+#### Return value
+
+The return value of a qa task contains the following fields:
+
+**model_version**: model name and version (if any) of the used model for inference
+
+**answers**: list of answers with each an `answer` text, a `score` and an `evidence` text.
+
+**Example:**
+
+```json
+{
+    "model_version": "2022-04",
+    "answers": [
+        {
+            "answer": "42",
+            "score": 0.6781232,
+            "evidence": "The answer to the ultimate question of life, the universe and everything is 42."
+        }
+    ]
 }
 ```
 

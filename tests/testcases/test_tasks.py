@@ -1,7 +1,7 @@
 import pytest
 import time
 import requests
-from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt
+from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt, Document
 from tests.common import client
 
 
@@ -182,6 +182,21 @@ def validate_embedding_task_output(task, output):
                     ), "pooling, a value of a pooled embedding is a float"
 
 
+def validate_qa_task_output(task, output):
+
+    assert isinstance(output, dict), "qa result is a dict"
+    assert "model_version" in output, "model_version in qa result"
+    assert "answers" in output, "qa result has field answers"
+
+    for answer in output["answers"]:
+        for field_name in [
+            "answer",
+            "score",
+            "evidence",
+        ]:
+            assert field_name in answer, field_name + " field is missing in answer"
+
+
 @pytest.mark.parametrize(
     "endpoint,task_definition",
     [
@@ -237,6 +252,24 @@ def validate_embedding_task_output(task, output):
                 "pooling": ["mean", "max"],
             },
         ),
+        (
+            "qa",
+            {
+                "model": "test_model",
+                "query": "",
+                "documents": [],
+                "maximum_tokens": 7,
+            },
+        ),
+        (
+            "qa",
+            {
+                "model": "test_model",
+                "query": "Who likes to eat pizza?",
+                "documents": [Document.from_docx_file("tests/sample.docx")],
+                "maximum_tokens": 64,
+            },
+        ),
     ],
 )
 def test_task(client, endpoint, task_definition):
@@ -251,6 +284,8 @@ def test_task(client, endpoint, task_definition):
         result = client.embed(**task_definition)
     elif endpoint == "evaluate":
         result = client.evaluate(**task_definition)
+    elif endpoint == "qa":
+        result = client.qa(**task_definition)
 
     if endpoint == "complete":
         validate_completion_task_output(task_definition, result)
@@ -258,6 +293,8 @@ def test_task(client, endpoint, task_definition):
         validate_evaluation_task_output(task_definition, result)
     elif endpoint == "embed":
         validate_embedding_task_output(task_definition, result)
+    elif endpoint == "qa":
+        validate_qa_task_output(task_definition, result)
 
 
 def test_should_answer_question_about_image(client):
@@ -299,3 +336,73 @@ def test_should_entertain_image_cropping_params(client):
     print(result)
 
     assert "dog" in result["completions"][0]["completion"].lower()
+
+
+def test_should_answer_query_about_docx_document(client):
+
+    # Only execute this test if the model has qa support
+    models = client.available_models()
+    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    if not model["qa_support"]:
+        return
+
+    query = "Who likes to eat pizza?"
+
+    document = Document.from_docx_file(
+        "tests/sample.docx"
+    )  # With content: "Markus likes to eat pizza.\n\nBen likes to eat Pasta.\n\nDenis likes to eat Hotdogs."
+    documents = [document]
+
+    result = client.qa(
+        model=client.test_model, query=query, documents=documents, maximum_tokens=64
+    )
+
+    assert "Markus" in result["answers"][0]["answer"]
+
+
+def test_should_answer_query_about_docx_bytes_document(client):
+
+    # Only execute this test if the model has qa support
+    models = client.available_models()
+    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    if not model["qa_support"]:
+        return
+
+    query = "Who likes to eat pizza?"
+
+    # Turn sample docx into bytes to test `from_docx_bytes` functionality
+    sample_file = "tests/sample.docx"
+    with open("tests/sample.docx", "rb") as sample_file:
+        sample_data = sample_file.read()
+        document = Document.from_docx_bytes(
+            sample_data
+        )  # With content: "Markus likes to eat pizza.\n\nBen likes to eat Pasta.\n\nDenis likes to eat Hotdogs."
+
+        documents = [document]
+
+        result = client.qa(
+            model=client.test_model, query=query, documents=documents, maximum_tokens=64
+        )
+
+        assert "Markus" in result["answers"][0]["answer"]
+
+
+def test_should_answer_query_about_prompt_document(client):
+
+    # Only execute this test if the model has qa support
+    models = client.available_models()
+    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    if not model["qa_support"]:
+        return
+
+    query = "Who likes to eat pizza?"
+
+    prompt = ["Markus likes to eat pizza."]
+    document = Document.from_prompt(prompt)
+    documents = [document]
+
+    result = client.qa(
+        model=client.test_model, query=query, documents=documents, maximum_tokens=64
+    )
+
+    assert "Markus" in result["answers"][0]["answer"]
