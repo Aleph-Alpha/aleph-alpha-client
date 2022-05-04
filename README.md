@@ -160,7 +160,8 @@ client = AlephAlphaClient(
 # You need to choose a model with qa support for this example.
 model = "luminous-extended"
 
-prompt = ["What is a computer program?"]
+query = "What is a computer program?"
+prompt = ["In imperative programming, a computer program is a sequence of instructions in a programming language that a computer can execute or interpret."]
 document = Document.from_prompt(prompt)
 documents = [document]
 
