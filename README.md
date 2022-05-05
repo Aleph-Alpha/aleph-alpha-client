@@ -147,7 +147,7 @@ result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
 print(result)
 ```
 
-### Q&A with a Prompt
+### Q&A with a Text
 
 ```python
 from aleph_alpha_client import Document, AlephAlphaClient
@@ -161,7 +161,32 @@ client = AlephAlphaClient(
 model = "luminous-extended"
 
 query = "What is a computer program?"
-prompt = ["In imperative programming, a computer program is a sequence of instructions in a programming language that a computer can execute or interpret."]
+prompt = "In imperative programming, a computer program is a sequence of instructions in a programming language that a computer can execute or interpret."
+document = Document.from_text(prompt)
+documents = [document]
+
+result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
+
+print(result)
+```
+
+### Q&A with a multimodal prompt
+
+```python
+from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.com",
+    token="<your token>"
+)
+
+# You need to choose a model with qa support and multimodal capabilities for this example.
+model = "luminous-extended"
+
+query = "What is the name of the store?"
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
+image = ImagePrompt.from_url(url)
+prompt = [image]
 document = Document.from_prompt(prompt)
 documents = [document]
 
