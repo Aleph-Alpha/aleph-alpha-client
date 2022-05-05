@@ -36,8 +36,16 @@ class Document:
     @classmethod
     def from_prompt(cls, prompt: List[Union[str, ImagePrompt]]):
         """
-        Pass a prompt and prepare it to be used as a document
+        Pass a prompt that can contain multiple strings and Image prompts and prepare it to be used as a document
         """
+        return cls(prompt=prompt)
+
+    @classmethod
+    def from_text(cls, text: str):
+        """
+        Pass a single text and prepare it to be used as a document
+        """
+        prompt = [text]
         return cls(prompt=prompt)
 
     def _to_serializable_document(self) -> Dict[str, str]:
