@@ -3,20 +3,21 @@ from typing import Dict, List, Union
 
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt_item import _to_prompt_item
+from pydantic.dataclasses import dataclass
+from pydantic import validate_arguments
 
-
+@dataclass
 class Document:
     """
     A document that can be either a docx document or text/image prompts.
     """
-
-    def __init__(self, docx: str = None, prompt: List[Union[str, ImagePrompt]] = None):
-        # We use a base_64 representation for docx documents, because we want to embed the file
-        # into a prompt send in JSON.
-        self.docx = docx
-        self.prompt = prompt
+    # We use a base_64 representation for docx documents, because we want to embed the file
+    # into a prompt send in JSON.
+    docx: str = None
+    prompt: List[Union[str, ImagePrompt]] = None
 
     @classmethod
+    @validate_arguments
     def from_docx_bytes(cls, bytes: bytes):
         """
         Pass a docx file in bytes and prepare it to be used as a document
@@ -25,6 +26,7 @@ class Document:
         return cls(docx=docx_base64)
 
     @classmethod
+    @validate_arguments
     def from_docx_file(cls, path: str):
         """
         Load a docx file from disk and prepare it to be used as a document
@@ -33,7 +35,8 @@ class Document:
             docx_bytes = f.read()
         return cls.from_docx_bytes(docx_bytes)
 
-    @classmethod
+    @classmethod    
+    @validate_arguments
     def from_prompt(cls, prompt: List[Union[str, ImagePrompt]]):
         """
         Pass a prompt that can contain multiple strings and Image prompts and prepare it to be used as a document
@@ -41,6 +44,7 @@ class Document:
         return cls(prompt=prompt)
 
     @classmethod
+    @validate_arguments
     def from_text(cls, text: str):
         """
         Pass a single text and prepare it to be used as a document

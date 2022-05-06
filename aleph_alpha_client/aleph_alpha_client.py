@@ -3,6 +3,7 @@ from importlib.metadata import version
 
 import requests
 import logging
+from pydantic import validate_arguments, Field
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt_item import _to_prompt_item
@@ -479,12 +480,13 @@ class AlephAlphaClient:
         )
         return self._parse_response(response)
 
+    @validate_arguments
     def qa(
         self,
         model: str,
         query: str,
         documents: List[Document],
-        maximum_tokens: int = 64,
+        maximum_tokens: int = Field(64, gt=0),
         max_chunk_size: int = 175,
         disable_optimizations: bool = False,
         max_answers: int = 0,
@@ -527,39 +529,7 @@ class AlephAlphaClient:
             min_score (float, default 0.0):
                 The lower limit of minimum score for every answer.
         """
-
-        # validate data types
-        if not isinstance(model, str):
-            raise ValueError("model must be a string")
-
-        if not isinstance(query, str):
-            raise ValueError("query must be a string")
-
-        if not isinstance(documents, list):
-            raise ValueError(
-                "documents must be a list where all elements are of the type Document"
-            )
-
         documents = [document._to_serializable_document() for document in documents]
-
-        if not isinstance(maximum_tokens, int):
-            raise ValueError("maximum_tokens must be an int")
-
-        if not isinstance(max_chunk_size, int):
-            raise ValueError("max_chunk_size must be an int")
-
-        if not isinstance(max_answers, int):
-            raise ValueError("max_answers must be an int")
-
-        if not isinstance(min_score, float):
-            raise ValueError("min_score must be a float")
-
-        if not isinstance(disable_optimizations, bool):
-            raise ValueError("disable_optimizations must be a bool")
-
-        # validate values
-        if maximum_tokens <= 0:
-            raise ValueError("maximum_tokens must be a positive integer")
 
         payload = {
             "model": model,

@@ -1,8 +1,10 @@
 from setuptools import setup
 
+
 def readme():
-    with open('README.md') as f:
+    with open("README.md") as f:
         return f.read()
+
 
 setup(
     name="aleph-alpha-client",
@@ -10,8 +12,8 @@ setup(
     author="Aleph Alpha",
     author_email="support@aleph-alpha.com",
     packages=["aleph_alpha_client"],
-    setup_requires=['setuptools_scm'],
-    install_requires=["requests"],
+    setup_requires=["setuptools_scm"],
+    install_requires=["requests", "pydantic"],
     tests_require=["pytest", "pytest-cov", "python-dotenv"],
     extras_require={
         "test": ["pytest", "pytest-cov", "python-dotenv"],

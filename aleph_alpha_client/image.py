@@ -1,8 +1,10 @@
 import base64
 from typing import Dict, Optional
 import requests
+from pydantic.dataclasses import dataclass
+from pydantic import validate_arguments
 
-
+@dataclass
 class Cropping:
     """
     Describes a quadratic crop of the file.
@@ -12,28 +14,25 @@ class Cropping:
         self.upper_left_y = upper_left_y
         self.size = size
 
-
+@dataclass
 class ImagePrompt:
     """
     An image send as part of a prompt to a model. The image is represented as
     base64.
     """
-    def __init__(
-        self,
-        base_64: str,
-        cropping: Optional[Cropping] = None,
-    ):
-        # We use a base_64 reperesentation, because we want to embed the image
-        # into a prompt send in JSON.
-        self.base_64 = base_64
-        self.cropping = cropping
+    # We use a base_64 reperesentation, because we want to embed the image
+    # into a prompt send in JSON.
+    base_64: str
+    cropping: Optional[Cropping] = None
 
     @classmethod
+    @validate_arguments
     def from_bytes(cls, bytes: bytes, cropping: Optional[Cropping] = None):
         image = base64.b64encode(bytes).decode()
         return cls(image, cropping)
 
     @classmethod
+    @validate_arguments
     def from_url(cls, url: str):
         """
         Downloads a file and prepare it to be used in a prompt.
@@ -43,6 +42,7 @@ class ImagePrompt:
         return cls.from_bytes(bytes)
 
     @classmethod
+    @validate_arguments
     def from_url_with_cropping(cls, url: str, upper_left_x: int,
                                upper_left_y: int, crop_size: int):
         """
@@ -56,6 +56,7 @@ class ImagePrompt:
         return cls.from_bytes(bytes, cropping=cropping)
 
     @classmethod
+    @validate_arguments
     def from_file(cls, path: str):
         """
         Load an image from disk and prepare it to be used in a prompt
@@ -66,6 +67,7 @@ class ImagePrompt:
         return cls.from_bytes(image)
 
     @classmethod
+    @validate_arguments
     def from_file_with_cropping(cls, path: str, upper_left_x: int,
                                 upper_left_y: int, crop_size: int):
         """
