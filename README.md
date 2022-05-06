@@ -4,7 +4,7 @@
 
 Interact with the Aleph Alpha API via Python
 
-> [Documentation of the HTTP API can be found here](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/main/API_Docs.md)
+> [Documentation of the HTTP API can be found here](https://docs.aleph-alpha.com/api/)
 
 ## Installation
 
