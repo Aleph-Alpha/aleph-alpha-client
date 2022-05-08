@@ -480,41 +480,6 @@ def test_aleph_alpha_client_evaluation_errors(
 @pytest.mark.parametrize(
     "config,description,exception_type",
     [
-        ({}, "model must be provided", TypeError),
-        (
-            {"model": "test_model", "query": None, "documents": []},
-            "query must be a string",
-            ValueError,
-        ),
-        (
-            {
-                "model": "test_model",
-                "query": "",
-                "documents": "Wrong Document Format",
-            },
-            "documents must be a list where all elements are of the type Document",
-            ValueError,
-        ),
-        (
-            {
-                "model": "test_model",
-                "query": "",
-                "documents": [],
-                "maximum_tokens": "42",
-            },
-            "maximum_tokens must be a positive integer",
-            ValueError,
-        ),
-        (
-            {
-                "model": "test_model",
-                "query": "",
-                "documents": [],
-                "maximum_tokens": 1.2,
-            },
-            "maximum_tokens must be a positive integer",
-            ValueError,
-        ),
         (
             {
                 "model": "test_model",
@@ -522,39 +487,9 @@ def test_aleph_alpha_client_evaluation_errors(
                 "documents": [],
                 "maximum_tokens": -1,
             },
-            "maximum_tokens must be an int or None",
+            "maximum_tokens must be a positive integer",
             ValueError,
-        ),
-        (
-            {
-                "model": "test_model",
-                "query": "",
-                "documents": [],
-                "max_chunk_size": "NOT AN INTEGER",
-            },
-            "max_chunk_size must be an int or None",
-            ValueError,
-        ),
-        (
-            {
-                "model": "test_model",
-                "query": "",
-                "documents": [],
-                "max_answers": "NOT AN INTEGER",
-            },
-            "max_answers must be an int or None",
-            ValueError,
-        ),
-        (
-            {
-                "model": "test_model",
-                "query": "",
-                "documents": [],
-                "min_score": "NOT A FLOAT",
-            },
-            "min_score must be a float or None",
-            ValueError,
-        ),
+        )
     ],
 )
 def test_aleph_alpha_client_qa_errors(client, config, description, exception_type):
@@ -568,4 +503,5 @@ def test_aleph_alpha_client_qa_errors(client, config, description, exception_typ
     response = requests.post(
         client.host + "qa", headers=client.request_headers, json=config
     )
+    print("response: ", response)
     assert response.status_code == 400, description
