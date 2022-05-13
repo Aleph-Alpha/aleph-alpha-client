@@ -362,7 +362,7 @@ def test_should_answer_query_about_docx_document(client):
 
 def test_should_answer_query_about_docx_bytes_document(client):
 
-    # Only execute this test if the model has qa support
+    # Only execute this test if the model has qa & multimodal support
     models = client.available_models()
     model = next(filter(lambda model: model["name"] == client.test_model, models))
     if not model["qa_support"]:
@@ -392,7 +392,7 @@ def test_should_answer_query_about_prompt_document(client):
     # Only execute this test if the model has qa support
     models = client.available_models()
     model = next(filter(lambda model: model["name"] == client.test_model, models))
-    if not model["qa_support"]:
+    if not (model["qa_support"] and model["image_support"]):
         return
 
     query = "Who likes to eat pizza?"
