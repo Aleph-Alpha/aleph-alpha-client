@@ -1,8 +1,8 @@
 from typing import List, Optional, Dict, Union
-from importlib.metadata import version
 
 import requests
 import logging
+import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt_item import _to_prompt_item
@@ -72,7 +72,7 @@ class AlephAlphaClient:
     def request_headers(self):
         return {
             "Authorization": "Bearer " + self.token,
-            "User-Agent": "Aleph-Alpha-Python-Client-" + version("aleph-alpha-client"),
+            "User-Agent": "Aleph-Alpha-Python-Client-" + aleph_alpha_client.__version__,
         }
 
     def available_models(self):
