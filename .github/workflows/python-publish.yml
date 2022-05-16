@@ -27,10 +27,12 @@ jobs:
         python-version: '3.x'
     - name: Assert tag version matches __version__ attribute
       run: |
-        python -c "import aleph_alpha_client; \
+        pushd aleph_alpha_client
+        python -c "from version import __version__; \
           git_version = '$(git describe --tags)'[1:]; \
-          assert aleph_alpha_client.version.__version__ == git_version, \
-            f'versions do not match {aleph_alpha_client.__version__} vs. {git_version}'"
+          assert __version__ == git_version, \
+            f'versions do not match {__version__} vs. {git_version}'"
+        popd
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
