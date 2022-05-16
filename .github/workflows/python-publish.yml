@@ -29,7 +29,10 @@ jobs:
       run: |
         pushd aleph_alpha_client
         python -c "from version import __version__; \
-          git_version = '${GITHUB_REF#refs/*/}'[1:]; \
+          git_ref = '${GITHUB_REF#refs/}'; \
+          assert git_ref.startswith('tags'), \
+            f'{git_ref} is not a version tag'; \
+          git_version = '${GITHUB_REF#refs/tags/}'[1:]; \
           assert __version__ == git_version, \
             f'versions do not match {__version__} vs. {git_version}'"
         popd
