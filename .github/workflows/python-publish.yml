@@ -29,7 +29,7 @@ jobs:
       run: |
         python -c "import aleph_alpha_client; \
           git_version = '$(git describe --tags)'[1:]; \
-          assert aleph_alpha_client.__version__ == git_version, \
+          assert aleph_alpha_client.version.__version__ == git_version, \
             f'versions do not match {aleph_alpha_client.__version__} vs. {git_version}'"
     - name: Install dependencies
       run: |
