@@ -32,7 +32,7 @@ jobs:
             f'{git_ref} is not a version tag'; \
           git_version = '${GITHUB_REF#refs/tags/}'[1:]; \
           assert __version__ == git_version, \
-            f'versions do not match {__version__} vs. {git_version}'"
+            f'versions do not match {__version__} vs. {git_version}. Please update version.py to match the git Release tag.'"
         popd
     - name: Install dependencies
       run: |
