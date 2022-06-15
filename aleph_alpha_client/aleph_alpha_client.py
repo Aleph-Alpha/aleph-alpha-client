@@ -1,11 +1,13 @@
+from socket import timeout
 from typing import List, Optional, Dict, Union
 
 import requests
 import logging
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
+from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt_item import _to_prompt_item
+from aleph_alpha_client.prompt import _to_prompt_item
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
@@ -82,7 +84,7 @@ class AlephAlphaClient:
         response = requests.get(
             self.host + "models_available", headers=self.request_headers
         )
-        return self._parse_response(response)
+        return self._translate_errors(response)
 
     def tokenize(
         self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True
@@ -102,7 +104,7 @@ class AlephAlphaClient:
             json=payload,
             timeout=None,
         )
-        return self._parse_response(response)
+        return self._translate_errors(response)
 
     def detokenize(self, model: str, token_ids: List[int]):
         """
@@ -115,7 +117,7 @@ class AlephAlphaClient:
             json=payload,
             timeout=None,
         )
-        return self._parse_response(response)
+        return self._translate_errors(response)
 
     def complete(
         self,
@@ -331,7 +333,7 @@ class AlephAlphaClient:
             json=payload,
             timeout=None,
         )
-        response_json = self._parse_response(response)
+        response_json = self._translate_errors(response)
         if response_json.get("optimized_prompt") is not None:
             # Return a message to the user that we optimized their prompt
             print(
@@ -429,7 +431,7 @@ class AlephAlphaClient:
         response = requests.post(
             self.host + "embed", headers=self.request_headers, json=payload
         )
-        return self._parse_response(response)
+        return self._translate_errors(response)
 
     def evaluate(
         self,
@@ -477,7 +479,7 @@ class AlephAlphaClient:
         response = requests.post(
             self.host + "evaluate", headers=self.request_headers, json=payload
         )
-        return self._parse_response(response)
+        return self._translate_errors(response)
 
     def qa(
         self,
@@ -578,11 +580,18 @@ class AlephAlphaClient:
             json=payload,
             timeout=None,
         )
-        response_json = self._parse_response(response)
+        response_json = self._translate_errors(response)
         return response_json
 
+    def _explain(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
+        body = request.render_as_body(model, hosting)
+        response = requests.post(f"{self.host}explain", headers=self.request_headers, json=body)
+        response_dict = self._translate_errors(response)
+        return response_dict
+        
+
     @staticmethod
-    def _parse_response(response):
+    def _translate_errors(response):
         if response.status_code == 200:
             return response.json()
         else:

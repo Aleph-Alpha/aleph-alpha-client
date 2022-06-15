@@ -37,3 +37,13 @@ def client():
     )
     client.test_model = model
     yield client
+
+@pytest.fixture(scope="session")
+def model() -> str:
+    config = dotenv_values(".env")
+    model = config.get("TEST_MODEL")
+    if model is None:
+        raise ValueError(
+            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_MODEL."
+        )
+    return model

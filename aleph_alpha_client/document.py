@@ -2,7 +2,7 @@ import base64
 from typing import Dict, List, Union
 
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt_item import _to_prompt_item
+from aleph_alpha_client.prompt import _to_prompt_item
 
 
 class Document:
