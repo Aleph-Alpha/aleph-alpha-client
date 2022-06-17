@@ -345,9 +345,9 @@ class AlephAlphaClient:
         self,
         model,
         prompt: Union[str, List[Union[str, ImagePrompt]]],
-        pooling: List[str],
         layers: List[int],
         hosting: str = "cloud",
+        pooling: Optional[List[str]] = None,
         tokens: Optional[bool] = False,
     ):
         """
@@ -366,18 +366,18 @@ class AlephAlphaClient:
                     * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
                     * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
 
-            pooling (List[str])
+            hosting (str, optional, default "cloud"):
+                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+                executed on any of our servers. An error will be returned if the specified hosting is not available.
+                Check available_models() for available hostings.
+
+            pooling (List(str), optional, default None)
                 Pooling operation to use.
                 Pooling operations include:
                     * mean: aggregate token embeddings across the sequence dimension using an average
                     * max: aggregate token embeddings across the sequence dimension using a maximum
                     * last_token: just use the last token
                     * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
-
-            hosting (str, optional, default "cloud"):
-                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
-                executed on any of our servers. An error will be returned if the specified hosting is not available.
-                Check available_models() for available hostings.
 
             tokens (bool, optional, default False)
                 Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
@@ -407,7 +407,7 @@ class AlephAlphaClient:
         if not isinstance(tokens, bool):
             raise ValueError("tokens must be a bool")
 
-        if not pooling is None and not isinstance(pooling, list):
+        if not (pooling is None or isinstance(pooling, list)):
             raise ValueError("pooling must be None or a list")
 
         if pooling is not None:
@@ -583,12 +583,15 @@ class AlephAlphaClient:
         response_json = self._translate_errors(response)
         return response_json
 
-    def _explain(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
+    def _explain(
+        self, model: str, request: ExplanationRequest, hosting: Optional[str] = None
+    ):
         body = request.render_as_body(model, hosting)
-        response = requests.post(f"{self.host}explain", headers=self.request_headers, json=body)
+        response = requests.post(
+            f"{self.host}explain", headers=self.request_headers, json=body
+        )
         response_dict = self._translate_errors(response)
         return response_dict
-        
 
     @staticmethod
     def _translate_errors(response):
