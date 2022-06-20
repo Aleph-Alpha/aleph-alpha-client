@@ -234,24 +234,6 @@ def validate_qa_task_output(task, output):
             "evaluate",
             {"model": "test_model", "prompt": "", "completion_expected": "abc"},
         ),
-        (
-            "embed",
-            {
-                "model": "test_model",
-                "prompt": "abc",
-                "layers": [-1],
-                "pooling": ["mean"],
-            },
-        ),
-        (
-            "embed",
-            {
-                "model": "test_model",
-                "prompt": "abc",
-                "layers": [-1],
-                "pooling": ["mean", "max"],
-            },
-        ),
         # Hangs. Known bug
         # (
         #     "qa",
