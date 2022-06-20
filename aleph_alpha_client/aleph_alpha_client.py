@@ -351,7 +351,7 @@ class AlephAlphaClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
             request (EmbeddingRequest, required):
-                NamedTuple descrinbing the request for the embedding
+                Input for the embeddings to be computed
 
             hosting (str, optional, default "cloud"):
                 Specifies where the computation will take place. This defaults to "cloud", meaning that it can be

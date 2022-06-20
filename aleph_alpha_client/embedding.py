@@ -9,7 +9,7 @@ class EmbeddingRequest(NamedTuple):
 
     Parameters:
         prompt
-            The text to be embedded.
+            The text and/or image(s) to be embedded.
 
         layers
             A list of layer indices from which to return embeddings.
@@ -28,14 +28,14 @@ class EmbeddingRequest(NamedTuple):
         type
             Type of the embedding (e.g. symmetric or asymmetric)
 
-        tokens (bool, optional, default False)
+        tokens
             Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
 
     """
     prompt: List[Union[str, ImagePrompt]]
     layers: List[int]
     pooling: List[str]
-    type: Optional[str]
+    type: Optional[str] = None
     tokens: bool = False
 
     def render_as_body(self, model: str, hosting=Optional[str]) -> dict:
