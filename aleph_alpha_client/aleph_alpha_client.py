@@ -5,6 +5,7 @@ import requests
 import logging
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
+from aleph_alpha_client.embedding import EmbeddingRequest, EmbeddingResponse
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_prompt_item
@@ -341,98 +342,28 @@ class AlephAlphaClient:
             )
         return response_json
 
-    def embed(
-        self,
-        model,
-        prompt: Union[str, List[Union[str, ImagePrompt]]],
-        pooling: List[str],
-        layers: List[int],
-        hosting: str = "cloud",
-        tokens: Optional[bool] = False,
-    ):
+    def embed(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
         """
-        Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
+        Embeds a multi-modal prompt and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
         Parameters:
             model (str, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
-            prompt (str, required):
-               The text to be embedded.
-
-            layers (List[int], required):
-               A list of layer indices from which to return embeddings.
-                    * Index 0 corresponds to the word embeddings used as input to the first transformer layer
-                    * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
-                    * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
-
-            pooling (List[str])
-                Pooling operation to use.
-                Pooling operations include:
-                    * mean: aggregate token embeddings across the sequence dimension using an average
-                    * max: aggregate token embeddings across the sequence dimension using a maximum
-                    * last_token: just use the last token
-                    * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
+            request (EmbeddingRequest, required):
+                Input for the embeddings to be computed
 
             hosting (str, optional, default "cloud"):
                 Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
-
-            tokens (bool, optional, default False)
-                Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
         """
-
-        if not isinstance(model, str):
-            raise ValueError("model must be a string")
-
-        serializable_prompt = _to_serializable_prompt(
-            prompt=prompt, at_least_one_token=True
-        )
-
-        if not isinstance(layers, list):
-            raise ValueError("layers must be a list")
-
-        if len(layers) == 0:
-            raise ValueError("layers must contain at least one layer")
-
-        for layer in layers:
-            if not isinstance(layer, int):
-                raise ValueError(
-                    "each item in the layers list must be an integer; got " + str(layer)
-                )
-
-        if tokens is None:
-            tokens = False
-        if not isinstance(tokens, bool):
-            raise ValueError("tokens must be a bool")
-
-        if not pooling is None and not isinstance(pooling, list):
-            raise ValueError("pooling must be None or a list")
-
-        if pooling is not None:
-            for pooling_option in pooling:
-                if pooling_option not in POOLING_OPTIONS:
-                    raise ValueError(
-                        "each item in the pooling list must be either one of "
-                        + str(POOLING_OPTIONS)
-                        + "; got "
-                        + str(pooling_option)
-                    )
-
-        payload = {
-            "model": model,
-            "prompt": serializable_prompt,
-            "hosting": hosting,
-            "layers": layers,
-            "tokens": tokens,
-            "pooling": pooling,
-        }
-        response = requests.post(
-            self.host + "embed", headers=self.request_headers, json=payload
-        )
-        return self._translate_errors(response)
-
+        body = request.render_as_body(model, hosting)
+        response = requests.post(f"{self.host}embed", headers=self.request_headers, json=body)
+        response_dict = self._translate_errors(response)
+        response = EmbeddingResponse.from_json(response_dict)
+        return response
+ 
     def evaluate(
         self,
         model,
