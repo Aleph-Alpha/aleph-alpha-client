@@ -9,6 +9,7 @@ from aleph_alpha_client.embedding import EmbeddingRequest, EmbeddingResponse
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_prompt_item
+from aleph_alpha_client.tokenization import TokenizationResponse, TokenizationRequest
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
@@ -88,24 +89,18 @@ class AlephAlphaClient:
         return self._translate_errors(response)
 
     def tokenize(
-        self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True
+        self, model: str, request: TokenizationRequest
     ):
         """
         Tokenizes the given prompt for the given model.
         """
-        payload = {
-            "model": model,
-            "prompt": prompt,
-            "tokens": tokens,
-            "token_ids": token_ids,
-        }
         response = requests.post(
             self.host + "tokenize",
             headers=self.request_headers,
-            json=payload,
-            timeout=None,
+            json=request.render_as_body(model),
         )
-        return self._translate_errors(response)
+        response_dict = self._translate_errors(response)
+        return TokenizationResponse.from_json(response_dict)
 
     def detokenize(self, model: str, token_ids: List[int]):
         """
