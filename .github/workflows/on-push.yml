@@ -1,0 +1,22 @@
+name: Run Python Tests
+
+on: push
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.x"
+      - name: Lint with mypy
+        run: |
+          pip install mypy
+          pip install types-requests
+          mypy aleph_alpha_client
+          mypy --ignore-missing-imports tests
+
+# run tests

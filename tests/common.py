@@ -1,10 +1,11 @@
+from typing import Iterable
 import pytest
 from aleph_alpha_client import AlephAlphaClient
 from dotenv import dotenv_values
 
 
 @pytest.fixture(scope="session")
-def client():
+def client() -> Iterable[AlephAlphaClient]:
     config = dotenv_values(".env")
 
     api_url = config.get("TEST_API_URL")
@@ -35,8 +36,9 @@ def client():
     client = AlephAlphaClient(
         host=api_url, token=token, email=username, password=password
     )
-    client.test_model = model
+    client.test_model = model  # type: ignore
     yield client
+
 
 @pytest.fixture(scope="session")
 def model() -> str:

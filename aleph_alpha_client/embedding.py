@@ -53,6 +53,7 @@ class EmbeddingResponse(NamedTuple):
     embeddings: Optional[Dict[Tuple[str, str], List[float]]]
     tokens: Optional[List[str]]
 
+    @staticmethod
     def from_json(json: Dict[str, Any]) -> "EmbeddingResponse":
         return EmbeddingResponse(
             model_version=json["model_version"],
