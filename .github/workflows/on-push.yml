@@ -1,0 +1,16 @@
+name: Run Python Tests
+
+on: push
+
+jobs:
+  build_server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lint with mypy
+        run: |
+          pip install mypy
+          pip install types-requests
+          mypy aleph-alpha-client
+
+# run tests
