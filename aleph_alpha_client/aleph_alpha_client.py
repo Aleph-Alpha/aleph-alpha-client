@@ -215,7 +215,7 @@ class AlephAlphaClient:
         if not isinstance(model, str):
             raise ValueError("model must be a string")
 
-        prompt = _to_serializable_prompt(prompt=prompt)
+        json_prompt = _to_serializable_prompt(prompt=prompt)
 
         if not (maximum_tokens is None or isinstance(maximum_tokens, int)):
             raise ValueError("maximum_tokens must be an int or None")
@@ -293,9 +293,8 @@ class AlephAlphaClient:
         if top_p is not None:
             if top_p < 0.0 or top_p > 1.0:
                 raise ValueError("top_p must be a float between 0.0 and 1.0")
-        if n is not None:
-            if n <= 0:
-                raise ValueError("top_k must be a positive integer")
+        if (n is not None and n <= 0) or n is None:
+            raise ValueError("n must be a positive integer")
 
         if best_of is not None:
             if best_of == n:
@@ -309,7 +308,7 @@ class AlephAlphaClient:
 
         payload = {
             "model": model,
-            "prompt": prompt,
+            "prompt": json_prompt,
             "hosting": hosting,
             "maximum_tokens": maximum_tokens,
             "temperature": temperature,
@@ -342,7 +341,9 @@ class AlephAlphaClient:
             )
         return response_json
 
-    def embed(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
+    def embed(
+        self, model: str, request: EmbeddingRequest, hosting: Optional[str] = None
+    ):
         """
         Embeds a multi-modal prompt and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -359,11 +360,13 @@ class AlephAlphaClient:
                 Check available_models() for available hostings.
         """
         body = request.render_as_body(model, hosting)
-        response = requests.post(f"{self.host}embed", headers=self.request_headers, json=body)
+        response = requests.post(
+            f"{self.host}embed", headers=self.request_headers, json=body
+        )
         response_dict = self._translate_errors(response)
-        response = EmbeddingResponse.from_json(response_dict)
-        return response
- 
+        embedding_response = EmbeddingResponse.from_json(response_dict)
+        return embedding_response
+
     def evaluate(
         self,
         model,
@@ -473,7 +476,9 @@ class AlephAlphaClient:
                 "documents must be a list where all elements are of the type Document"
             )
 
-        documents = [document._to_serializable_document() for document in documents]
+        serialized_documents = [
+            document._to_serializable_document() for document in documents
+        ]
 
         if not isinstance(maximum_tokens, int):
             raise ValueError("maximum_tokens must be an int")
@@ -497,7 +502,7 @@ class AlephAlphaClient:
         payload = {
             "model": model,
             "query": query,
-            "documents": documents,
+            "documents": serialized_documents,
             "maximum_tokens": maximum_tokens,
             "max_answers": max_answers,
             "min_score": min_score,
@@ -514,12 +519,15 @@ class AlephAlphaClient:
         response_json = self._translate_errors(response)
         return response_json
 
-    def _explain(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
+    def _explain(
+        self, model: str, request: ExplanationRequest, hosting: Optional[str] = None
+    ):
         body = request.render_as_body(model, hosting)
-        response = requests.post(f"{self.host}explain", headers=self.request_headers, json=body)
+        response = requests.post(
+            f"{self.host}explain", headers=self.request_headers, json=body
+        )
         response_dict = self._translate_errors(response)
         return response_dict
-        
 
     @staticmethod
     def _translate_errors(response):

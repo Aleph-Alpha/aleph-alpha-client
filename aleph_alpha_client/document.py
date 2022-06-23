@@ -1,5 +1,5 @@
 import base64
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Sequence, Union
 
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_prompt_item
@@ -10,7 +10,9 @@ class Document:
     A document that can be either a docx document or text/image prompts.
     """
 
-    def __init__(self, docx: str = None, prompt: List[Union[str, ImagePrompt]] = None):
+    def __init__(
+        self, docx: str = None, prompt: Sequence[Union[str, ImagePrompt]] = None
+    ):
         # We use a base_64 representation for docx documents, because we want to embed the file
         # into a prompt send in JSON.
         self.docx = docx
@@ -48,7 +50,7 @@ class Document:
         prompt = [text]
         return cls(prompt=prompt)
 
-    def _to_serializable_document(self) -> Dict[str, str]:
+    def _to_serializable_document(self) -> Dict[str, Any]:
         """
         A dict if serialized to JSON is suitable as a document element
         """
@@ -61,3 +63,5 @@ class Document:
             # Serialize prompt to Document JSON format
             prompt_data = [_to_prompt_item(prompt_item) for prompt_item in self.prompt]
             return {"prompt": prompt_data}
+        else:
+            raise NotImplementedError("unsupported document type")

@@ -16,6 +16,7 @@ jobs:
         run: |
           pip install mypy
           pip install types-requests
-          mypy aleph_alpha_client tests
+          mypy aleph_alpha_client
+          mypy --ignore-missing-imports tests
 
 # run tests

@@ -1,5 +1,5 @@
 import base64
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 import requests
 
 
@@ -79,7 +79,7 @@ class ImagePrompt:
             bytes = f.read()
         return cls.from_bytes(bytes, cropping=cropping)
 
-    def _to_prompt_item(self) -> Dict[str, str]:
+    def _to_prompt_item(self) -> Dict[str, Any]:
         """
         A dict if serialized to JSON is suitable as a prompt element
         """
