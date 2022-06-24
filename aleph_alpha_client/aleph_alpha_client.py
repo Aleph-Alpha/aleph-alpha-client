@@ -103,7 +103,13 @@ class AlephAlphaClient:
         """
         Tokenizes the given prompt for the given model.
         """
+        if request is None:
+            logging.warning(
+                "Calling this method with individual request parameters is deprecated. "
+                + "Please pass a TokenizationRequest object as the request parameter instead."
+            )
         named_request = request or TokenizationRequest(prompt or "", tokens, token_ids)
+
         response = requests.post(
             self.host + "tokenize",
             headers=self.request_headers,
@@ -123,6 +129,12 @@ class AlephAlphaClient:
         """
         Detokenizes the given tokens.
         """
+        if request is None:
+            logging.warning(
+                "Calling this method with individual request parameters is deprecated. "
+                + "Please pass a DetokenizationRequest object as the request parameter instead."
+            )
+
         named_request = request or DetokenizationRequest(token_ids)
         response = requests.post(
             self.host + "detokenize",
