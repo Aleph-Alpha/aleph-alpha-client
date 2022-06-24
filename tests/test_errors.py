@@ -166,11 +166,6 @@ from tests.common import client
             ValueError,
         ),
         (
-            {"model": "test_model", "logit_bias": {1: 1}},
-            "logit_bias must be a dict mapping ints to a float",
-            ValueError,
-        ),
-        (
             {"model": "test_model", "logit_bias": {1: "10"}},
             "logit_bias must be a dict mapping ints to a float",
             ValueError,
