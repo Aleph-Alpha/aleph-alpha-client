@@ -11,6 +11,7 @@ from aleph_alpha_client.detokenization import (
 )
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.embedding import EmbeddingRequest, EmbeddingResponse
+from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_serializable_prompt
@@ -343,9 +344,10 @@ class AlephAlphaClient:
     def evaluate(
         self,
         model,
-        completion_expected,
+        completion_expected: str = None,
         hosting: str = "cloud",
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
+        request: EvaluationRequest = None,
     ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
@@ -366,27 +368,20 @@ class AlephAlphaClient:
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
         """
 
-        if not isinstance(model, str):
-            raise ValueError("model must be a string")
-
-        serializable_prompt = _to_serializable_prompt(prompt=prompt)
-
-        if not isinstance(completion_expected, str):
-            raise ValueError("completion_expected must be a string")
-
-        if len(completion_expected) == 0:
-            raise ValueError("completion_expected cannot be empty")
-
-        payload = {
-            "model": model,
-            "prompt": serializable_prompt,
-            "hosting": hosting,
-            "completion_expected": completion_expected,
-        }
-        response = requests.post(
-            self.host + "evaluate", headers=self.request_headers, json=payload
+        named_request = request or EvaluationRequest(
+            prompt=prompt, completion_expected=completion_expected or ""
         )
-        return self._translate_errors(response)
+        response = requests.post(
+            self.host + "evaluate",
+            headers=self.request_headers,
+            json=named_request.render_as_body(model, hosting),
+        )
+        response_dict = self._translate_errors(response)
+        return (
+            response_dict
+            if request is None
+            else EvaluationResponse.from_json(response_dict)
+        )
 
     def qa(
         self,

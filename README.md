@@ -51,6 +51,7 @@ print(result.completions[0]["completion"])
 
 ```python
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+from aleph_alpha_client.evaluation import EvaluationRequest
 import os
 
 client = AlephAlphaClient(
@@ -59,8 +60,8 @@ client = AlephAlphaClient(
 )
 
 model = "luminous-base"
-prompt = "The api works"
-result = client.evaluate(model, prompt=prompt, completion_expected=" well")
+request = EvaluationRequest(prompt="The api works", completion_expected=" well")
+result = client.evaluate(model, request=request)
 
 print(result)
 
@@ -73,6 +74,7 @@ print(result)
 
 ```python
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+from aleph_alpha_client.evaluation import EvaluationRequest
 import os
 
 client = AlephAlphaClient(
@@ -89,8 +91,8 @@ prompt = [
     image,
     "Q: What is the name of the store?\nA:",
 ]
-
-result = client.evaluate(model, prompt=prompt, completion_expected=" Blockbuster Video")
+request = EvaluationRequest(prompt=prompt, completion_expected=" Blockbuster Video")
+result = client.evaluate(model, request=request)
 
 print(result)
 ```
