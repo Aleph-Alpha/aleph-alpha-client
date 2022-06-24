@@ -43,6 +43,9 @@ result = client.complete(model, prompt=prompt, maximum_tokens=20)
 print(result["completions"][0]["completion"])
 ```
 
+     A flowchart.
+
+
 
 ### Evaluation text prompt
 
@@ -299,11 +302,9 @@ python -m http.server --directory htmlcov 8000
 
 > Do not change the README.md directly as it is generated from readme.ipynb 
 
-To update the readme edit the notebook in your favorite jupyter editor and run all python cells to verify that the code examples still work.
+1. `pip install -r requirements-dev.txt`
 
-To generate a new README.md first remove all output cells from the Jupyter notebook and then execute the command:
+2. To update the readme edit the notebook in your favorite jupyter editor and run all python cells to verify that the code examples still work.
 
-```bash
-jupyter nbconvert --to markdown readme.ipynb --output README.md
-```
+3. To generate a new README.md first remove all output cells from the Jupyter notebook and then execute the command: `jupyter nbconvert --to markdown readme.ipynb --output README.md`
 
