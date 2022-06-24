@@ -18,12 +18,15 @@ pip install aleph-alpha-client
 
 ### Completion Multimodal
 
+
+
 ```python
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+import os
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.com",
-    token="<your token>"
+    token=os.getenv("AA_TOKEN")
 )
 
 # You need to choose a model with multimodal capabilities for this example.
@@ -40,14 +43,17 @@ result = client.complete(model, prompt=prompt, maximum_tokens=20)
 print(result["completions"][0]["completion"])
 ```
 
+
 ### Evaluation text prompt
+
 
 ```python
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+import os
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.com",
-    token="<your token>"
+    token=os.getenv("AA_TOKEN")
 )
 
 model = "luminous-base"
@@ -55,16 +61,21 @@ prompt = "The api works"
 result = client.evaluate(model, prompt=prompt, completion_expected=" well")
 
 print(result)
+
 ```
+
 
 ### Evaluation Multimodal
 
+
+
 ```python
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+import os
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.com",
-    token="<your token>"
+    token=os.getenv("AA_TOKEN")
 )
 
 # You need to choose a model with multimodal capabilities for this example.
@@ -82,31 +93,39 @@ result = client.evaluate(model, prompt=prompt, completion_expected=" Blockbuster
 print(result)
 ```
 
+
 ### Embedding text prompt
 
+
+
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, EmbeddingRequest
+import os
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.com",
-    token="<your token>"
+    token=os.getenv("AA_TOKEN")
 )
 
 model = "luminous-base"
 request = EmbeddingRequest(prompt="This is an example.", layers=[-1], pooling=["mean"])
-result = client.embed(model, request=request)
+result = client.embed(model, request)
 
 print(result)
 ```
 
+
 ### Embedding multimodal prompt
+
+
 
 ```python
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+import os
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.com",
-    token="<your token>"
+    token=os.getenv("AA_TOKEN")
 )
 
 # You need to choose a model with multimodal capabilities for this example.
@@ -118,27 +137,31 @@ prompt = [
     image,
     "Q: What is the name of the store?\nA:",
 ]
-
-result = client.embed(model, prompt=prompt, layers=[-1], pooling=["mean"])
+request = EmbeddingRequest(prompt=prompt, layers=[-1], pooling=["mean"])
+result = client.embed(model, request)
 
 print(result)
 ```
 
+
 ### Q&A with a Docx Document
+
+
 
 ```python
 from aleph_alpha_client import Document, AlephAlphaClient
+import os
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.com",
-    token="<your token>"
+    token=os.getenv("AA_TOKEN")
 )
 
 # You need to choose a model with qa support for this example.
 model = "luminous-extended"
 
 query = "What is a computer program?"
-docx_file = "./sample.docx"
+docx_file = "./tests/sample.docx"
 document = Document.from_docx_file(docx_file)
 documents = [document]
 
@@ -147,14 +170,17 @@ result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
 print(result)
 ```
 
+
 ### Q&A with a Text
+
 
 ```python
 from aleph_alpha_client import Document, AlephAlphaClient
+import os
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.com",
-    token="<your token>"
+    token=os.getenv("AA_TOKEN")
 )
 
 # You need to choose a model with qa support for this example.
@@ -170,14 +196,18 @@ result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
 print(result)
 ```
 
+
 ### Q&A with a multimodal prompt
+
+
 
 ```python
 from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient
+import os
 
 client = AlephAlphaClient(
     host="https://api.aleph-alpha.com",
-    token="<your token>"
+    token=os.getenv("AA_TOKEN")
 )
 
 # You need to choose a model with qa support and multimodal capabilities for this example.
@@ -195,379 +225,29 @@ result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
 print(result)
 ```
 
-## Endpoints
 
-### Complete
+### Tokenize a text prompt
 
-generate completions from a prompt
 
-#### Parameters
 
-**model** (str, required)
+```python
+from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient
+from aleph_alpha_client.tokenization import TokenizationRequest
+import os
 
-Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.  
-see `available_models()`
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.com",
+    token=os.getenv("AA_TOKEN")
+)
 
-**prompt** (str or multimodal list*, optional, default "")
+# You need to choose a model with qa support and multimodal capabilities for this example.
+model = "luminous-extended"
+request = TokenizationRequest(prompt="This is an example.", tokens=True, token_ids=True)
+response = client.tokenize(model, request)
 
-The text to be completed. Unconditional completion can be started with an empty string (default). The prompt may contain a zero shot or few shot task.
-
-**hosting** (str, optional, default "cloud"):
-
-Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
-executed on any of our servers. An error will be returned if the specified hosting is not available.
-Check available_models() for available hostings.
-
-**maximum_tokens** (int, optional, default 64)
-
-The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
-
-**temperature** (float, optional, default 0.0)
-
-A higher sampling temperature encourages the model to produce less probable outputs ("be more creative"). Values are expected in a range from 0.0 to 1.0. Try high values (e.g. 0.9) for a more "creative" response and the default 0.0 for a well defined and repeatable answer.
-
-It is recommended to use either temperature, top_k or top_p and not all at the same time. If a combination of temperature, top_k or top_p is used rescaling of logits with temperature will be performed first. Then top_k is applied. Top_p follows last.
-
-**top_k** (int, optional, default 0)
-
-Introduces random sampling for generated tokens by randomly selecting the next token from the k most likely options. A value larger than 1 encourages the model to be more creative. Set to 0 if repeatable output is to be produced.
-
-It is recommended to use either temperature, top_k or top_p and not all at the same time. If a combination of temperature, top_k or top_p is used rescaling of logits with temperature will be performed first. Then top_k is applied. Top_p follows last.
-
-**top_p** (float, optional, default 0.0)
-
-Introduces random sampling for generated tokens by randomly selecting the next token from the smallest possible set of tokens whose cumulative probability exceeds the probability top_p. Set to 0.0 if repeatable output is to be produced.
-
-It is recommended to use either temperature, top_k or top_p and not all at the same time. If a combination of temperature, top_k or top_p is used rescaling of logits with temperature will be performed first. Then top_k is applied. Top_p follows last.
-
-**presence_penalty** (float, optional, default 0.0)
-
-The presence penalty reduces the likelihood of generating tokens that are already present in the text. Presence penalty is independent of the number of occurences. Increase the value to produce text that is not repeating the input.
-
-An operation of like the following is applied:
-    logits[t] -> logits[t] - 1 * penalty
-
-where logits[t] is the logits for any given token. Note that the formula is independent of the number of times that a token appears in context_tokens.
-
-**frequency_penalty** (float, optional, default 0.0)
-
-The frequency penalty reduces the likelihood of generating tokens that are already present in the text. Presence penalty is dependent on the number of occurences of a token.
-
-An operation of like the following is applied:
-    logits[t] -> logits[t] - count[t] * penalty
-
-where logits[t] is the logits for any given token and count[t] is the number of times that token appears in context_tokens
-
-**repetition_penalties_include_prompt** (bool, optional, default False)
-
-Flag deciding whether presence penalty or frequency penalty are applied to the prompt and completion (True) or only the completion (False)
-
-**use_multiplicative_presence_penalty** (bool, optional, default True)
-
-Flag deciding whether presence penalty is applied multiplicatively (True) or additively (False). This changes the formula stated for presence and frequency penalty.
-
-**best_of** (int, optional, default None)
-
-best_of number of completions are created on server side. The completion with the highest log probability per token is returned. If the parameter n is larger than 1 more than 1 (n) completions will be returned. best_of must be strictly greater than n.
-
-**n** (int, optional, default 1)
-
-Number of completions to be returned. If only the argmax sampling is used (temperature, top_k, top_p are all default) the same completions will be produced. This parameter should only be increased if a random sampling is chosen.
-
-**logit_bias** (dict mapping token ids to score, optional, default None)
-
-The logit bias allows to influence the likelihood of generating tokens. A dictionary mapping token ids (int) to a bias (float) can be provided. Such bias is added to the logits as generated by the model.
-
-**log_probs** (int, optional, default None)
-
-Number of top log probabilities to be returned for each generated token. Log probabilities may be used in downstream tasks or to assess the model's certainty when producing tokens.
-
-No log probs are returned if set to None.
-Log probs of generated tokens are returned if set to 0.
-Log probs of generated tokens and top n logprobs are returned if set to n.
-
-**stop_sequences** (List(str), optional, default None)
-
-List of strings which will stop generation if they're generated. Stop sequences may be helpful in structured texts.
-
-Example: In a question answering scenario a text may consist of lines starting with either "Question: " or "Answer: " (alternating). After producing an answer, the model will be likely to generate "Question: ". "Question: " may therfore be used as stop sequence in order not to have the model generate more questions but rather restrict text generation to the answers.
-
-**tokens** (bool, optional, default False)
-
-Flag indicating whether individual tokens of the completion are to be returned (True) or whether solely the generated text (i.e. the completion) is sufficient (False).
-
-**disable_optimizations** (bool, optional, default False)
-
-We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and completion for you.
-
-Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
-
-#### Return value
-
-The return value of a completion contains the following fields:
-
-**id**: unique identifier of a task for traceability
-
-**model_version**: model name and version (if any) of the used model for inference
-
-**completions**: list of completions; may contain only one entry if no more are requested (see parameter n)
-
-**log_probs**: list with a dictionary for each generated token. The dictionary maps the keys' tokens to the respective log probabilities. This field is only returned if requested with the parameter "log_probs".
-
-**completion**: generated completion on the basis of the prompt
-
-**completion_tokens**: completion split into tokens. This field is only returned if requested with the parameter "tokens".
-
-**finish_reason**: reason for termination of generation. This may be a stop sequence or maximum number of tokens reached.
-
-**message**: an optional message by the system. This may contain warnings or hints.
-
-(unconditional completion, prompt is empty)
-
-```json
-{
-    "id": "6b17dd34-5dc0-4794-aacf-263311965178",
-    "model_version": "luminous-base",
-    "completions": [
-        {
-            "log_probs": null,
-            "completion": "Antidote for acute serine in superoxide anion from depycoid and lipopolysaccharide (PE) purified preparations by gel filtration.\nDepycoid and lipopolysaccharide (LPS) isolated from Klepida capers were used as selective antagonists for 8-",
-            "completion_tokens": null,
-            "finish_reason": null,
-            "message": null
-        },
-        "..."
-    ]
-}
+print(response)
 ```
 
-### Evaluate
-
-Evaluates the model's likelihood to produce a completion given a prompt.
-
-#### Parameters
-
-**model** (str, required)
-
-Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
-see `available_models()`
-
-**completion_expected** (str, required)
-
-The ground truth completion expected to be produced given the prompt.
-
-**prompt** (str or multimodal list*, optional, default "")
-
-The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
-
-**hosting** (str, optional, default "cloud"):
-
-Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
-executed on any of our servers. An error will be returned if the specified hosting is not available.
-Check available_models() for available hostings.
-
-#### Return value
-
-The return value of an evaluation contains the following fields:
-
-**id**: unique identifier of a task for traceability
-
-**model_version**: model name and version (if any) of the used model for inference
-
-**message**: an optional message by the system. This may contain warnings or hints.
-
-**result**: dictionary with result metrics of the evaluation
-
-**log_probability**: log probability of producing the expected completion given the prompt. This metric refers to all tokens and is therefore dependent on the used tokenizer. It cannot be directly compared among models with different tokenizers.
-
-**log_perplexity**: log perplexity associated with the expected completion given the prompt. This metric refers to all tokens and is therefore dependent on the used tokenizer. It cannot be directly compared among models with different tokenizers.
-
-**log_perplexity_per_token**: log perplexity associated with the expected completion given the prompt normalized for the number of tokens. This metric computes an average per token and is therefore dependent on the used tokenizer. It cannot be directly compared among models with different tokenizers.
-
-**log_perplexity_per_character**: log perplexity associated with the expected completion given the prompt normalized for the number of characters. This metric is independent of any tokenizer. It can be directly compared among models with different tokenizers.
-
-**correct_greedy**: Flag indicating whether a greedy completion would have produced the expected completion.
-
-**token_count**: Number of tokens in the expected completion.
-
-**character_count**: Number of characters in the expected completion.
-
-**completion**: argmax completion given the input consisting of prompt and expected completion. This may be used as an indicator of what the model would have produced. As only one single forward is performed an incoherent text could be produced especially for long expected completions.  
-
-prompt: "The api works"
-completion_expected: " well."
-
-```json
-{
-    "id": "e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
-    "model_version": "luminous-base",
-    "message": null,
-    "result": {
-        "log_probability": -5.3242188,
-        "log_perplexity": -5.3242188,
-        "log_perplexity_per_token": -2.6621094,
-        "log_perplexity_per_character": -0.88720703,
-        "correct_greedy": false,
-        "token_count": 2,
-        "character_count": 6,
-        "completion": " fine,"
-    }
-}
-```
-
-### Embed
-
-Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
-
-#### Parameters
-
-**model** (str, required)
-
-Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
-see `available_models()`
-
-**prompt** (str or multimodal list*, required)
-
-The text to be embedded.
-
-**layers** (List[int], required)
-
-A list of layer indices from which to return embeddings.
-
-* Index 0 corresponds to the word embeddings used as input to the first transformer layer
-* Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
-* Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
-
-**hosting** (str, optional, default "cloud"):
-
-Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
-executed on any of our servers. An error will be returned if the specified hosting is not available.
-Check available_models() for available hostings.
-
-**tokens** (bool, optional, default False)
-
-Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
-
-**pooling** (List[str])
-
-Pooling operation to use.
-
-Pooling operations include:
-
-* mean: aggregate token embeddings across the sequence dimension using an average
-* max: aggregate token embeddings across the sequence dimension using a maximum
-* last_token: just use the last token
-* abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
-
-#### Return value
-
-The return value of an embed contains the following fields:
-
-**id**: unique identifier of a task for traceability
-
-**model_version**: model name and version (if any) of the used model for inference
-
-**message**: an optional message by the system. This may contain warnings or hints.
-
-**embeddings**:
-a dict with layer names as keys and and pooling output as values. A pooling output is a dict with pooling operation as key and a pooled embedding (list of floats) as values
-  
-**tokens**: a list of tokens
-
-example for pooling
-
-```json
-{
-    "id": "e0db3dfb-82b0-4554-bb35-e1e124b1c0ee",
-    "model_version": "luminous-base",
-    "message": null,
-    "embeddings": {
-       "layer_0": {
-           "max": [1,0, 2.0, "..."],
-           "mean": [1,0, 2.0, "..."],
-       }
-    },
-    "tokens": ["a", "...",  "z"]
-}
-```
-
-### Q&A
-
-Answers a question based on a list of documents that can be for example prompts or docx files.
-
-#### Parameters
-
-**model** (str, required)
-
-Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.  
-see `available_models()` and verify that your selected model supports Q&A requests via the `qa_support` flag.
-
-**query** (str, required)
-
-The question to be answered about the documents by the model.
-
-**documents** (List[Document], required))
-
-A list of documents. This can be either docx documents or text/image prompts.
-
-**hosting** (str, optional, default "cloud"):
-
-Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
-executed on any of our servers. An error will be returned if the specified hosting is not available.
-Check `available_models()` for available hostings.
-
-**maximum_tokens** (int, optional, default 64)
-
-The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached.
-Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
-
-**max_chunk_size** (int, optional, default 175)
-
-Long documents will be split into chunks if they exceed max_chunk_size.
-The splitting will be done along the following boundaries until all chunks are shorter than max_chunk_size or all splitting criteria have been exhausted.
-The splitting boundaries are, in the given order:
-1. Split first by double newline
-(assumed to mark the boundary between 2 paragraphs).
-2. Split paragraphs that are still too long by their median sentence as long as we can still find multiple sentences in the paragraph.
-3. Split each remaining chunk of a paragraph or sentence further along white spaces until each chunk is smaller than max_chunk_size or until no whitespace can be found anymore.
-
-
-**disable_optimizations** (bool, optional, default False)
-
-We continually research optimal ways to work with our models. By default, we apply these optimizations to both your query, documents, and answers for you.
-
-Our goal is to improve your results while using our API. But you can always pass `disable_optimizations: true` and we will leave your query, documents, and answers untouched.
-
-**max_answers** (int, optional, default 0):
-
-The upper limit of maximum number of answers.
-
-**min_score** (float, optional, default 0.0):
-
-The lower limit of minimum score for every answer.
-
-#### Return value
-
-The return value of a qa task contains the following fields:
-
-**model_version**: model name and version (if any) of the used model for inference
-
-**answers**: list of answers with each an `answer` text, a `score` and an `evidence` text.
-
-**Example:**
-
-```json
-{
-    "model_version": "2022-04",
-    "answers": [
-        {
-            "answer": "42",
-            "score": 0.6781232,
-            "evidence": "The answer to the ultimate question of life, the universe and everything is 42."
-        }
-    ]
-}
-```
 
 ## Testing
 
@@ -614,3 +294,4 @@ If an html coverage report has been created a simple http server can be run to s
 ```bash
 python -m http.server --directory htmlcov 8000
 ```
+
