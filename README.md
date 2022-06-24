@@ -43,9 +43,6 @@ result = client.complete(model, prompt=prompt, maximum_tokens=20)
 print(result["completions"][0]["completion"])
 ```
 
-     A flowchart.
-
-
 
 ### Evaluation text prompt
 
@@ -232,7 +229,6 @@ print(result)
 ### Tokenize a text prompt
 
 
-
 ```python
 from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient
 from aleph_alpha_client.tokenization import TokenizationRequest
@@ -247,6 +243,28 @@ client = AlephAlphaClient(
 model = "luminous-extended"
 request = TokenizationRequest(prompt="This is an example.", tokens=True, token_ids=True)
 response = client.tokenize(model, request=request)
+
+print(response)
+```
+
+
+### Detokenize a token IDs into text prompt
+
+
+```python
+from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient
+from aleph_alpha_client.detokenization import DetokenizationRequest
+import os
+
+client = AlephAlphaClient(
+    host="https://api.aleph-alpha.com",
+    token=os.getenv("AA_TOKEN")
+)
+
+# You need to choose a model with qa support and multimodal capabilities for this example.
+model = "luminous-extended"
+request = DetokenizationRequest(token_ids=[1730, 387, 300, 4377, 17])
+response = client.detokenize(model, request=request)
 
 print(response)
 ```

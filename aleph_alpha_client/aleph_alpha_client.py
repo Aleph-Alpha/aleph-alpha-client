@@ -4,6 +4,10 @@ from typing import Any, List, Mapping, Optional, Dict, Union
 import requests
 import logging
 import aleph_alpha_client
+from aleph_alpha_client.detokenization import (
+    DetokenizationRequest,
+    DetokenizationResponse,
+)
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.embedding import EmbeddingRequest, EmbeddingResponse
 from aleph_alpha_client.explanation import ExplanationRequest
@@ -106,20 +110,32 @@ class AlephAlphaClient:
             json=named_request.render_as_body(model),
         )
         response_dict = self._translate_errors(response)
-        return TokenizationResponse.from_json(response_dict) if request else response_dict
+        return (
+            TokenizationResponse.from_json(response_dict) if request else response_dict
+        )
 
-    def detokenize(self, model: str, token_ids: List[int]):
+    def detokenize(
+        self,
+        model: str,
+        token_ids: List[int] = [],
+        request: Optional[DetokenizationRequest] = None,
+    ):
         """
         Detokenizes the given tokens.
         """
-        payload = {"model": model, "token_ids": token_ids}
+        named_request = request or DetokenizationRequest(token_ids)
         response = requests.post(
             self.host + "detokenize",
             headers=self.request_headers,
-            json=payload,
+            json=named_request.render_as_body(model),
             timeout=None,
         )
-        return self._translate_errors(response)
+        response_dict = self._translate_errors(response)
+        return (
+            DetokenizationResponse.from_json(response_dict)
+            if request
+            else response_dict
+        )
 
     def complete(
         self,
