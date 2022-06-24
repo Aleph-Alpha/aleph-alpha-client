@@ -1,5 +1,5 @@
 from socket import timeout
-from typing import List, Optional, Dict, Union
+from typing import Any, List, Mapping, Optional, Dict, Union
 
 import requests
 import logging
@@ -89,18 +89,24 @@ class AlephAlphaClient:
         return self._translate_errors(response)
 
     def tokenize(
-        self, model: str, request: TokenizationRequest
-    ):
+        self,
+        model: str,
+        prompt: Optional[str] = None,
+        tokens: bool = True,
+        token_ids: bool = True,
+        request: Optional[TokenizationRequest] = None,
+    ) -> Any:
         """
         Tokenizes the given prompt for the given model.
         """
+        named_request = request or TokenizationRequest(prompt or "", tokens, token_ids)
         response = requests.post(
             self.host + "tokenize",
             headers=self.request_headers,
-            json=request.render_as_body(model),
+            json=named_request.render_as_body(model),
         )
         response_dict = self._translate_errors(response)
-        return TokenizationResponse.from_json(response_dict)
+        return TokenizationResponse.from_json(response_dict) if request else response_dict
 
     def detokenize(self, model: str, token_ids: List[int]):
         """

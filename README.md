@@ -243,7 +243,7 @@ client = AlephAlphaClient(
 # You need to choose a model with qa support and multimodal capabilities for this example.
 model = "luminous-extended"
 request = TokenizationRequest(prompt="This is an example.", tokens=True, token_ids=True)
-response = client.tokenize(model, request)
+response = client.tokenize(model, request=request)
 
 print(response)
 ```
