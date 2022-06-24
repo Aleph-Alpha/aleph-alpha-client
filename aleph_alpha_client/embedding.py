@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Tuple, Union
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_prompt_item
 
@@ -32,7 +32,8 @@ class EmbeddingRequest(NamedTuple):
             Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
 
     """
-    prompt: List[Union[str, ImagePrompt]]
+
+    prompt: Sequence[Union[str, ImagePrompt]]
     layers: List[int]
     pooling: List[str]
     type: Optional[str] = None
@@ -45,8 +46,9 @@ class EmbeddingRequest(NamedTuple):
             "layers": self.layers,
             "pooling": self.pooling,
             "type": self.type,
-            "tokens": self.tokens
+            "tokens": self.tokens,
         }
+
 
 class EmbeddingResponse(NamedTuple):
     model_version: str
@@ -57,5 +59,10 @@ class EmbeddingResponse(NamedTuple):
     def from_json(json: Dict[str, Any]) -> "EmbeddingResponse":
         return EmbeddingResponse(
             model_version=json["model_version"],
-            embeddings={(layer, pooling): embedding for layer, pooling_dict in json["embeddings"].items() for pooling, embedding in pooling_dict.items()},
-            tokens=json.get("tokens"))
+            embeddings={
+                (layer, pooling): embedding
+                for layer, pooling_dict in json["embeddings"].items()
+                for pooling, embedding in pooling_dict.items()
+            },
+            tokens=json.get("tokens"),
+        )

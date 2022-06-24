@@ -110,8 +110,8 @@ client = AlephAlphaClient(
 )
 
 model = "luminous-base"
-request = EmbeddingRequest(prompt="This is an example.", layers=[-1], pooling=["mean"])
-result = client.embed(model, request)
+request = EmbeddingRequest(prompt=["This is an example."], layers=[-1], pooling=["mean"])
+result = client.embed(model, request=request)
 
 print(result)
 ```
@@ -140,7 +140,7 @@ prompt = [
     "Q: What is the name of the store?\nA:",
 ]
 request = EmbeddingRequest(prompt=prompt, layers=[-1], pooling=["mean"])
-result = client.embed(model, request)
+result = client.embed(model, request=request)
 
 print(result)
 ```

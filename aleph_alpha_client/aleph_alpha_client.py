@@ -1,5 +1,5 @@
 from socket import timeout
-from typing import Any, List, Mapping, Optional, Dict, Union
+from typing import Any, List, Mapping, Optional, Dict, Sequence, Type, Union
 
 import requests
 import logging
@@ -268,7 +268,15 @@ class AlephAlphaClient:
         )
 
     def embed(
-        self, model: str, request: EmbeddingRequest, hosting: Optional[str] = None
+        self,
+        model,
+        prompt: Union[str, Sequence[Union[str, ImagePrompt]]] = None,
+        pooling: Optional[List[str]] = None,
+        layers: Optional[List[int]] = None,
+        hosting: str = "cloud",
+        tokens: Optional[bool] = False,
+        type: Optional[str] = None,
+        request: EmbeddingRequest = None,
     ):
         """
         Embeds a multi-modal prompt and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -277,21 +285,60 @@ class AlephAlphaClient:
             model (str, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
-            request (EmbeddingRequest, required):
-                Input for the embeddings to be computed
+            prompt (str, required):
+               The text to be embedded.
+
+            pooling (List[str])
+                Pooling operation to use.
+                Pooling operations include:
+                    * mean: aggregate token embeddings across the sequence dimension using an average
+                    * max: aggregate token embeddings across the sequence dimension using a maximum
+                    * last_token: just use the last token
+                    * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
+
+            layers (List[int], required):
+               A list of layer indices from which to return embeddings.
+                    * Index 0 corresponds to the word embeddings used as input to the first transformer layer
+                    * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
+                    * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
 
             hosting (str, optional, default "cloud"):
                 Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
+
+            tokens (bool, optional, default False)
+                Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
+
+            type
+                Type of the embedding (e.g. symmetric or asymmetric)
+
+            request (EmbeddingRequest, required):
+                Input for the embeddings to be computed
         """
-        body = request.render_as_body(model, hosting)
+        if request is None:
+            logging.warning(
+                "Calling this method with individual request parameters is deprecated. "
+                + "Please pass an EmbeddingRequest object as the request parameter instead."
+            )
+
+        named_request = request or EmbeddingRequest(
+            prompt=prompt or "",
+            layers=layers or [],
+            pooling=pooling or [],
+            type=type or None,
+            tokens=tokens or False,
+        )
+        body = named_request.render_as_body(model, hosting)
         response = requests.post(
             f"{self.host}embed", headers=self.request_headers, json=body
         )
         response_dict = self._translate_errors(response)
-        embedding_response = EmbeddingResponse.from_json(response_dict)
-        return embedding_response
+        return (
+            response_dict
+            if request is None
+            else EmbeddingResponse.from_json(response_dict)
+        )
 
     def evaluate(
         self,
