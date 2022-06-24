@@ -295,3 +295,15 @@ If an html coverage report has been created a simple http server can be run to s
 python -m http.server --directory htmlcov 8000
 ```
 
+## Update README
+
+> Do not change the README.md directly as it is generated from readme.ipynb 
+
+To update the readme edit the notebook in your favorite jupyter editor and run all python cells to verify that the code examples still work.
+
+To generate a new README.md first remove all output cells from the Jupyter notebook and then execute the command:
+
+```bash
+jupyter nbconvert --to markdown readme.ipynb --output README.md
+```
+
