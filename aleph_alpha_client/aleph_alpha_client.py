@@ -4,6 +4,7 @@ from typing import Any, List, Mapping, Optional, Dict, Union
 import requests
 import logging
 import aleph_alpha_client
+from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
 from aleph_alpha_client.detokenization import (
     DetokenizationRequest,
     DetokenizationResponse,
@@ -12,31 +13,10 @@ from aleph_alpha_client.document import Document
 from aleph_alpha_client.embedding import EmbeddingRequest, EmbeddingResponse
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_prompt_item
+from aleph_alpha_client.prompt import _to_serializable_prompt
 from aleph_alpha_client.tokenization import TokenizationResponse, TokenizationRequest
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
-
-
-def _to_serializable_prompt(
-    prompt, at_least_one_token=False
-) -> Union[str, List[Dict[str, str]]]:
-    """
-    Validates that a prompt and emits the format suitable for serialization as JSON
-    """
-    if isinstance(prompt, str):
-        if at_least_one_token:
-            if len(prompt) == 0:
-                raise ValueError("prompt must contain at least one character")
-        # Just pass the string through as is.
-        return prompt
-
-    elif isinstance(prompt, list):
-        return [_to_prompt_item(item) for item in prompt]
-
-    raise ValueError(
-        "Invalid prompt. Prompt must either be a string, or a list of valid multimodal propmt items."
-    )
 
 
 class QuotaError(Exception):
@@ -169,6 +149,7 @@ class AlephAlphaClient:
         stop_sequences: Optional[List[str]] = None,
         tokens: Optional[bool] = False,
         disable_optimizations: Optional[bool] = False,
+        request: CompletionRequest = None,
     ):
         """
         Generates samples from a prompt.
@@ -238,128 +219,40 @@ class AlephAlphaClient:
                 We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
 
                 Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
+
+            request
+                A CompletionRequest wrapping the above-mentioned parameters except model and hosting
         """
 
-        # validate data types
-        if not isinstance(model, str):
-            raise ValueError("model must be a string")
-
-        json_prompt = _to_serializable_prompt(prompt=prompt)
-
-        if not (maximum_tokens is None or isinstance(maximum_tokens, int)):
-            raise ValueError("maximum_tokens must be an int or None")
-        if isinstance(temperature, int):
-            temperature = float(temperature)
-        if not (temperature is None or isinstance(temperature, float)):
-            raise ValueError("temperature must be a float or None")
-        if not (top_k is None or isinstance(top_k, int)):
-            raise ValueError("top_k must be a positive int or None")
-        if isinstance(top_p, int):
-            top_p = float(top_p)
-        if not (top_p is None or isinstance(top_p, float)):
-            raise ValueError("top_p must be a float or None")
-        if isinstance(presence_penalty, int):
-            presence_penalty = float(presence_penalty)
-        if not (presence_penalty is None or isinstance(presence_penalty, float)):
-            raise ValueError("presence_penalty must be a float or None")
-        if isinstance(frequency_penalty, int):
-            frequency_penalty = float(frequency_penalty)
-        if not (frequency_penalty is None or isinstance(frequency_penalty, float)):
-            raise ValueError("frequency_penalty must be a float or None")
-        if not (
-            repetition_penalties_include_prompt is None
-            or isinstance(repetition_penalties_include_prompt, bool)
-        ):
-            raise ValueError(
-                "repetition_penalties_include_prompt must be a bool or None"
+        if request is None:
+            logging.warning(
+                "Calling this method with individual request parameters is deprecated. "
+                + "Please pass a CompletionRequest object as the request parameter instead."
             )
-        if not (
-            use_multiplicative_presence_penalty is None
-            or isinstance(use_multiplicative_presence_penalty, bool)
-        ):
-            raise ValueError(
-                "use_multiplicative_presence_penalty must be a bool or None"
-            )
-        if not (best_of is None or isinstance(best_of, int)):
-            raise ValueError("best_of must be an int or None")
-        if not (n is None or isinstance(n, int)):
-            raise ValueError("n must be an int or None")
-        if not (logit_bias is None or isinstance(logit_bias, dict)):
-            raise ValueError("logit_bias must be a dict or None")
-        if logit_bias is not None:
-            for k, v in logit_bias.items():
-                if not isinstance(k, int):
-                    raise ValueError("a key in the logit_bias dict must be an integer")
-                if not isinstance(v, float):
-                    raise ValueError("a value in the logit_bias dict must be a float")
-        if not (log_probs is None or isinstance(log_probs, int)):
-            raise ValueError("log_probs must be an int or None")
-        if not (stop_sequences is None or isinstance(stop_sequences, list)):
-            raise ValueError("stop_sequences must be an list of strings or None")
-        if stop_sequences is not None:
-            for stop_sequence in stop_sequences:
-                if not isinstance(stop_sequence, str):
-                    raise ValueError(
-                        "each item in the stop_sequences list must be a string"
-                    )
-        if not (tokens is None or isinstance(tokens, bool)):
-            raise ValueError("tokens must be a bool or None")
-        if not (
-            disable_optimizations is None or isinstance(disable_optimizations, bool)
-        ):
-            raise ValueError("disable_optimizations must be a bool or None")
 
-        # validate values
-        if maximum_tokens is not None:
-            if maximum_tokens <= 0:
-                raise ValueError("maximum_tokens must be a positive integer")
-        if top_k is not None:
-            if top_k < 0:
-                raise ValueError("top_k must be a positive integer, 0 or None")
-        if temperature is not None:
-            if temperature < 0.0 or temperature > 1.0:
-                raise ValueError("temperature must be a float between 0.0 and 1.0")
-        if top_p is not None:
-            if top_p < 0.0 or top_p > 1.0:
-                raise ValueError("top_p must be a float between 0.0 and 1.0")
-        if (n is not None and n <= 0) or n is None:
-            raise ValueError("n must be a positive integer")
-
-        if best_of is not None:
-            if best_of == n:
-                raise ValueError(
-                    "With best_of equal to n no best completions are choses because only n are computed."
-                )
-            if best_of < n:
-                raise ValueError(
-                    "best_of needs to be bigger than n. The model cannot return more completions (n) than were computed (best_of)."
-                )
-
-        payload = {
-            "model": model,
-            "prompt": json_prompt,
-            "hosting": hosting,
-            "maximum_tokens": maximum_tokens,
-            "temperature": temperature,
-            "top_k": top_k,
-            "top_p": top_p,
-            "presence_penalty": presence_penalty,
-            "frequency_penalty": frequency_penalty,
-            "best_of": best_of,
-            "n": n,
-            "logit_bias": logit_bias,
-            "log_probs": log_probs,
-            "repetition_penalties_include_prompt": repetition_penalties_include_prompt,
-            "use_multiplicative_presence_penalty": use_multiplicative_presence_penalty,
-            "stop_sequences": stop_sequences,
-            "tokens": tokens,
-            "disable_optimizations": disable_optimizations,
-        }
+        named_request = request or CompletionRequest(
+            prompt=prompt,
+            maximum_tokens=maximum_tokens,
+            temperature=temperature,
+            top_k=top_k,
+            top_p=top_p,
+            presence_penalty=presence_penalty,
+            frequency_penalty=frequency_penalty,
+            best_of=best_of,
+            n=n,
+            logit_bias=logit_bias,
+            log_probs=log_probs,
+            repetition_penalties_include_prompt=repetition_penalties_include_prompt,
+            use_multiplicative_presence_penalty=use_multiplicative_presence_penalty,
+            stop_sequences=stop_sequences,
+            tokens=tokens,
+            disable_optimizations=disable_optimizations,
+        )
 
         response = requests.post(
             self.host + "complete",
             headers=self.request_headers,
-            json=payload,
+            json=named_request.render_as_body(model, hosting),
             timeout=None,
         )
         response_json = self._translate_errors(response)
@@ -368,7 +261,11 @@ class AlephAlphaClient:
             print(
                 'We optimized your prompt before sending it to the model. The optimized prompt is available at result["optimized_prompt"]. If you do not want these optimizations applied, you can pass the disable_optimizations flag to your request.'
             )
-        return response_json
+        return (
+            response_json
+            if request is None
+            else CompletionResponse.from_json(response_json)
+        )
 
     def embed(
         self, model: str, request: EmbeddingRequest, hosting: Optional[str] = None
