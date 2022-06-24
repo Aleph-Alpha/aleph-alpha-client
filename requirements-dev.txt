@@ -1,0 +1,4 @@
+mypy
+nbconvert
+ipykernel
+black
