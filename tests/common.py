@@ -41,7 +41,7 @@ def client() -> Iterable[AlephAlphaClient]:
 
 
 @pytest.fixture(scope="session")
-def model() -> str:
+def model_name() -> str:
     config = dotenv_values(".env")
     model = config.get("TEST_MODEL")
     if model is None:

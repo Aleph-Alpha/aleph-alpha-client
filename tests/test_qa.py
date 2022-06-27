@@ -3,12 +3,12 @@ from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.qa import QaRequest
 
-from tests.common import client, model
+from tests.common import client, model_name
 
 
-def test_qa(client: AlephAlphaClient, model: str):
+def test_qa(client: AlephAlphaClient, model_name: str):
     # given a client
-    assert model in map(lambda model: model["name"], client.available_models())
+    assert model_name in map(lambda model: model["name"], client.available_models())
 
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -17,7 +17,7 @@ def test_qa(client: AlephAlphaClient, model: str):
     )
 
     response = client.qa(
-        model,
+        model_name,
         hosting="cloud",
         request=request,
     )
@@ -27,9 +27,9 @@ def test_qa(client: AlephAlphaClient, model: str):
     assert response.model_version is not None
 
 
-def test_qa_no_answer_found(client: AlephAlphaClient, model: str):
+def test_qa_no_answer_found(client: AlephAlphaClient, model_name: str):
     # given a client
-    assert model in map(lambda model: model["name"], client.available_models())
+    assert model_name in map(lambda model: model["name"], client.available_models())
 
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -38,7 +38,7 @@ def test_qa_no_answer_found(client: AlephAlphaClient, model: str):
     )
 
     response = client.qa(
-        model,
+        model_name,
         hosting="cloud",
         request=request,
     )
@@ -48,13 +48,13 @@ def test_qa_no_answer_found(client: AlephAlphaClient, model: str):
     assert response.model_version is not None
 
 
-def test_qa_with_explicit_parameters(client: AlephAlphaClient, model: str):
+def test_qa_with_explicit_parameters(client: AlephAlphaClient, model_name: str):
     # given a client
-    assert model in map(lambda model: model["name"], client.available_models())
+    assert model_name in map(lambda model: model["name"], client.available_models())
 
     # when posting a QA request with explicit parameters
     response = client.qa(
-        model,
+        model_name,
         hosting="cloud",
         query="Who likes pizza?",
         documents=[Document.from_prompt(["Andreas likes pizza."])],
@@ -65,9 +65,9 @@ def test_qa_with_explicit_parameters(client: AlephAlphaClient, model: str):
     assert response["model_version"] is not None
 
 
-def test_qa_fails(client: AlephAlphaClient, model: str):
+def test_qa_fails(client: AlephAlphaClient, model_name: str):
     # given a client
-    assert model in map(lambda model: model["name"], client.available_models())
+    assert model_name in map(lambda model: model["name"], client.available_models())
 
     # when posting an illegal request
     request = QaRequest(
@@ -78,7 +78,7 @@ def test_qa_fails(client: AlephAlphaClient, model: str):
     # then we expect an exception tue to a bad request response from the API
     with pytest.raises(ValueError) as e:
         response = client.qa(
-            model,
+            model_name,
             hosting="cloud",
             request=request,
         )
