@@ -1,10 +1,11 @@
 import pytest
 from aleph_alpha_client import AlephAlphaClient, ExplanationRequest
+from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 
-from tests.common import client, model
+from tests.common import client, model_name, model
 
 
-def test_explanation(client: AlephAlphaClient, model: str):
+def test_explanation(model: AlephAlphaModel):
 
     request = ExplanationRequest(
         prompt=["An apple a day"],
@@ -13,15 +14,15 @@ def test_explanation(client: AlephAlphaClient, model: str):
         suppression_factor=0.1,
     )
 
-    explanation = client._explain(model=model, request=request, hosting=None)
+    explanation = model._explain(request)
 
     # List is true if not None and not empty
     assert explanation["result"]
 
 
-def test_explain_fails(client: AlephAlphaClient, model: str):
+def test_explain_fails(model: AlephAlphaModel):
     # given a client
-    assert model in map(lambda model: model["name"], client.available_models())
+    assert model.model_name in map(lambda model: model["name"], model.client.available_models())
 
     # when posting an illegal request
     request = ExplanationRequest(
@@ -34,10 +35,6 @@ def test_explain_fails(client: AlephAlphaClient, model: str):
 
     # then we expect an exception tue to a bad request response from the API
     with pytest.raises(ValueError) as e:
-        response = client._explain(
-            model,
-            hosting="cloud",
-            request=request,
-        )
+        response = model._explain(request)
 
     assert e.value.args[0] == 400

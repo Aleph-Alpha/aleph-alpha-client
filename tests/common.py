@@ -3,7 +3,14 @@ import pytest
 from aleph_alpha_client import AlephAlphaClient
 from dotenv import dotenv_values
 
+from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 
+
+@pytest.fixture(scope="session")
+def model(client: AlephAlphaClient, model_name: str) -> AlephAlphaModel:
+    return AlephAlphaModel(client, model_name)
+
+    
 @pytest.fixture(scope="session")
 def client() -> Iterable[AlephAlphaClient]:
     config = dotenv_values(".env")
@@ -41,7 +48,7 @@ def client() -> Iterable[AlephAlphaClient]:
 
 
 @pytest.fixture(scope="session")
-def model() -> str:
+def model_name() -> str:
     config = dotenv_values(".env")
     model = config.get("TEST_MODEL")
     if model is None:

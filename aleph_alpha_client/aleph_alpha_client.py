@@ -1,22 +1,13 @@
 from socket import timeout
-from typing import Any, List, Mapping, Optional, Dict, Sequence, Type, Union
+from typing import List, Optional, Dict, Sequence, Union
 
 import requests
 import logging
 import aleph_alpha_client
-from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
-from aleph_alpha_client.detokenization import (
-    DetokenizationRequest,
-    DetokenizationResponse,
-)
 from aleph_alpha_client.document import Document
-from aleph_alpha_client.embedding import EmbeddingRequest, EmbeddingResponse
-from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_serializable_prompt
-from aleph_alpha_client.qa import QaRequest, QaResponse
-from aleph_alpha_client.tokenization import TokenizationResponse, TokenizationRequest
+from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
@@ -75,83 +66,58 @@ class AlephAlphaClient:
         return self._translate_errors(response)
 
     def tokenize(
-        self,
-        model: str,
-        prompt: Optional[str] = None,
-        tokens: bool = True,
-        token_ids: bool = True,
-        request: Optional[TokenizationRequest] = None,
-    ) -> Any:
+        self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True
+    ):
         """
         Tokenizes the given prompt for the given model.
         """
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass a TokenizationRequest object as the request parameter instead."
-            )
-        named_request = request or TokenizationRequest(prompt or "", tokens, token_ids)
-
+        payload = {
+            "model": model,
+            "prompt": prompt,
+            "tokens": tokens,
+            "token_ids": token_ids,
+        }
         response = requests.post(
             self.host + "tokenize",
             headers=self.request_headers,
-            json=named_request.render_as_body(model),
+            json=payload,
+            timeout=None,
         )
-        response_dict = self._translate_errors(response)
-        return (
-            TokenizationResponse.from_json(response_dict) if request else response_dict
-        )
+        return self._translate_errors(response)
 
-    def detokenize(
-        self,
-        model: str,
-        token_ids: List[int] = [],
-        request: Optional[DetokenizationRequest] = None,
-    ):
+    def detokenize(self, model: str, token_ids: List[int]):
         """
         Detokenizes the given tokens.
         """
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass a DetokenizationRequest object as the request parameter instead."
-            )
-
-        named_request = request or DetokenizationRequest(token_ids)
+        payload = {"model": model, "token_ids": token_ids}
         response = requests.post(
             self.host + "detokenize",
             headers=self.request_headers,
-            json=named_request.render_as_body(model),
+            json=payload,
             timeout=None,
         )
-        response_dict = self._translate_errors(response)
-        return (
-            DetokenizationResponse.from_json(response_dict)
-            if request
-            else response_dict
-        )
+        return self._translate_errors(response)
 
     def complete(
         self,
         model: str,
-        prompt: Optional[List[Union[str, ImagePrompt]]] = None,
+        prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
         hosting: str = "cloud",
-        maximum_tokens: int = 64,
-        temperature: float = 0.0,
-        top_k: int = 0,
-        top_p: float = 0.0,
-        presence_penalty: float = 0.0,
-        frequency_penalty: float = 0.0,
-        repetition_penalties_include_prompt: bool = False,
-        use_multiplicative_presence_penalty: bool = False,
+        maximum_tokens: Optional[int] = 64,
+        temperature: Optional[float] = 0.0,
+        top_k: Optional[int] = 0,
+        top_p: Optional[float] = 0.0,
+        presence_penalty: Optional[float] = 0.0,
+        frequency_penalty: Optional[float] = 0.0,
+        repetition_penalties_include_prompt: Optional[bool] = False,
+        use_multiplicative_presence_penalty: Optional[bool] = False,
         best_of: Optional[int] = None,
-        n: int = 1,
+        n: Optional[int] = 1,
         logit_bias: Optional[Dict[int, float]] = None,
         log_probs: Optional[int] = None,
         stop_sequences: Optional[List[str]] = None,
-        tokens: bool = False,
-        disable_optimizations: bool = False,
-        request: CompletionRequest = None,
+        tokens: Optional[bool] = False,
+        disable_optimizations: Optional[bool] = False,
     ):
         """
         Generates samples from a prompt.
@@ -169,12 +135,7 @@ class AlephAlphaClient:
                 Check available_models() for available hostings.
 
             maximum_tokens (int, optional, default 64):
-                The maximum number of tokens to be generated.
-                Completion will terminate after the maximum number of tokens is reached.
-                Increase this value to generate longer texts. A text is split into tokens.
-                Usually there are more tokens than words.
-                The maximum supported number of tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
-                The prompt's tokens plus the maximum_tokens request must not exceed this number.
+                The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
 
             temperature (float, optional, default 0.0)
                 A higher sampling temperature encourages the model to produce less probable outputs ("be more creative"). Values are expected in a range from 0.0 to 1.0. Try high values (e.g. 0.9) for a more "creative" response and the default 0.0 for a well defined and repeatable answer.
@@ -226,40 +187,46 @@ class AlephAlphaClient:
                 We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
 
                 Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
-
-            request
-                A CompletionRequest wrapping the above-mentioned parameters except model and hosting
         """
 
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass a CompletionRequest object as the request parameter instead."
-            )
+        # validate data types
+        if not isinstance(model, str):
+            raise ValueError("model must be a string")
 
-        named_request = request or CompletionRequest(
-            prompt=prompt or [""],
-            maximum_tokens=maximum_tokens,
-            temperature=temperature,
-            top_k=top_k,
-            top_p=top_p,
-            presence_penalty=presence_penalty,
-            frequency_penalty=frequency_penalty,
-            best_of=best_of,
-            n=n,
-            logit_bias=logit_bias,
-            log_probs=log_probs,
-            repetition_penalties_include_prompt=repetition_penalties_include_prompt,
-            use_multiplicative_presence_penalty=use_multiplicative_presence_penalty,
-            stop_sequences=stop_sequences,
-            tokens=tokens,
-            disable_optimizations=disable_optimizations,
-        )
+        if isinstance(temperature, int):
+            temperature = float(temperature)
+        if isinstance(top_p, int):
+            top_p = float(top_p)
+        if isinstance(presence_penalty, int):
+            presence_penalty = float(presence_penalty)
+        if isinstance(frequency_penalty, int):
+            frequency_penalty = float(frequency_penalty)
+
+        payload = {
+            "model": model,
+            "prompt": _to_serializable_prompt(prompt=prompt),
+            "hosting": hosting,
+            "maximum_tokens": maximum_tokens,
+            "temperature": temperature,
+            "top_k": top_k,
+            "top_p": top_p,
+            "presence_penalty": presence_penalty,
+            "frequency_penalty": frequency_penalty,
+            "best_of": best_of,
+            "n": n,
+            "logit_bias": logit_bias,
+            "log_probs": log_probs,
+            "repetition_penalties_include_prompt": repetition_penalties_include_prompt,
+            "use_multiplicative_presence_penalty": use_multiplicative_presence_penalty,
+            "stop_sequences": stop_sequences,
+            "tokens": tokens,
+            "disable_optimizations": disable_optimizations,
+        }
 
         response = requests.post(
             self.host + "complete",
             headers=self.request_headers,
-            json=named_request.render_as_body(model, hosting),
+            json=payload,
             timeout=None,
         )
         response_json = self._translate_errors(response)
@@ -268,25 +235,20 @@ class AlephAlphaClient:
             print(
                 'We optimized your prompt before sending it to the model. The optimized prompt is available at result["optimized_prompt"]. If you do not want these optimizations applied, you can pass the disable_optimizations flag to your request.'
             )
-        return (
-            response_json
-            if request is None
-            else CompletionResponse.from_json(response_json)
-        )
+        return response_json
 
     def embed(
         self,
         model,
-        prompt: Union[str, Sequence[Union[str, ImagePrompt]]] = None,
-        pooling: Optional[List[str]] = None,
-        layers: Optional[List[int]] = None,
+        prompt: Union[str, Sequence[Union[str, ImagePrompt]]],
+        pooling: List[str],
+        layers: List[int],
         hosting: str = "cloud",
         tokens: Optional[bool] = False,
         type: Optional[str] = None,
-        request: EmbeddingRequest = None,
     ):
         """
-        Embeds a multi-modal prompt and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
+        Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
         Parameters:
             model (str, required):
@@ -295,6 +257,12 @@ class AlephAlphaClient:
             prompt (str, required):
                The text to be embedded.
 
+            layers (List[int], required):
+               A list of layer indices from which to return embeddings.
+                    * Index 0 corresponds to the word embeddings used as input to the first transformer layer
+                    * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
+                    * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
+
             pooling (List[str])
                 Pooling operation to use.
                 Pooling operations include:
@@ -302,12 +270,6 @@ class AlephAlphaClient:
                     * max: aggregate token embeddings across the sequence dimension using a maximum
                     * last_token: just use the last token
                     * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
-
-            layers (List[int], required):
-               A list of layer indices from which to return embeddings.
-                    * Index 0 corresponds to the word embeddings used as input to the first transformer layer
-                    * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
-                    * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
 
             hosting (str, optional, default "cloud"):
                 Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
@@ -320,40 +282,35 @@ class AlephAlphaClient:
             type
                 Type of the embedding (e.g. symmetric or asymmetric)
 
-            request (EmbeddingRequest, optional):
-                Input for the embeddings to be computed
         """
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass an EmbeddingRequest object as the request parameter instead."
-            )
 
-        named_request = request or EmbeddingRequest(
-            prompt=prompt or "",
-            layers=layers or [],
-            pooling=pooling or [],
-            type=type or None,
-            tokens=tokens or False,
+        serializable_prompt = _to_serializable_prompt(
+            prompt=prompt, at_least_one_token=True
         )
-        body = named_request.render_as_body(model, hosting)
+
+        if tokens is None:
+            tokens = False
+
+        payload = {
+            "model": model,
+            "prompt": serializable_prompt,
+            "hosting": hosting,
+            "layers": layers,
+            "tokens": tokens,
+            "pooling": pooling,
+            "type": type,
+        }
         response = requests.post(
-            f"{self.host}embed", headers=self.request_headers, json=body
+            self.host + "embed", headers=self.request_headers, json=payload
         )
-        response_dict = self._translate_errors(response)
-        return (
-            response_dict
-            if request is None
-            else EmbeddingResponse.from_json(response_dict)
-        )
+        return self._translate_errors(response)
 
     def evaluate(
         self,
         model,
-        completion_expected: str = None,
+        completion_expected,
         hosting: str = "cloud",
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
-        request: EvaluationRequest = None,
     ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
@@ -372,44 +329,32 @@ class AlephAlphaClient:
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
-
-            request (EvaluationRequest, optional):
-                Input for the evaluation to be computed
         """
 
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass an EvaluationRequest object as the request parameter instead."
-            )
+        serializable_prompt = _to_serializable_prompt(prompt=prompt)
 
-        named_request = request or EvaluationRequest(
-            prompt=prompt, completion_expected=completion_expected or ""
-        )
+        payload = {
+            "model": model,
+            "prompt": serializable_prompt,
+            "hosting": hosting,
+            "completion_expected": completion_expected,
+        }
         response = requests.post(
-            self.host + "evaluate",
-            headers=self.request_headers,
-            json=named_request.render_as_body(model, hosting),
+            self.host + "evaluate", headers=self.request_headers, json=payload
         )
-        response_dict = self._translate_errors(response)
-        return (
-            response_dict
-            if request is None
-            else EvaluationResponse.from_json(response_dict)
-        )
+        return self._translate_errors(response)
 
     def qa(
         self,
         model: str,
-        query: Optional[str] = None,
-        documents: Optional[Sequence[Document]] = None,
+        query: str,
+        documents: List[Document],
         maximum_tokens: int = 64,
         max_chunk_size: int = 175,
         disable_optimizations: bool = False,
         max_answers: int = 0,
         min_score: float = 0.0,
         hosting: str = "cloud",
-        request: Optional[QaRequest] = None,
     ):
         """
         Answers a question about a prompt.
@@ -418,50 +363,69 @@ class AlephAlphaClient:
             model (str, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
-            hosting (str, optional, default "cloud"):
+            query (str, required):
+                The question to be answered about the documents by the model.
+
+            documents (List[Document], required):
+                A list of documents. This can be either docx documents or text/image prompts.
+
+            maximum_tokens (int, default 64):
+                The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached.
+
+                Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
+
+            max_chunk_size (int, default 175):
+                Long documents will be split into chunks if they exceed max_chunk_size.
+                The splitting will be done along the following boundaries until all chunks are shorter than max_chunk_size or all splitting criteria have been exhausted.
+                The splitting boundaries are, in the given order:
+                1. Split first by double newline
+                (assumed to mark the boundary between 2 paragraphs).
+                2. Split paragraphs that are still too long by their median sentence as long as we can still find multiple sentences in the paragraph.
+                3. Split each remaining chunk of a paragraph or sentence further along white spaces until each chunk is smaller than max_chunk_size or until no whitespace can be found anymore.
+
+            disable_optimizations  (bool, default False)
+                We continually research optimal ways to work with our models. By default, we apply these optimizations to both your query, documents, and answers for you.
+                Our goal is to improve your results while using our API. But you can always pass `disable_optimizations: true` and we will leave your query, documents, and answers untouched.
+
+            max_answers (int, default 0):
+                The upper limit of maximum number of answers.
+
+            min_score (float, default 0.0):
+                The lower limit of minimum score for every answer.
+
+            hosting (str, default "cloud"):
                 Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
-
-            request (QaRequest, optional):
-                Input for the answers to be computed
-
         """
 
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass an QaRequest object as the request parameter instead."
-            )
-
-        named_request = request or QaRequest(
-            query or "",
-            documents or [],
-            maximum_tokens,
-            max_chunk_size,
-            disable_optimizations,
-            max_answers,
-            min_score,
-        )
+        payload = {
+            "model": model,
+            "query": query,
+            "documents": [document._to_serializable_document() for document in documents],
+            "maximum_tokens": maximum_tokens,
+            "max_answers": max_answers,
+            "min_score": min_score,
+            "max_chunk_size": max_chunk_size,
+            "disable_optimizations": disable_optimizations,
+            "hosting": hosting,
+        }
 
         response = requests.post(
             self.host + "qa",
             headers=self.request_headers,
-            json=named_request.render_as_body(model, hosting),
+            json=payload,
             timeout=None,
         )
         response_json = self._translate_errors(response)
-        return response_json if request is None else QaResponse.from_json(response_json)
+        return response_json
 
-    def _explain(
-        self, model: str, request: ExplanationRequest, hosting: Optional[str] = None
-    ):
+    def _explain(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
         body = request.render_as_body(model, hosting)
-        response = requests.post(
-            f"{self.host}explain", headers=self.request_headers, json=body
-        )
+        response = requests.post(f"{self.host}explain", headers=self.request_headers, json=body)
         response_dict = self._translate_errors(response)
         return response_dict
+        
 
     @staticmethod
     def _translate_errors(response):

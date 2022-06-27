@@ -1,7 +1,14 @@
-from typing import Dict, List, Union
+from typing import Dict, List, NamedTuple, Union
 
 from aleph_alpha_client.image import ImagePrompt
 
+
+class Prompt(NamedTuple):
+    items: List[Union[str, ImagePrompt]]
+
+    @staticmethod
+    def from_text(text: str) -> "Prompt":
+        return Prompt([text])
 
 def _to_prompt_item(item: Union[str, ImagePrompt]) -> Dict[str, str]:
     if isinstance(item, str):
