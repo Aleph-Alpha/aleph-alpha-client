@@ -143,16 +143,14 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import Document, AlephAlphaClient, QaRequest
+from aleph_alpha_client import Document, AlephAlphaClient, AlephAlphaModel, QaRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with qa support for this example.
+    model_name = "luminous-extended"
 )
-
-# You need to choose a model with qa support for this example.
-model = "luminous-extended"
 
 docx_file = "./tests/sample.docx"
 document = Document.from_docx_file(docx_file)
@@ -162,7 +160,7 @@ request = QaRequest(
     documents = [document]
 )
 
-result = client.qa(model, request=request)
+result = model.qa(request)
 
 print(result)
 ```
@@ -172,16 +170,14 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import Document, AlephAlphaClient, QaRequest
+from aleph_alpha_client import AlephAlphaClient, AlephAlphaModel, QaRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with qa support for this example.
+    model_name = "luminous-extended"
 )
-
-# You need to choose a model with qa support for this example.
-model = "luminous-extended"
 
 prompt = "In imperative programming, a computer program is a sequence of instructions in a programming language that a computer can execute or interpret."
 document = Document.from_text(prompt)
@@ -191,7 +187,7 @@ request = QaRequest(
     documents = [document],
 )
 
-result = client.qa(model, request=request)
+result = model.qa(request)
 
 print(result)
 ```
@@ -202,16 +198,14 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient, QaRequest
+from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient, AlephAlphaModel, QaRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with qa support for this example.
+    model_name = "luminous-extended"
 )
-
-# You need to choose a model with qa support and multimodal capabilities for this example.
-model = "luminous-extended"
 
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
 image = ImagePrompt.from_url(url)
@@ -223,7 +217,7 @@ request = QaRequest (
     documents = [document]
 )
 
-result = client.qa(model, request=request)
+result = model.qa(request)
 
 print(result)
 ```

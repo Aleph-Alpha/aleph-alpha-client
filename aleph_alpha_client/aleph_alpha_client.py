@@ -345,7 +345,6 @@ class AlephAlphaClient:
         max_answers: int = 0,
         min_score: float = 0.0,
         hosting: str = "cloud",
-        request: Optional[QaRequest] = None,
     ):
         """
         Answers a question about a prompt.
@@ -358,19 +357,8 @@ class AlephAlphaClient:
                 Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
-
-            request (QaRequest, optional):
-                Input for the answers to be computed
-
         """
-
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass an QaRequest object as the request parameter instead."
-            )
-
-        named_request = request or QaRequest(
+        named_request = QaRequest(
             query or "",
             documents or [],
             maximum_tokens,
@@ -386,8 +374,7 @@ class AlephAlphaClient:
             json=named_request.render_as_body(model, hosting),
             timeout=None,
         )
-        response_json = self._translate_errors(response)
-        return response_json if request is None else QaResponse.from_json(response_json)
+        return self._translate_errors(response)
 
     def _explain(
         self, model: str, request: ExplanationRequest, hosting: Optional[str] = None
