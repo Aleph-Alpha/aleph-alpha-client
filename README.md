@@ -21,16 +21,15 @@ pip install aleph-alpha-client
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient, CompletionRequest
+from aleph_alpha_client import ImagePrompt, AlephAlphaModel, AlephAlphaClient, CompletionRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    model_name = "luminous-extended"
 )
 
 # You need to choose a model with multimodal capabilities for this example.
-model = "luminous-base"
 url = "https://cdn-images-1.medium.com/max/1200/1*HunNdlTmoPj8EKpl-jqvBA.png"
 
 image = ImagePrompt.from_url(url)
@@ -39,7 +38,7 @@ prompt = [
     "Q: What does the picture show? A:",
 ]
 request = CompletionRequest(prompt=prompt, maximum_tokens=20)
-result = client.complete(model, request=request)
+result = model.complete(request)
 
 print(result.completions[0]["completion"])
 ```
@@ -240,18 +239,17 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient, TokenizationRequest
+from aleph_alpha_client import AlephAlphaClient, AlephAlphaModel, TokenizationRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    model_name = "luminous-extended"
 )
 
 # You need to choose a model with qa support and multimodal capabilities for this example.
-model = "luminous-extended"
 request = TokenizationRequest(prompt="This is an example.", tokens=True, token_ids=True)
-response = client.tokenize(model, request=request)
+response = model.tokenize(request)
 
 print(response)
 ```

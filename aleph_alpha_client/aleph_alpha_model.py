@@ -1,5 +1,6 @@
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
+from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
 
 
 class AlephAlphaModel:
@@ -12,3 +13,7 @@ class AlephAlphaModel:
     def complete(self, request: CompletionRequest) -> CompletionResponse:
         response_json = self.client.complete(model = self.model_name, hosting=self.hosting, **request._asdict())
         return CompletionResponse.from_json(response_json)
+
+    def tokenize(self, request: TokenizationRequest) -> TokenizationResponse:
+        response_json = self.client.tokenize(model = self.model_name, **request._asdict())
+        return TokenizationResponse.from_json(response_json)
