@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 from typing import List
 import pytest
 from aleph_alpha_client import AlephAlphaClient
@@ -33,9 +34,11 @@ def test_evaluate_fails(client: AlephAlphaClient, model: str):
     )
 
     # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError) as e:
         response = client.evaluate(
             model,
             hosting="cloud",
             request=request,
         )
+
+    assert e.value.args[0] == 400

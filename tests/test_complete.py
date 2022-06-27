@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import pytest
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.completion import CompletionRequest
@@ -33,7 +34,7 @@ def test_complete_with_explicit_parameters(client: AlephAlphaClient, model: str)
 
 def test_complete_fails(client: AlephAlphaClient, model: str):
     # given a client
-    assert model in map(lambda model: model["name"], client.available_models())
+    assert model in (model["name"] for model in client.available_models())
 
     # when posting an illegal request
     request = CompletionRequest(
@@ -44,9 +45,7 @@ def test_complete_fails(client: AlephAlphaClient, model: str):
     )
 
     # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(Exception):
-        response = client.complete(
-            model,
-            hosting="cloud",
-            request=request,
-        )
+    with pytest.raises(ValueError) as e:
+        response = client.complete(model, hosting="cloud", request=request)
+
+    assert e.value.args[0] == 400

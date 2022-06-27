@@ -25,8 +25,10 @@ def test_detokenize_fails(client: AlephAlphaClient, model: str):
     request = DetokenizationRequest([])
 
     # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError) as e:
         response = client.detokenize(
             model,
             request=request,
         )
+
+    e.value.args[0] == 400

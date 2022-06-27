@@ -27,8 +27,10 @@ def test_tokenize_fails(client: AlephAlphaClient, model: str):
     request = TokenizationRequest("hello", False, False)
 
     # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError) as e:
         response = client.tokenize(
             model,
             request=request,
         )
+
+    assert e.value.args[0] == 400

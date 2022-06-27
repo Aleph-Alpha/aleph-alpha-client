@@ -33,9 +33,11 @@ def test_explain_fails(client: AlephAlphaClient, model: str):
     )
 
     # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError) as e:
         response = client._explain(
             model,
             hosting="cloud",
             request=request,
         )
+
+    assert e.value.args[0] == 400
