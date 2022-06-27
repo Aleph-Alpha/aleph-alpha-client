@@ -42,6 +42,7 @@ class EmbeddingRequest(NamedTuple):
     def render_as_body(self, model: str, hosting=Optional[str]) -> dict:
         return {
             "model": model,
+            "hosting": hosting,
             "prompt": [_to_prompt_item(item) for item in self.prompt],
             "layers": self.layers,
             "pooling": self.pooling,

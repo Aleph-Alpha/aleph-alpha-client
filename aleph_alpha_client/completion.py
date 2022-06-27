@@ -9,11 +9,17 @@ class CompletionRequest(NamedTuple):
     Describes a completion request
 
     Parameters:
-        prompt (str, optional, default ""):
-            The text to be completed. Unconditional completion can be started with an empty string (default). The prompt may contain a zero shot or few shot task.
+        prompt:
+            The text or image prompt to be completed.
+            Unconditional completion can be started with an empty string (default).
+            The prompt may contain a zero shot or few shot task.
 
         maximum_tokens (int, optional, default 64):
-            The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
+            The maximum number of tokens to be generated.
+            Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts.
+            A text is split into tokens. Usually there are more tokens than words.
+            The maximum supported number of tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
+            The prompt's tokens plus the maximum_tokens request must not exceed this number.
 
         temperature (float, optional, default 0.0)
             A higher sampling temperature encourages the model to produce less probable outputs ("be more creative"). Values are expected in a range from 0.0 to 1.0. Try high values (e.g. 0.9) for a more "creative" response and the default 0.0 for a well defined and repeatable answer.
@@ -29,10 +35,12 @@ class CompletionRequest(NamedTuple):
             It is recommended to use either temperature, top_k or top_p and not all at the same time. If a combination of temperature, top_k or top_p is used rescaling of logits with temperature will be performed first. Then top_k is applied. Top_p follows last.
 
         presence_penalty (float, optional, default 0.0)
-            The presence penalty reduces the likelihood of generating tokens that are already present in the text. Presence penalty is independent of the number of occurences. Increase the value to produce text that is not repeating the input.
+            The presence penalty reduces the likelihood of generating tokens that are already present in the text.
+            Presence penalty is independent of the number of occurences. Increase the value to produce text that is not repeating the input.
 
         frequency_penalty (float, optional, default 0.0)
-            The frequency penalty reduces the likelihood of generating tokens that are already present in the text. Presence penalty is dependent on the number of occurences of a token.
+            The frequency penalty reduces the likelihood of generating tokens that are already present in the text.
+            Frequency penalty is dependent on the number of occurences of a token.
 
         repetition_penalties_include_prompt (bool, optional, default False)
             Flag deciding whether presence penalty or frequency penalty are applied to the prompt and completion (True) or only the completion (False)
@@ -67,22 +75,22 @@ class CompletionRequest(NamedTuple):
             Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
     """
 
-    prompt: Union[str, List[Union[str, ImagePrompt]]] = ""
-    maximum_tokens: Optional[int] = 64
-    temperature: Optional[float] = 0.0
-    top_k: Optional[int] = 0
-    top_p: Optional[float] = 0.0
-    presence_penalty: Optional[float] = 0.0
-    frequency_penalty: Optional[float] = 0.0
-    repetition_penalties_include_prompt: Optional[bool] = False
-    use_multiplicative_presence_penalty: Optional[bool] = False
+    prompt: Sequence[Union[str, ImagePrompt]]
+    maximum_tokens: int = 64
+    temperature: float = 0.0
+    top_k: int = 0
+    top_p: float = 0.0
+    presence_penalty: float = 0.0
+    frequency_penalty: float = 0.0
+    repetition_penalties_include_prompt: bool = False
+    use_multiplicative_presence_penalty: bool = False
     best_of: Optional[int] = None
-    n: Optional[int] = 1
+    n: int = 1
     logit_bias: Optional[Dict[int, float]] = None
     log_probs: Optional[int] = None
     stop_sequences: Optional[List[str]] = None
-    tokens: Optional[bool] = False
-    disable_optimizations: Optional[bool] = False
+    tokens: bool = False
+    disable_optimizations: bool = False
 
     def render_as_body(self, model: str, hosting: str) -> Dict[str, Any]:
         return {

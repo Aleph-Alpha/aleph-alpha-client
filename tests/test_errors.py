@@ -7,11 +7,6 @@ from tests.common import client
     "config,description,exception_type",
     [
         ({}, "model must be provided", TypeError),
-        (
-            {"model": "test_model", "prompt": None},
-            "prompt must not be None",
-            ValueError,
-        ),
         ({"model": "test_model", "prompt": 123}, "prompt must be a string", ValueError),
         (
             {"model": "test_model", "maximum_tokens": "42"},
@@ -306,20 +301,6 @@ def test_aleph_alpha_client_evaluation_errors(
     "config,description,exception_type",
     [
         ({}, "model must be provided", TypeError),
-        (
-            {"model": "test_model", "query": None, "documents": []},
-            "query must be a string",
-            ValueError,
-        ),
-        (
-            {
-                "model": "test_model",
-                "query": "",
-                "documents": "Wrong Document Format",
-            },
-            "documents must be a list where all elements are of the type Document",
-            ValueError,
-        ),
         (
             {
                 "model": "test_model",

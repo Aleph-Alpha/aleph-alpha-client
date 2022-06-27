@@ -62,8 +62,14 @@ def test_embed_with_tokens(client: AlephAlphaClient, model: str):
 
 
 def test_failing_embedding_request(client: AlephAlphaClient, model: str):
+    # given a client
+    assert model in (model["name"] for model in client.available_models())
 
+    # when posting an illegal request
     request = EmbeddingRequest(prompt=["abc"], layers=[0, 1, 2], pooling=["mean"])
 
-    with pytest.raises(ValueError):
+    # then we expect an exception tue to a bad request response from the API
+    with pytest.raises(ValueError) as e:
         client.embed(model=model, request=request)
+
+    assert e.value.args[0] == 400

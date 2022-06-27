@@ -21,8 +21,7 @@ pip install aleph-alpha-client
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient
-from aleph_alpha_client.completion import CompletionRequest
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, CompletionRequest
 import os
 
 client = AlephAlphaClient(
@@ -50,7 +49,7 @@ print(result.completions[0]["completion"])
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, EvaluationRequest
 import os
 
 client = AlephAlphaClient(
@@ -59,8 +58,8 @@ client = AlephAlphaClient(
 )
 
 model = "luminous-base"
-prompt = "The api works"
-result = client.evaluate(model, prompt=prompt, completion_expected=" well")
+request = EvaluationRequest(prompt="The api works", completion_expected=" well")
+result = client.evaluate(model, request=request)
 
 print(result)
 
@@ -72,7 +71,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, EvaluationRequest
 import os
 
 client = AlephAlphaClient(
@@ -89,8 +88,8 @@ prompt = [
     image,
     "Q: What is the name of the store?\nA:",
 ]
-
-result = client.evaluate(model, prompt=prompt, completion_expected=" Blockbuster Video")
+request = EvaluationRequest(prompt=prompt, completion_expected=" Blockbuster Video")
+result = client.evaluate(model, request=request)
 
 print(result)
 ```
@@ -122,7 +121,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, EmbeddingRequest
 import os
 
 client = AlephAlphaClient(
@@ -151,7 +150,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import Document, AlephAlphaClient
+from aleph_alpha_client import Document, AlephAlphaClient, QaRequest
 import os
 
 client = AlephAlphaClient(
@@ -162,12 +161,15 @@ client = AlephAlphaClient(
 # You need to choose a model with qa support for this example.
 model = "luminous-extended"
 
-query = "What is a computer program?"
 docx_file = "./tests/sample.docx"
 document = Document.from_docx_file(docx_file)
-documents = [document]
 
-result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
+request = QaRequest(
+    query = "What is a computer program?",
+    documents = [document]
+)
+
+result = client.qa(model, request=request)
 
 print(result)
 ```
@@ -177,7 +179,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import Document, AlephAlphaClient
+from aleph_alpha_client import Document, AlephAlphaClient, QaRequest
 import os
 
 client = AlephAlphaClient(
@@ -188,12 +190,15 @@ client = AlephAlphaClient(
 # You need to choose a model with qa support for this example.
 model = "luminous-extended"
 
-query = "What is a computer program?"
 prompt = "In imperative programming, a computer program is a sequence of instructions in a programming language that a computer can execute or interpret."
 document = Document.from_text(prompt)
-documents = [document]
 
-result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
+request = QaRequest(
+    query = "What is a computer program?",
+    documents = [document],
+)
+
+result = client.qa(model, request=request)
 
 print(result)
 ```
@@ -204,7 +209,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient
+from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient, QaRequest
 import os
 
 client = AlephAlphaClient(
@@ -215,14 +220,17 @@ client = AlephAlphaClient(
 # You need to choose a model with qa support and multimodal capabilities for this example.
 model = "luminous-extended"
 
-query = "What is the name of the store?"
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
 image = ImagePrompt.from_url(url)
 prompt = [image]
 document = Document.from_prompt(prompt)
-documents = [document]
 
-result = client.qa(model, query=query, documents=documents, maximum_tokens=64)
+request = QaRequest (
+    query = "What is the name of the store?",
+    documents = [document]
+)
+
+result = client.qa(model, request=request)
 
 print(result)
 ```
@@ -232,8 +240,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient
-from aleph_alpha_client.tokenization import TokenizationRequest
+from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient, TokenizationRequest
 import os
 
 client = AlephAlphaClient(
@@ -254,8 +261,7 @@ print(response)
 
 
 ```python
-from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient
-from aleph_alpha_client.detokenization import DetokenizationRequest
+from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient, DetokenizationRequest
 import os
 
 client = AlephAlphaClient(
@@ -322,9 +328,11 @@ python -m http.server --directory htmlcov 8000
 
 > Do not change the README.md directly as it is generated from readme.ipynb 
 
+To update the readme, do the following:
+
 1. `pip install -r requirements-dev.txt`
 
-2. To update the readme edit the notebook in your favorite jupyter editor and run all python cells to verify that the code examples still work.
+2. Edit the notebook in your favorite jupyter editor and run all python cells to verify that the code examples still work.
 
 3. To generate a new README.md first remove all output cells from the Jupyter notebook and then execute the command: `jupyter nbconvert --to markdown readme.ipynb --output README.md`
 

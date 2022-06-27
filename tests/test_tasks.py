@@ -234,16 +234,15 @@ def validate_qa_task_output(task, output):
             "evaluate",
             {"model": "test_model", "prompt": "", "completion_expected": "abc"},
         ),
-        # Hangs. Known bug
-        # (
-        #     "qa",
-        #     {
-        #         "model": "test_model",
-        #         "query": "",
-        #         "documents": [],
-        #         "maximum_tokens": 7,
-        #     },
-        # ),
+        (
+            "qa",
+            {
+                "model": "test_model",
+                "query": "",
+                "documents": [],
+                "maximum_tokens": 7,
+            },
+        ),
         (
             "qa",
             {
