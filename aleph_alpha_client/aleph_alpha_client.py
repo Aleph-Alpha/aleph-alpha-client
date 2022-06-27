@@ -80,12 +80,11 @@ class AlephAlphaClient:
         prompt: Optional[str] = None,
         tokens: bool = True,
         token_ids: bool = True,
-        request: Optional[TokenizationRequest] = None,
     ) -> Any:
         """
         Tokenizes the given prompt for the given model.
         """
-        named_request = request or TokenizationRequest(prompt or "", tokens, token_ids)
+        named_request = TokenizationRequest(prompt or "", tokens, token_ids)
 
         response = requests.post(
             self.host + "tokenize",
@@ -98,30 +97,18 @@ class AlephAlphaClient:
         self,
         model: str,
         token_ids: List[int] = [],
-        request: Optional[DetokenizationRequest] = None,
     ):
         """
         Detokenizes the given tokens.
         """
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass a DetokenizationRequest object as the request parameter instead."
-            )
-
-        named_request = request or DetokenizationRequest(token_ids)
+        named_request = DetokenizationRequest(token_ids)
         response = requests.post(
             self.host + "detokenize",
             headers=self.request_headers,
             json=named_request.render_as_body(model),
             timeout=None,
         )
-        response_dict = self._translate_errors(response)
-        return (
-            DetokenizationResponse.from_json(response_dict)
-            if request
-            else response_dict
-        )
+        return self._translate_errors(response)
 
     def complete(
         self,

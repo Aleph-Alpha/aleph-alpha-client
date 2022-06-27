@@ -115,10 +115,22 @@ class CompletionRequest(NamedTuple):
         }
 
 
+class CompletionResult(NamedTuple):
+    log_probs: Optional[Sequence[Mapping[str, Optional[float]]]] = None
+    completion: Optional[str] = None
+    completion_tokens: Optional[Sequence[str]] = None
+    finish_reason: Optional[str] = None
+    message: Optional[str] = None
+
+
 class CompletionResponse(NamedTuple):
-    model_version: Optional[str] = None
-    completions: Optional[Mapping[str, Any]] = None
+    model_version: str
+    completions: Sequence[CompletionResult]
+    optimized_prompt: Optional[Sequence[str]] = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "CompletionResponse":
-        return CompletionResponse(**json)
+        return CompletionResponse(
+            model_version=json["model_version"], 
+            completions=[CompletionResult(**item) for item in json["completions"]],
+            optimized_prompt=json.get("optimized_prompt"))

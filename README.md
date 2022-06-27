@@ -259,18 +259,17 @@ print(response)
 
 
 ```python
-from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient, DetokenizationRequest
+from aleph_alpha_client import AlephAlphaClient, AlephAlphaModel, DetokenizationRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    model_name = "luminous-extended"
 )
 
 # You need to choose a model with qa support and multimodal capabilities for this example.
-model = "luminous-extended"
 request = DetokenizationRequest(token_ids=[1730, 387, 300, 4377, 17])
-response = client.detokenize(model, request=request)
+response = model.detokenize(request)
 
 print(response)
 ```

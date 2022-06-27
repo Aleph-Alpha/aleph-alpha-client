@@ -9,8 +9,8 @@ from tests.common import client, model_name, model
 def test_tokenize(model: AlephAlphaModel):
     response = model.tokenize(request=TokenizationRequest("Hello", tokens=True, token_ids=True))
 
-    assert len(response.tokens) == 1
-    assert len(response.token_ids) == 1
+    assert response.tokens and len(response.tokens) == 1
+    assert response.token_ids and len(response.token_ids) == 1
 
 
 def test_tokenize_with_client(client: AlephAlphaClient, model_name: str):
