@@ -248,7 +248,6 @@ class AlephAlphaClient:
         hosting: str = "cloud",
         tokens: Optional[bool] = False,
         type: Optional[str] = None,
-        request: EmbeddingRequest = None,
     ):
         """
         Embeds a multi-modal prompt and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -285,16 +284,8 @@ class AlephAlphaClient:
             type
                 Type of the embedding (e.g. symmetric or asymmetric)
 
-            request (EmbeddingRequest, optional):
-                Input for the embeddings to be computed
         """
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass an EmbeddingRequest object as the request parameter instead."
-            )
-
-        named_request = request or EmbeddingRequest(
+        named_request = EmbeddingRequest(
             prompt=prompt or "",
             layers=layers or [],
             pooling=pooling or [],
@@ -305,12 +296,7 @@ class AlephAlphaClient:
         response = requests.post(
             f"{self.host}embed", headers=self.request_headers, json=body
         )
-        response_dict = self._translate_errors(response)
-        return (
-            response_dict
-            if request is None
-            else EmbeddingResponse.from_json(response_dict)
-        )
+        return self._translate_errors(response)
 
     def evaluate(
         self,

@@ -99,17 +99,16 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient, EmbeddingRequest
+from aleph_alpha_client import AlephAlphaModel, AlephAlphaClient, EmbeddingRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    model_name = "luminous-extended"
 )
 
-model = "luminous-base"
 request = EmbeddingRequest(prompt=["This is an example."], layers=[-1], pooling=["mean"])
-result = client.embed(model, request=request)
+result = model.embed(request)
 
 print(result)
 ```
@@ -120,16 +119,14 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient, EmbeddingRequest
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, EmbeddingRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with multimodal capabilities for this example.
+    model_name = "luminous-extended"
 )
-
-# You need to choose a model with multimodal capabilities for this example.
-model = "luminous-base"
 
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
 image = ImagePrompt.from_url(url)
@@ -138,7 +135,7 @@ prompt = [
     "Q: What is the name of the store?\nA:",
 ]
 request = EmbeddingRequest(prompt=prompt, layers=[-1], pooling=["mean"])
-result = client.embed(model, request=request)
+result = model.embed(request)
 
 print(result)
 ```
