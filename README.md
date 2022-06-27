@@ -48,17 +48,16 @@ print(result.completions[0]["completion"])
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient, EvaluationRequest
+from aleph_alpha_client import AlephAlphaClient, AlephAlphaModel, EvaluationRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    model_name = "luminous-extended"
 )
 
-model = "luminous-base"
 request = EvaluationRequest(prompt="The api works", completion_expected=" well")
-result = client.evaluate(model, request=request)
+result = model.evaluate(request)
 
 print(result)
 
@@ -70,16 +69,14 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient, EvaluationRequest
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, EvaluationRequest
 import os
 
-client = AlephAlphaClient(
-    host="https://api.aleph-alpha.com",
-    token=os.getenv("AA_TOKEN")
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with multimodal capabilities for this example.
+    model_name = "luminous-extended"
 )
-
-# You need to choose a model with multimodal capabilities for this example.
-model = "luminous-base"
 
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
 image = ImagePrompt.from_url(url)
@@ -88,7 +85,7 @@ prompt = [
     "Q: What is the name of the store?\nA:",
 ]
 request = EvaluationRequest(prompt=prompt, completion_expected=" Blockbuster Video")
-result = client.evaluate(model, request=request)
+result = model.evaluate(request)
 
 print(result)
 ```

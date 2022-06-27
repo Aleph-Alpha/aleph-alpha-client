@@ -2,6 +2,7 @@ from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
 from aleph_alpha_client.detokenization import DetokenizationRequest, DetokenizationResponse
 from aleph_alpha_client.embedding import EmbeddingRequest, EmbeddingResponse
+from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
 
 
@@ -27,3 +28,7 @@ class AlephAlphaModel:
     def embed(self, request: EmbeddingRequest) -> EmbeddingResponse:
         response_json = self.client.embed(model = self.model_name, hosting=self.hosting, **request._asdict())
         return EmbeddingResponse.from_json(response_json)
+
+    def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
+        response_json = self.client.evaluate(model = self.model_name, hosting=self.hosting, **request._asdict())
+        return EvaluationResponse.from_json(response_json)

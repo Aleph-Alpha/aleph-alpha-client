@@ -304,7 +304,6 @@ class AlephAlphaClient:
         completion_expected: str = None,
         hosting: str = "cloud",
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
-        request: EvaluationRequest = None,
     ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
@@ -323,18 +322,9 @@ class AlephAlphaClient:
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
-
-            request (EvaluationRequest, optional):
-                Input for the evaluation to be computed
         """
 
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass an EvaluationRequest object as the request parameter instead."
-            )
-
-        named_request = request or EvaluationRequest(
+        named_request = EvaluationRequest(
             prompt=prompt, completion_expected=completion_expected or ""
         )
         response = requests.post(
@@ -342,12 +332,7 @@ class AlephAlphaClient:
             headers=self.request_headers,
             json=named_request.render_as_body(model, hosting),
         )
-        response_dict = self._translate_errors(response)
-        return (
-            response_dict
-            if request is None
-            else EvaluationResponse.from_json(response_dict)
-        )
+        return self._translate_errors(response)
 
     def qa(
         self,

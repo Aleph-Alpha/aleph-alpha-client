@@ -2,30 +2,31 @@ from multiprocessing.sharedctypes import Value
 from typing import List
 import pytest
 from aleph_alpha_client import AlephAlphaClient
+from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.evaluation import EvaluationRequest
-from tests.common import client, model_name
+from tests.common import client, model_name, model
 
 
-def test_evaluate(client: AlephAlphaClient, model_name: str):
+def test_evaluate(model: AlephAlphaModel):
 
     request = EvaluationRequest(prompt=["hello"], completion_expected="world")
 
-    result = client.evaluate(model=model_name, request=request)
+    result = model.evaluate(request)
 
     assert result.model_version is not None
     assert result.result is not None
 
 
-def test_evaluate_with_explicit_parameters(client: AlephAlphaClient, model_name: str):
+def test_evaluate_with_client(client: AlephAlphaClient, model_name: str):
     result = client.evaluate(model_name, prompt="hello", completion_expected="world")
 
     assert result["model_version"] is not None
     assert result["result"] is not None
 
 
-def test_evaluate_fails(client: AlephAlphaClient, model_name: str):
+def test_evaluate_fails(model: AlephAlphaModel):
     # given a client
-    assert model_name in map(lambda model: model["name"], client.available_models())
+    assert model.model_name in map(lambda model: model["name"], model.client.available_models())
 
     # when posting an illegal request
     request = EvaluationRequest(
@@ -35,10 +36,6 @@ def test_evaluate_fails(client: AlephAlphaClient, model_name: str):
 
     # then we expect an exception tue to a bad request response from the API
     with pytest.raises(ValueError) as e:
-        response = client.evaluate(
-            model_name,
-            hosting="cloud",
-            request=request,
-        )
+        response = model.evaluate(request=request)
 
     assert e.value.args[0] == 400
