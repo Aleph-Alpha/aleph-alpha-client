@@ -383,8 +383,7 @@ class AlephAlphaClient:
         response = requests.post(
             f"{self.host}explain", headers=self.request_headers, json=body
         )
-        response_dict = self._translate_errors(response)
-        return response_dict
+        return self._translate_errors(response)
 
     @staticmethod
     def _translate_errors(response):
