@@ -15,6 +15,7 @@ from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_serializable_prompt
+from aleph_alpha_client.qa import QaRequest, QaResponse
 from aleph_alpha_client.tokenization import TokenizationResponse, TokenizationRequest
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
@@ -133,7 +134,7 @@ class AlephAlphaClient:
     def complete(
         self,
         model: str,
-        prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
+        prompt: Optional[List[Union[str, ImagePrompt]]] = None,
         hosting: str = "cloud",
         maximum_tokens: int = 64,
         temperature: float = 0.0,
@@ -237,7 +238,7 @@ class AlephAlphaClient:
             )
 
         named_request = request or CompletionRequest(
-            prompt=prompt,
+            prompt=prompt or [""],
             maximum_tokens=maximum_tokens,
             temperature=temperature,
             top_k=top_k,
@@ -319,7 +320,7 @@ class AlephAlphaClient:
             type
                 Type of the embedding (e.g. symmetric or asymmetric)
 
-            request (EmbeddingRequest, required):
+            request (EmbeddingRequest, optional):
                 Input for the embeddings to be computed
         """
         if request is None:
@@ -371,7 +372,16 @@ class AlephAlphaClient:
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
+
+            request (EvaluationRequest, optional):
+                Input for the evaluation to be computed
         """
+
+        if request is None:
+            logging.warning(
+                "Calling this method with individual request parameters is deprecated. "
+                + "Please pass an EvaluationRequest object as the request parameter instead."
+            )
 
         named_request = request or EvaluationRequest(
             prompt=prompt, completion_expected=completion_expected or ""
@@ -391,13 +401,15 @@ class AlephAlphaClient:
     def qa(
         self,
         model: str,
-        query: str,
-        documents: List[Document],
+        query: Optional[str] = None,
+        documents: Optional[Sequence[Document]] = None,
         maximum_tokens: int = 64,
         max_chunk_size: int = 175,
         disable_optimizations: bool = False,
         max_answers: int = 0,
         min_score: float = 0.0,
+        hosting: str = "cloud",
+        request: Optional[QaRequest] = None,
     ):
         """
         Answers a question about a prompt.
@@ -406,91 +418,40 @@ class AlephAlphaClient:
             model (str, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
-            query (str, required):
-                The question to be answered about the documents by the model.
+            hosting (str, optional, default "cloud"):
+                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+                executed on any of our servers. An error will be returned if the specified hosting is not available.
+                Check available_models() for available hostings.
 
-            documents (List[Document], required):
-                A list of documents. This can be either docx documents or text/image prompts.
+            request (QaRequest, optional):
+                Input for the answers to be computed
 
-            maximum_tokens (int, default 64):
-                The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached.
-
-                Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
-
-            max_chunk_size (int, default 175):
-                Long documents will be split into chunks if they exceed max_chunk_size.
-                The splitting will be done along the following boundaries until all chunks are shorter than max_chunk_size or all splitting criteria have been exhausted.
-                The splitting boundaries are, in the given order:
-                1. Split first by double newline
-                (assumed to mark the boundary between 2 paragraphs).
-                2. Split paragraphs that are still too long by their median sentence as long as we can still find multiple sentences in the paragraph.
-                3. Split each remaining chunk of a paragraph or sentence further along white spaces until each chunk is smaller than max_chunk_size or until no whitespace can be found anymore.
-
-            disable_optimizations  (bool, default False)
-                We continually research optimal ways to work with our models. By default, we apply these optimizations to both your query, documents, and answers for you.
-                Our goal is to improve your results while using our API. But you can always pass `disable_optimizations: true` and we will leave your query, documents, and answers untouched.
-
-            max_answers (int, default 0):
-                The upper limit of maximum number of answers.
-
-            min_score (float, default 0.0):
-                The lower limit of minimum score for every answer.
         """
 
-        # validate data types
-        if not isinstance(model, str):
-            raise ValueError("model must be a string")
-
-        if not isinstance(query, str):
-            raise ValueError("query must be a string")
-
-        if not isinstance(documents, list):
-            raise ValueError(
-                "documents must be a list where all elements are of the type Document"
+        if request is None:
+            logging.warning(
+                "Calling this method with individual request parameters is deprecated. "
+                + "Please pass an QaRequest object as the request parameter instead."
             )
 
-        serialized_documents = [
-            document._to_serializable_document() for document in documents
-        ]
-
-        if not isinstance(maximum_tokens, int):
-            raise ValueError("maximum_tokens must be an int")
-
-        if not isinstance(max_chunk_size, int):
-            raise ValueError("max_chunk_size must be an int")
-
-        if not isinstance(max_answers, int):
-            raise ValueError("max_answers must be an int")
-
-        if not isinstance(min_score, float):
-            raise ValueError("min_score must be a float")
-
-        if not isinstance(disable_optimizations, bool):
-            raise ValueError("disable_optimizations must be a bool")
-
-        # validate values
-        if maximum_tokens <= 0:
-            raise ValueError("maximum_tokens must be a positive integer")
-
-        payload = {
-            "model": model,
-            "query": query,
-            "documents": serialized_documents,
-            "maximum_tokens": maximum_tokens,
-            "max_answers": max_answers,
-            "min_score": min_score,
-            "max_chunk_size": max_chunk_size,
-            "disable_optimizations": disable_optimizations,
-        }
+        named_request = request or QaRequest(
+            query or "",
+            documents or [],
+            maximum_tokens,
+            max_chunk_size,
+            disable_optimizations,
+            max_answers,
+            min_score,
+        )
 
         response = requests.post(
             self.host + "qa",
             headers=self.request_headers,
-            json=payload,
+            json=named_request.render_as_body(model, hosting),
             timeout=None,
         )
         response_json = self._translate_errors(response)
-        return response_json
+        return response_json if request is None else QaResponse.from_json(response_json)
 
     def _explain(
         self, model: str, request: ExplanationRequest, hosting: Optional[str] = None

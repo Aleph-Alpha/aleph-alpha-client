@@ -1,3 +1,4 @@
+import json
 from multiprocessing.sharedctypes import Value
 import pytest
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
@@ -7,16 +8,18 @@ from tests.common import client, model
 
 
 def test_complete(client: AlephAlphaClient, model: str):
+    request = CompletionRequest(
+        prompt="",
+        maximum_tokens=7,
+        tokens=False,
+        log_probs=0,
+        logit_bias={1: 2.0},
+    )
+
     response = client.complete(
         model,
         hosting="cloud",
-        request=CompletionRequest(
-            prompt="",
-            maximum_tokens=7,
-            tokens=False,
-            log_probs=0,
-            logit_bias={1: 2.0},
-        ),
+        request=request,
     )
 
     assert len(response.completions) == 1
@@ -25,7 +28,7 @@ def test_complete(client: AlephAlphaClient, model: str):
 
 def test_complete_with_explicit_parameters(client: AlephAlphaClient, model: str):
     response = client.complete(
-        model, prompt="", maximum_tokens=7, tokens=False, log_probs=0
+        model, prompt=[""], maximum_tokens=7, tokens=False, log_probs=0
     )
 
     assert len(response["completions"]) == 1

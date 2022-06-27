@@ -15,7 +15,11 @@ class CompletionRequest(NamedTuple):
             The prompt may contain a zero shot or few shot task.
 
         maximum_tokens (int, optional, default 64):
-            The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
+            The maximum number of tokens to be generated.
+            Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts.
+            A text is split into tokens. Usually there are more tokens than words.
+            The maximum supported number of tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
+            The prompt's tokens plus the maximum_tokens request must not exceed this number.
 
         temperature (float, optional, default 0.0)
             A higher sampling temperature encourages the model to produce less probable outputs ("be more creative"). Values are expected in a range from 0.0 to 1.0. Try high values (e.g. 0.9) for a more "creative" response and the default 0.0 for a well defined and repeatable answer.
@@ -71,7 +75,7 @@ class CompletionRequest(NamedTuple):
             Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
     """
 
-    prompt: Union[str, List[Union[str, ImagePrompt]]] = ""
+    prompt: Sequence[Union[str, ImagePrompt]]
     maximum_tokens: int = 64
     temperature: float = 0.0
     top_k: int = 0
