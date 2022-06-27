@@ -151,7 +151,6 @@ class AlephAlphaClient:
         stop_sequences: Optional[List[str]] = None,
         tokens: bool = False,
         disable_optimizations: bool = False,
-        request: CompletionRequest = None,
     ):
         """
         Generates samples from a prompt.
@@ -226,18 +225,9 @@ class AlephAlphaClient:
                 We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
 
                 Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
-
-            request
-                A CompletionRequest wrapping the above-mentioned parameters except model and hosting
         """
 
-        if request is None:
-            logging.warning(
-                "Calling this method with individual request parameters is deprecated. "
-                + "Please pass a CompletionRequest object as the request parameter instead."
-            )
-
-        named_request = request or CompletionRequest(
+        named_request = CompletionRequest(
             prompt=prompt or [""],
             maximum_tokens=maximum_tokens,
             temperature=temperature,
@@ -268,11 +258,7 @@ class AlephAlphaClient:
             print(
                 'We optimized your prompt before sending it to the model. The optimized prompt is available at result["optimized_prompt"]. If you do not want these optimizations applied, you can pass the disable_optimizations flag to your request.'
             )
-        return (
-            response_json
-            if request is None
-            else CompletionResponse.from_json(response_json)
-        )
+        return response_json
 
     def embed(
         self,
