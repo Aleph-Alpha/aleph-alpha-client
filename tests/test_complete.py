@@ -1,3 +1,4 @@
+import pytest
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.completion import CompletionRequest
 
@@ -9,7 +10,11 @@ def test_complete(client: AlephAlphaClient, model: str):
         model,
         hosting="cloud",
         request=CompletionRequest(
-            prompt="", maximum_tokens=7, tokens=False, log_probs=0
+            prompt="",
+            maximum_tokens=7,
+            tokens=False,
+            log_probs=0,
+            logit_bias={1: 2.0},
         ),
     )
 
@@ -22,6 +27,26 @@ def test_complete_with_explicit_parameters(client: AlephAlphaClient, model: str)
         model, prompt="", maximum_tokens=7, tokens=False, log_probs=0
     )
 
-    print(response)
     assert len(response["completions"]) == 1
     assert response["model_version"] is not None
+
+
+def test_complete_fails(client: AlephAlphaClient, model: str):
+    # given a client
+    assert model in map(lambda model: model["name"], client.available_models())
+
+    # when posting an illegal request
+    request = CompletionRequest(
+        prompt="",
+        maximum_tokens=-1,
+        tokens=False,
+        log_probs=0,
+    )
+
+    # then we expect an exception tue to a bad request response from the API
+    with pytest.raises(Exception):
+        response = client.complete(
+            model,
+            hosting="cloud",
+            request=request,
+        )

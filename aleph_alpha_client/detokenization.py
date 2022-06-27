@@ -2,7 +2,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Sequence
 
 
 class DetokenizationRequest(NamedTuple):
-    token_ids: List[int]
+    token_ids: Sequence[int]
 
     def render_as_body(self, model: str) -> Dict[str, Any]:
         return {
