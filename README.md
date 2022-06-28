@@ -21,7 +21,7 @@ pip install aleph-alpha-client
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaModel, AlephAlphaClient, CompletionRequest
+from aleph_alpha_client import ImagePrompt, AlephAlphaModel, AlephAlphaClient, CompletionRequest, Prompt
 import os
 
 model = AlephAlphaModel(
@@ -33,14 +33,14 @@ model = AlephAlphaModel(
 url = "https://cdn-images-1.medium.com/max/1200/1*HunNdlTmoPj8EKpl-jqvBA.png"
 
 image = ImagePrompt.from_url(url)
-prompt = [
+prompt = Prompt([
     image,
     "Q: What does the picture show? A:",
-]
+])
 request = CompletionRequest(prompt=prompt, maximum_tokens=20)
 result = model.complete(request)
 
-print(result.completions[0]["completion"])
+print(result.completions[0].completion)
 ```
 
 

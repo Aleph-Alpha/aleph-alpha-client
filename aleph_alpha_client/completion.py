@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence, Union
 
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_serializable_prompt
+from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
 
 
 class CompletionRequest(NamedTuple):
@@ -75,7 +75,7 @@ class CompletionRequest(NamedTuple):
             Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
     """
 
-    prompt: Sequence[Union[str, ImagePrompt]]
+    prompt: Prompt
     maximum_tokens: int = 64
     temperature: float = 0.0
     top_k: int = 0
