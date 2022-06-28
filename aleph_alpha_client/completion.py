@@ -92,28 +92,6 @@ class CompletionRequest(NamedTuple):
     tokens: bool = False
     disable_optimizations: bool = False
 
-    def render_as_body(self, model: str, hosting: str) -> Dict[str, Any]:
-        return {
-            "model": model,
-            "hosting": hosting,
-            "prompt": _to_serializable_prompt(self.prompt),
-            "maximum_tokens": self.maximum_tokens,
-            "temperature": self.temperature,
-            "top_k": self.top_k,
-            "top_p": self.top_p,
-            "presence_penalty": self.presence_penalty,
-            "frequency_penalty": self.frequency_penalty,
-            "best_of": self.best_of,
-            "n": self.n,
-            "logit_bias": self.logit_bias,
-            "log_probs": self.log_probs,
-            "repetition_penalties_include_prompt": self.repetition_penalties_include_prompt,
-            "use_multiplicative_presence_penalty": self.use_multiplicative_presence_penalty,
-            "stop_sequences": self.stop_sequences,
-            "tokens": self.tokens,
-            "disable_optimizations": self.disable_optimizations,
-        }
-
 
 class CompletionResult(NamedTuple):
     log_probs: Optional[Sequence[Mapping[str, Optional[float]]]] = None
