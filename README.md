@@ -96,7 +96,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import AlephAlphaModel, AlephAlphaClient, EmbeddingRequest
+from aleph_alpha_client import AlephAlphaModel, AlephAlphaClient, EmbeddingRequest, Prompt
 import os
 
 model = AlephAlphaModel(
@@ -104,7 +104,7 @@ model = AlephAlphaModel(
     model_name = "luminous-extended"
 )
 
-request = EmbeddingRequest(prompt=["This is an example."], layers=[-1], pooling=["mean"])
+request = EmbeddingRequest(prompt=Prompt.from_text("This is an example."), layers=[-1], pooling=["mean"])
 result = model.embed(request)
 
 print(result)
@@ -116,7 +116,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, EmbeddingRequest
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, EmbeddingRequest, Prompt
 import os
 
 model = AlephAlphaModel(
@@ -127,10 +127,10 @@ model = AlephAlphaModel(
 
 url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
 image = ImagePrompt.from_url(url)
-prompt = [
+prompt = Prompt([
     image,
     "Q: What is the name of the store?\nA:",
-]
+])
 request = EmbeddingRequest(prompt=prompt, layers=[-1], pooling=["mean"])
 result = model.embed(request)
 

@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Tuple, Union
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_prompt_item
+from aleph_alpha_client.prompt import Prompt, _to_prompt_item
 
 
 class EmbeddingRequest(NamedTuple):
@@ -33,7 +33,7 @@ class EmbeddingRequest(NamedTuple):
 
     """
 
-    prompt: Sequence[Union[str, ImagePrompt]]
+    prompt: Prompt
     layers: List[int]
     pooling: List[str]
     type: Optional[str] = None
