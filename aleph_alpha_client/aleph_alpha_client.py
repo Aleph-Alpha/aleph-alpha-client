@@ -423,7 +423,7 @@ class AlephAlphaClient:
     def _explain(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
         body = {
             "model": model,
-            "prompt": [_to_prompt_item(item) for item in request.prompt],
+            "prompt": [_to_prompt_item(item) for item in request.prompt.items],
             "target": request.target,
             "suppression_factor": request.suppression_factor,
             "directional": request.directional,

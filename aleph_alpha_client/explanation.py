@@ -1,10 +1,9 @@
 from typing import List, NamedTuple, Optional, Union
-from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_prompt_item
+from aleph_alpha_client.prompt import Prompt
 
 
 class ExplanationRequest(NamedTuple):
-    prompt: List[Union[str, ImagePrompt]]
+    prompt: Prompt
     target: str
     directional: bool
     suppression_factor: float
