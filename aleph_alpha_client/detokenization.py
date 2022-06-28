@@ -2,6 +2,12 @@ from typing import Any, Dict, List, NamedTuple, Optional, Sequence
 
 
 class DetokenizationRequest(NamedTuple):
+    """Describes a detokenization request.
+    
+    Parameters
+        token_ids (Sequence[int])
+            Ids of the tokens for which the text should be returned.
+    """
     token_ids: Sequence[int]
 
 
