@@ -2,13 +2,13 @@ from typing import Any, Dict, List, NamedTuple, Optional, Sequence
 
 
 class DetokenizationRequest(NamedTuple):
+    """Describes a detokenization request.
+    
+    Parameters
+        token_ids (Sequence[int])
+            Ids of the tokens for which the text should be returned.
+    """
     token_ids: Sequence[int]
-
-    def render_as_body(self, model: str) -> Dict[str, Any]:
-        return {
-            "model": model,
-            "token_ids": self.token_ids,
-        }
 
 
 class DetokenizationResponse(NamedTuple):

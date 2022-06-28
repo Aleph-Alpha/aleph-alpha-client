@@ -421,10 +421,16 @@ class AlephAlphaClient:
         return response_json
 
     def _explain(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
-        body = request.render_as_body(model, hosting)
+        body = {
+            "model": model,
+            "prompt": [_to_prompt_item(item) for item in request.prompt.items],
+            "target": request.target,
+            "suppression_factor": request.suppression_factor,
+            "directional": request.directional,
+            "conceptual_suppression_threshold": request.conceptual_suppression_threshold
+        }
         response = requests.post(f"{self.host}explain", headers=self.request_headers, json=body)
-        response_dict = self._translate_errors(response)
-        return response_dict
+        return self._translate_errors(response)
         
 
     @staticmethod

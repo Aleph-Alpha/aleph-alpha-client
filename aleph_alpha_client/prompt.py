@@ -10,6 +10,11 @@ class Prompt(NamedTuple):
     def from_text(text: str) -> "Prompt":
         return Prompt([text])
 
+    @staticmethod
+    def from_image(image: ImagePrompt) -> "Prompt":
+        return Prompt([image])
+
+    
 def _to_prompt_item(item: Union[str, ImagePrompt]) -> Dict[str, str]:
     if isinstance(item, str):
         return {"type": "text", "data": item}

@@ -4,13 +4,14 @@ import pytest
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.completion import CompletionRequest
+from aleph_alpha_client.prompt import Prompt
 
 from tests.common import client, model_name, model
 
 
 def test_complete(model: AlephAlphaModel):
     request = CompletionRequest(
-        prompt="",
+        prompt=Prompt.from_text(""),
         maximum_tokens=7,
         tokens=False,
         log_probs=0,
@@ -38,7 +39,7 @@ def test_complete_fails(model: AlephAlphaModel):
 
     # when posting an illegal request
     request = CompletionRequest(
-        prompt="",
+        prompt=Prompt.from_text(""),
         maximum_tokens=-1,
         tokens=False,
         log_probs=0,

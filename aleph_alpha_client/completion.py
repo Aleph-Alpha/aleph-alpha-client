@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence, Union
 
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_serializable_prompt
+from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
 
 
 class CompletionRequest(NamedTuple):
@@ -75,7 +75,7 @@ class CompletionRequest(NamedTuple):
             Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
     """
 
-    prompt: Sequence[Union[str, ImagePrompt]]
+    prompt: Prompt
     maximum_tokens: int = 64
     temperature: float = 0.0
     top_k: int = 0
@@ -91,28 +91,6 @@ class CompletionRequest(NamedTuple):
     stop_sequences: Optional[List[str]] = None
     tokens: bool = False
     disable_optimizations: bool = False
-
-    def render_as_body(self, model: str, hosting: str) -> Dict[str, Any]:
-        return {
-            "model": model,
-            "hosting": hosting,
-            "prompt": _to_serializable_prompt(self.prompt),
-            "maximum_tokens": self.maximum_tokens,
-            "temperature": self.temperature,
-            "top_k": self.top_k,
-            "top_p": self.top_p,
-            "presence_penalty": self.presence_penalty,
-            "frequency_penalty": self.frequency_penalty,
-            "best_of": self.best_of,
-            "n": self.n,
-            "logit_bias": self.logit_bias,
-            "log_probs": self.log_probs,
-            "repetition_penalties_include_prompt": self.repetition_penalties_include_prompt,
-            "use_multiplicative_presence_penalty": self.use_multiplicative_presence_penalty,
-            "stop_sequences": self.stop_sequences,
-            "tokens": self.tokens,
-            "disable_optimizations": self.disable_optimizations,
-        }
 
 
 class CompletionResult(NamedTuple):

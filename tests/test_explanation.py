@@ -1,6 +1,7 @@
 import pytest
-from aleph_alpha_client import AlephAlphaClient, ExplanationRequest
+from aleph_alpha_client import ExplanationRequest
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
+from aleph_alpha_client.prompt import Prompt
 
 from tests.common import client, model_name, model
 
@@ -8,7 +9,7 @@ from tests.common import client, model_name, model
 def test_explanation(model: AlephAlphaModel):
 
     request = ExplanationRequest(
-        prompt=["An apple a day"],
+        prompt=Prompt.from_text("An apple a day"),
         target=" keeps the doctor away",
         directional=False,
         suppression_factor=0.1,
@@ -26,7 +27,7 @@ def test_explain_fails(model: AlephAlphaModel):
 
     # when posting an illegal request
     request = ExplanationRequest(
-        prompt=["An apple a day"],
+        prompt=Prompt.from_text("An apple a day"),
         target=" keeps the doctor away",
         directional=False,
         suppression_factor=0.1,

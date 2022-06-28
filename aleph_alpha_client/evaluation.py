@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Tuple, Union
-from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_serializable_prompt
+from aleph_alpha_client.prompt import Prompt
 
 
 class EvaluationRequest(NamedTuple):
@@ -15,16 +14,8 @@ class EvaluationRequest(NamedTuple):
             The ground truth completion expected to be produced given the prompt.
     """
 
-    prompt: Sequence[Union[str, ImagePrompt]]
+    prompt: Prompt
     completion_expected: str
-
-    def render_as_body(self, model: str, hosting=Optional[str]) -> dict:
-        return {
-            "model": model,
-            "hosting": hosting,
-            "prompt": _to_serializable_prompt(self.prompt),
-            "completion_expected": self.completion_expected,
-        }
 
 
 class EvaluationResponse(NamedTuple):

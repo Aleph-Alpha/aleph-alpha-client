@@ -51,23 +51,6 @@ class QaRequest(NamedTuple):
     max_answers: int = 0
     min_score: float = 0.0
 
-    def render_as_body(self, model: str, hosting: str):
-        serialized_documents = [
-            document._to_serializable_document() for document in self.documents
-        ]
-
-        return {
-            "model": model,
-            "hosting": hosting,
-            "query": self.query,
-            "documents": serialized_documents,
-            "maximum_tokens": self.maximum_tokens,
-            "max_answers": self.max_answers,
-            "min_score": self.min_score,
-            "max_chunk_size": self.max_chunk_size,
-            "disable_optimizations": self.disable_optimizations,
-        }
-
 
 class QaAnswer(NamedTuple):
     answer: str

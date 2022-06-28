@@ -2,17 +2,25 @@ from typing import Any, Dict, NamedTuple, Optional, Sequence
 
 
 class TokenizationRequest(NamedTuple):
+    """Describes a tokenization request.
+    
+    Parameters
+        prompt (str)
+            The text prompt which should be converted into tokens
+        
+        tokens (bool)
+            True to extract text-tokens
+
+        token_ids (bool)
+            True to extract token-ids
+        
+    Returns
+        TokenizationResponse
+    """
     prompt: str
     tokens: bool
     token_ids: bool
 
-    def render_as_body(self, model: str) -> Dict[str, Any]:
-        return {
-            "model": model,
-            "prompt": self.prompt,
-            "tokens": self.tokens,
-            "token_ids": self.token_ids,
-        }
 
 class TokenizationResponse(NamedTuple):
     tokens: Optional[Sequence[str]] = None
