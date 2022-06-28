@@ -45,7 +45,7 @@ class AlephAlphaModel:
 
     def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         response_json = self.client.evaluate(
-            model=self.model_name, hosting=self.hosting, **request._asdict()
+            model=self.model_name, hosting=self.hosting, **self.as_request_dict(request)
         )
         return EvaluationResponse.from_json(response_json)
 
@@ -62,6 +62,6 @@ class AlephAlphaModel:
 
     @staticmethod
     def as_request_dict(
-        request: Union[CompletionRequest, EmbeddingRequest]
+        request: Union[CompletionRequest, EmbeddingRequest, EvaluationRequest]
     ) -> Mapping[str, Any]:
         return ChainMap({"prompt": request.prompt.items}, request._asdict())

@@ -4,12 +4,13 @@ import pytest
 from aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.evaluation import EvaluationRequest
+from aleph_alpha_client.prompt import Prompt
 from tests.common import client, model_name, model
 
 
 def test_evaluate(model: AlephAlphaModel):
 
-    request = EvaluationRequest(prompt=["hello"], completion_expected="world")
+    request = EvaluationRequest(prompt=Prompt.from_text("hello"), completion_expected="world")
 
     result = model.evaluate(request)
 
@@ -30,7 +31,7 @@ def test_evaluate_fails(model: AlephAlphaModel):
 
     # when posting an illegal request
     request = EvaluationRequest(
-        prompt=["hello"],
+        prompt=Prompt.from_text("hello"),
         completion_expected="",
     )
 
