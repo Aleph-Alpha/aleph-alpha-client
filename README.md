@@ -137,6 +137,31 @@ result = model.embed(request)
 print(result)
 ```
 
+### Semantic embedding
+
+
+```python
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, SemanticEmbeddingRequest, Prompt
+import os
+
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with multimodal capabilities for this example.
+    model_name = "luminous-base"
+)
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
+image = ImagePrompt.from_url(url)
+prompt = Prompt([
+    image,
+    "Q: What is the name of the store?\nA:",
+])
+request = SemanticEmbeddingRequest(prompt=prompt, type="symmetric")
+result = model.semantic_embed(request)
+
+print(result)
+```
+
 
 ### Q&A with a Docx Document
 

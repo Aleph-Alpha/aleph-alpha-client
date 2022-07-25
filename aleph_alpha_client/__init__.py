@@ -3,7 +3,7 @@ from .aleph_alpha_model import AlephAlphaModel
 from .image import ImagePrompt
 from .prompt import Prompt
 from .explanation import ExplanationRequest
-from .embedding import EmbeddingRequest
+from .embedding import EmbeddingRequest, SemanticEmbeddingRequest
 from .completion import CompletionRequest
 from .qa import QaRequest
 from .evaluation import EvaluationRequest

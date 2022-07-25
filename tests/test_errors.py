@@ -1,6 +1,6 @@
 import pytest
 import requests
-from tests.common import client
+from tests.common import client, model_name
 
 
 @pytest.mark.parametrize(
@@ -220,11 +220,11 @@ from tests.common import client
     ],
 )
 def test_aleph_alpha_client_completion_errors(
-    client, config, description, exception_type
+    client, model_name, config, description, exception_type
 ):
     if "model" in config:
         if config["model"] == "test_model":
-            config["model"] = client.test_model
+            config["model"] = model_name
 
     with pytest.raises(exception_type):
         client.complete(**config)
@@ -276,11 +276,11 @@ def test_aleph_alpha_client_completion_errors(
     ],
 )
 def test_aleph_alpha_client_evaluation_errors(
-    client, config, description, exception_type
+    client, model_name, config, description, exception_type
 ):
     if "model" in config:
         if config["model"] == "test_model":
-            config["model"] = client.test_model
+            config["model"] = model_name
 
     with pytest.raises(exception_type):
         client.evaluate(**config)
@@ -363,10 +363,10 @@ def test_aleph_alpha_client_evaluation_errors(
         ),
     ],
 )
-def test_aleph_alpha_client_qa_errors(client, config, description, exception_type):
+def test_aleph_alpha_client_qa_errors(client, model_name, config, description, exception_type):
     if "model" in config:
         if config["model"] == "test_model":
-            config["model"] = client.test_model
+            config["model"] = model_name
 
     with pytest.raises(exception_type):
         client.qa(**config)

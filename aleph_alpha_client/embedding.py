@@ -56,3 +56,24 @@ class EmbeddingResponse(NamedTuple):
             },
             tokens=json.get("tokens"),
         )
+
+
+class SemanticEmbeddingRequest(NamedTuple):
+    """
+    Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
+
+    Parameters:
+        prompt
+            The text and/or image(s) to be embedded.
+
+        type
+            Type of the embedding (e.g. symmetric or asymmetric)
+
+        tokens
+            Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
+
+    """
+
+    prompt: Prompt
+    type: str
+    tokens: bool = False
