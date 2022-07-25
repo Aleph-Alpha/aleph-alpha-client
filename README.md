@@ -150,13 +150,7 @@ model = AlephAlphaModel(
     model_name = "luminous-base"
 )
 
-url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
-image = ImagePrompt.from_url(url)
-prompt = Prompt([
-    image,
-    "Q: What is the name of the store?\nA:",
-])
-request = SemanticEmbeddingRequest(prompt=prompt, type="symmetric")
+request = SemanticEmbeddingRequest(prompt=Prompt.from_text("This is an example."), type="symmetric")
 result = model.semantic_embed(request)
 
 print(result)
