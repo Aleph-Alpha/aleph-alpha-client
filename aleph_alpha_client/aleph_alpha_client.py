@@ -337,8 +337,9 @@ class AlephAlphaClient:
             "hosting": hosting,
             "prompt": serializable_prompt,
             "representation": request.representation.value,
-            "size": request.size,
         }
+        if request.size is not None:
+            payload["size"] = request.size
         response = requests.post(
             self.host + "semantic_embed", headers=self.request_headers, json=payload
         )

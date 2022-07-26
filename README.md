@@ -142,6 +142,7 @@ print(result)
 
 ```python
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, SemanticEmbeddingRequest, SemanticRepresentation, Prompt
+import math
 import os
 
 model = AlephAlphaModel(
@@ -150,10 +151,35 @@ model = AlephAlphaModel(
     model_name = "luminous-base"
 )
 
-request = SemanticEmbeddingRequest(prompt=Prompt.from_text("This is an example."), representation=SemanticRepresentation.Symmetric)
-result = model.semantic_embed(request)
+# Texts to compare
+texts = [
+    "deep learning",
+    "artificial intelligence",
+    "deep diving",
+    "artificial snow",
+]
 
-print(result)
+embeddings = []
+
+for text in texts:
+    request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric)
+    result = model.semantic_embed(request)
+    embeddings.append(result.embedding)
+
+# Calculate cosine similarities. Can use numpy or scipy or another library to do this
+def cosine_similarity(v1, v2):
+    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+    sumxx, sumxy, sumyy = 0, 0, 0
+    for i in range(len(v1)):
+        x = v1[i]; y = v2[i]
+        sumxx += x*x
+        sumyy += y*y
+        sumxy += x*y
+    return sumxy/math.sqrt(sumxx*sumyy)
+# Cosine similarities are in [-1, 1]. Higher means more similar
+print("Cosine similarity between \"%s\" and \"%s\" is: %.3f" % (texts[0], texts[1], cosine_similarity(embeddings[0], embeddings[1])))
+print("Cosine similarity between \"%s\" and \"%s\" is: %.3f" % (texts[0], texts[2], cosine_similarity(embeddings[0], embeddings[2])))
+print("Cosine similarity between \"%s\" and \"%s\" is: %.3f" % (texts[0], texts[3], cosine_similarity(embeddings[0], embeddings[3])))
 ```
 
 
