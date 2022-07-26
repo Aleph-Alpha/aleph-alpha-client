@@ -9,7 +9,8 @@ from aleph_alpha_client.detokenization import (
 from aleph_alpha_client.embedding import (
     EmbeddingRequest,
     EmbeddingResponse,
-    EmbeddingForSearchRequest,
+    SemanticEmbeddingRequest,
+    SemanticEmbeddingResponse,
 )
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.explanation import ExplanationRequest
@@ -47,11 +48,13 @@ class AlephAlphaModel:
         )
         return EmbeddingResponse.from_json(response_json)
 
-    def embed_for_search(self, request: EmbeddingForSearchRequest) -> EmbeddingResponse:
-        response_json = self.client.embed_for_search(
+    def semantic_embed(
+        self, request: SemanticEmbeddingRequest
+    ) -> SemanticEmbeddingResponse:
+        response_json = self.client.semantic_embed(
             model=self.model_name, hosting=self.hosting, request=request
         )
-        return EmbeddingResponse.from_json(response_json)
+        return SemanticEmbeddingResponse.from_json(response_json)
 
     def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         response_json = self.client.evaluate(

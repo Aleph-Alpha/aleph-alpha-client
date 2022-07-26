@@ -2,7 +2,10 @@ from typing import List
 import pytest
 from aleph_alpha_client import AlephAlphaClient, EmbeddingRequest
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
-from aleph_alpha_client.embedding import EmbeddingForSearchRequest
+from aleph_alpha_client.embedding import (
+    SemanticEmbeddingRequest,
+    SemanticRepresentation,
+)
 from aleph_alpha_client.prompt import Prompt
 from tests.common import client, model_name, luminous_base, model
 
@@ -87,15 +90,14 @@ def test_failing_embedding_request(model: AlephAlphaModel):
 
 def test_embed_semantic(luminous_base: AlephAlphaModel):
 
-    request = EmbeddingForSearchRequest(
+    request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
-        type="symmetric",
+        representation=SemanticRepresentation.Symmetric,
+        size=128,
     )
 
-    result = luminous_base.embed_for_search(request=request)
+    result = luminous_base.semantic_embed(request=request)
 
     assert result.model_version is not None
-    assert result.embeddings
-    assert len(result.embeddings) == 1
-    assert ("symmetric", "weighted_mean") in result.embeddings
-    assert result.tokens is None
+    assert result.embedding
+    assert len(result.embedding) == 128

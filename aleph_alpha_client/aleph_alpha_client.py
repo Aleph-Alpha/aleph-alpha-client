@@ -5,7 +5,7 @@ import requests
 import logging
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
-from aleph_alpha_client.embedding import EmbeddingForSearchRequest
+from aleph_alpha_client.embedding import SemanticEmbeddingRequest
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
@@ -306,11 +306,11 @@ class AlephAlphaClient:
         )
         return self._translate_errors(response)
 
-    def embed_for_search(
+    def semantic_embed(
         self,
         model,
         hosting: str,
-        request: EmbeddingForSearchRequest,
+        request: SemanticEmbeddingRequest,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -334,12 +334,13 @@ class AlephAlphaClient:
 
         payload = {
             "model": model,
-            "prompt": serializable_prompt,
             "hosting": hosting,
-            "type": request.type,
+            "prompt": serializable_prompt,
+            "representation": request.representation.value,
+            "size": request.size,
         }
         response = requests.post(
-            self.host + "embed_for_search", headers=self.request_headers, json=payload
+            self.host + "semantic_embed", headers=self.request_headers, json=payload
         )
         return self._translate_errors(response)
 

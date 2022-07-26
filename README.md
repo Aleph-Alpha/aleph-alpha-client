@@ -141,7 +141,7 @@ print(result)
 
 
 ```python
-from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, EmbeddingForSearchRequest, Prompt
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, SemanticEmbeddingRequest, SemanticRepresentation, Prompt
 import os
 
 model = AlephAlphaModel(
@@ -150,8 +150,8 @@ model = AlephAlphaModel(
     model_name = "luminous-base"
 )
 
-request = EmbeddingForSearchRequest(prompt=Prompt.from_text("This is an example."), type="symmetric")
-result = model.embed_for_search(request)
+request = SemanticEmbeddingRequest(prompt=Prompt.from_text("This is an example."), representation=SemanticRepresentation.Symmetric)
+result = model.semantic_embed(request)
 
 print(result)
 ```
