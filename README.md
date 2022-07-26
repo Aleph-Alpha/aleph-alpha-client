@@ -139,6 +139,8 @@ print(result)
 
 ### Semantic embedding
 
+#### Symmetric
+
 
 ```python
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, SemanticEmbeddingRequest, SemanticRepresentation, Prompt
@@ -180,6 +182,61 @@ def cosine_similarity(v1, v2):
 print("Cosine similarity between \"%s\" and \"%s\" is: %.3f" % (texts[0], texts[1], cosine_similarity(embeddings[0], embeddings[1])))
 print("Cosine similarity between \"%s\" and \"%s\" is: %.3f" % (texts[0], texts[2], cosine_similarity(embeddings[0], embeddings[2])))
 print("Cosine similarity between \"%s\" and \"%s\" is: %.3f" % (texts[0], texts[3], cosine_similarity(embeddings[0], embeddings[3])))
+```
+
+#### Documents and Query
+
+
+```python
+from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, SemanticEmbeddingRequest, SemanticRepresentation, Prompt
+import math
+import os
+
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with multimodal capabilities for this example.
+    model_name = "luminous-base"
+)
+
+# Documents to search in
+documents = [
+    # AI wikipedia article
+    "Artificial intelligence (AI) is intelligence demonstrated by machines, as opposed to the natural intelligence displayed by animals including humans. AI research has been defined as the field of study of intelligent agents, which refers to any system that perceives its environment and takes actions that maximize its chance of achieving its goals.",
+    # Deep Learning Wikipedia article
+    "Deep learning (also known as deep structured learning) is part of a broader family of machine learning methods based on artificial neural networks with representation learning. Learning can be supervised, semi-supervised or unsupervised.",
+    # Deep Diving Wikipedia article
+    "Deep diving is underwater diving to a depth beyond the norm accepted by the associated community. In some cases this is a prescribed limit established by an authority, while in others it is associated with a level of certification or training, and it may vary depending on whether the diving is recreational, technical or commercial. Nitrogen narcosis becomes a hazard below 30 metres (98 ft) and hypoxic breathing gas is required below 60 metres (200 ft) to lessen the risk of oxygen toxicity.",
+]
+# Keyword to search documents with
+query = "artificial intelligence"
+
+# Embed Query
+request = SemanticEmbeddingRequest(prompt=Prompt.from_text(query), representation=SemanticRepresentation.Query)
+result = model.semantic_embed(request)
+query_embedding = result.embedding
+
+# Embed documents
+document_embeddings = []
+
+for document in documents:
+    request = SemanticEmbeddingRequest(prompt=Prompt.from_text(document), representation=SemanticRepresentation.Document)
+    result = model.semantic_embed(request)
+    document_embeddings.append(result.embedding)
+
+# Calculate cosine similarities. Can use numpy or scipy or another library to do this
+def cosine_similarity(v1, v2):
+    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+    sumxx, sumxy, sumyy = 0, 0, 0
+    for i in range(len(v1)):
+        x = v1[i]; y = v2[i]
+        sumxx += x*x
+        sumyy += y*y
+        sumxy += x*y
+    return sumxy/math.sqrt(sumxx*sumyy)
+# Cosine similarities are in [-1, 1]. Higher means more similar
+print("Cosine similarity between \"%s\" and \"%s...\" is: %.3f" % (query, documents[0][:10], cosine_similarity(query_embedding, document_embeddings[0])))
+print("Cosine similarity between \"%s\" and \"%s...\" is: %.3f" % (query, documents[1][:10], cosine_similarity(query_embedding, document_embeddings[1])))
+print("Cosine similarity between \"%s\" and \"%s...\" is: %.3f" % (query, documents[2][:10], cosine_similarity(query_embedding, document_embeddings[2])))
 ```
 
 
