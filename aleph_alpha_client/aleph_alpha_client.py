@@ -1,5 +1,5 @@
 from socket import timeout
-from typing import List, Optional, Dict, Sequence, Union
+from typing import Any, List, Optional, Dict, Sequence, Union
 
 import requests
 import logging
@@ -334,7 +334,7 @@ class AlephAlphaClient:
             prompt=request.prompt.items, at_least_one_token=True
         )
 
-        payload = {
+        payload: Dict[str, Any] = {
             "model": model,
             "hosting": hosting,
             "prompt": serializable_prompt,
