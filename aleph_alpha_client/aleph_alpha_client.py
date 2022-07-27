@@ -3,6 +3,8 @@ from typing import List, Optional, Dict, Sequence, Union
 
 import requests
 import logging
+
+from requests import Response
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.embedding import SemanticEmbeddingRequest
@@ -240,7 +242,7 @@ class AlephAlphaClient:
 
     def embed(
         self,
-        model,
+        model: str,
         prompt: Union[str, Sequence[Union[str, ImagePrompt]]],
         pooling: List[str],
         layers: List[int],
@@ -308,7 +310,7 @@ class AlephAlphaClient:
 
     def semantic_embed(
         self,
-        model,
+        model: str,
         hosting: str,
         request: SemanticEmbeddingRequest,
     ):
@@ -479,7 +481,7 @@ class AlephAlphaClient:
         return self._translate_errors(response)
 
     @staticmethod
-    def _translate_errors(response):
+    def _translate_errors(response: Response):
         if response.status_code == 200:
             return response.json()
         else:

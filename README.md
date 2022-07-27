@@ -143,6 +143,7 @@ print(result)
 
 
 ```python
+from typing import Sequence
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, SemanticEmbeddingRequest, SemanticRepresentation, Prompt
 import math
 import os
@@ -169,7 +170,7 @@ for text in texts:
     embeddings.append(result.embedding)
 
 # Calculate cosine similarities. Can use numpy or scipy or another library to do this
-def cosine_similarity(v1, v2):
+def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
     "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
     sumxx, sumxy, sumyy = 0, 0, 0
     for i in range(len(v1)):
@@ -188,6 +189,7 @@ print("Cosine similarity between \"%s\" and \"%s\" is: %.3f" % (texts[0], texts[
 
 
 ```python
+from typing import Sequence
 from aleph_alpha_client import ImagePrompt, AlephAlphaClient, AlephAlphaModel, SemanticEmbeddingRequest, SemanticRepresentation, Prompt
 import math
 import os
@@ -224,7 +226,7 @@ for document in documents:
     document_embeddings.append(result.embedding)
 
 # Calculate cosine similarities. Can use numpy or scipy or another library to do this
-def cosine_similarity(v1, v2):
+def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
     "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
     sumxx, sumxy, sumyy = 0, 0, 0
     for i in range(len(v1)):
