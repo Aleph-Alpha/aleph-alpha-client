@@ -98,19 +98,22 @@ class SemanticEmbeddingRequest(NamedTuple):
             The text and/or image(s) to be embedded.
         representation
             Semantic representation to embed the prompt with.
-        size
-            Options available: 128 5120
-            Default: 5120
-            The number of dimensions in the embedding. Default behavior is to return the full, 5120 dimension, embedding.
+        compress_to_size
+            Options available: 128
+
+            The default behavior is to return the full embedding, but you can optionally request an embedding compressed to a smaller set of dimensions.
+
+            Full embedding sizes for supported models:
+              - luminous-base: 5120
 
             The 128 size is expected to have a small drop in accuracy performance (4-6%), with the benefit of being much smaller, which makes comparing these embeddings much faster for use cases where speed is critical.
 
-            The 128 size also can perform better if you are embedding really short texts or documents.
+            The 128 size can also perform better if you are embedding really short texts or documents.
     """
 
     prompt: Prompt
     representation: SemanticRepresentation
-    size: Optional[Literal[128, 5120]] = None
+    compress_to_size: Optional[Literal[128]] = None
 
 
 class SemanticEmbeddingResponse(NamedTuple):

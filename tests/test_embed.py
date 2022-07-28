@@ -93,7 +93,7 @@ def test_embed_semantic(luminous_base: AlephAlphaModel):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
         representation=SemanticRepresentation.Symmetric,
-        size=128,
+        compress_to_size=128,
     )
 
     result = luminous_base.semantic_embed(request=request)
