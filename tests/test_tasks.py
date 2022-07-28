@@ -1,6 +1,5 @@
 import pytest
 import time
-import requests
 from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt, Document
 from tests.common import client, model_name
 
