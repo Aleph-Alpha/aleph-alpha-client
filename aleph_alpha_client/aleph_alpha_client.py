@@ -21,10 +21,14 @@ class QuotaError(Exception):
 
 
 class AlephAlphaClient:
-    def __init__(self, host, token=None, email=None, password=None):
+    def __init__(
+        self, host, token=None, email=None, password=None, request_timeout_seconds=180
+    ):
         if host[-1] != "/":
             host += "/"
         self.host = host
+
+        self.request_timeout_seconds = request_timeout_seconds
 
         # check server version
         expect_release = "1"
@@ -38,12 +42,12 @@ class AlephAlphaClient:
         self.token = token or self.get_token(email, password)
 
     def get_version(self):
-        response = requests.get(self.host + "version")
+        response = self.get_request(self.host + "version")
         response.raise_for_status()
         return response.text
 
     def get_token(self, email, password):
-        response = requests.post(
+        response = self.post_request(
             self.host + "get_token", json={"email": email, "password": password}
         )
         if response.status_code == 200:
@@ -51,6 +55,14 @@ class AlephAlphaClient:
             return response_json["token"]
         else:
             raise ValueError("cannot get token")
+
+    def get_request(self, url, headers=None):
+        return requests.get(url, headers=headers, timeout=self.request_timeout_seconds)
+
+    def post_request(self, url, json, headers=None):
+        return requests.post(
+            url, headers=headers, json=json, timeout=self.request_timeout_seconds
+        )
 
     @property
     def request_headers(self):
@@ -63,7 +75,7 @@ class AlephAlphaClient:
         """
         Queries all models which are currently available.
         """
-        response = requests.get(
+        response = self.get_request(
             self.host + "models_available", headers=self.request_headers
         )
         return self._translate_errors(response)
@@ -80,11 +92,10 @@ class AlephAlphaClient:
             "tokens": tokens,
             "token_ids": token_ids,
         }
-        response = requests.post(
+        response = self.post_request(
             self.host + "tokenize",
             headers=self.request_headers,
             json=payload,
-            timeout=None,
         )
         return self._translate_errors(response)
 
@@ -93,11 +104,10 @@ class AlephAlphaClient:
         Detokenizes the given tokens.
         """
         payload = {"model": model, "token_ids": token_ids}
-        response = requests.post(
+        response = self.post_request(
             self.host + "detokenize",
             headers=self.request_headers,
             json=payload,
-            timeout=None,
         )
         return self._translate_errors(response)
 
@@ -226,11 +236,10 @@ class AlephAlphaClient:
             "disable_optimizations": disable_optimizations,
         }
 
-        response = requests.post(
+        response = self.post_request(
             self.host + "complete",
             headers=self.request_headers,
             json=payload,
-            timeout=None,
         )
         response_json = self._translate_errors(response)
         if response_json.get("optimized_prompt") is not None:
@@ -303,7 +312,7 @@ class AlephAlphaClient:
             "pooling": pooling,
             "type": type,
         }
-        response = requests.post(
+        response = self.post_request(
             self.host + "embed", headers=self.request_headers, json=payload
         )
         return self._translate_errors(response)
@@ -341,7 +350,7 @@ class AlephAlphaClient:
             "representation": request.representation.value,
             "compress_to_size": request.compress_to_size,
         }
-        response = requests.post(
+        response = self.post_request(
             self.host + "semantic_embed", headers=self.request_headers, json=payload
         )
         return self._translate_errors(response)
@@ -380,7 +389,7 @@ class AlephAlphaClient:
             "hosting": hosting,
             "completion_expected": completion_expected,
         }
-        response = requests.post(
+        response = self.post_request(
             self.host + "evaluate", headers=self.request_headers, json=payload
         )
         return self._translate_errors(response)
@@ -454,11 +463,10 @@ class AlephAlphaClient:
             "hosting": hosting,
         }
 
-        response = requests.post(
+        response = self.post_request(
             self.host + "qa",
             headers=self.request_headers,
             json=payload,
-            timeout=None,
         )
         response_json = self._translate_errors(response)
         return response_json
@@ -474,7 +482,7 @@ class AlephAlphaClient:
             "directional": request.directional,
             "conceptual_suppression_threshold": request.conceptual_suppression_threshold,
         }
-        response = requests.post(
+        response = self.post_request(
             f"{self.host}explain", headers=self.request_headers, json=body
         )
         return self._translate_errors(response)

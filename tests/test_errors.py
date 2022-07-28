@@ -1,3 +1,5 @@
+import time
+from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 import pytest
 import requests
 from tests.common import client, model_name
@@ -363,7 +365,9 @@ def test_aleph_alpha_client_evaluation_errors(
         ),
     ],
 )
-def test_aleph_alpha_client_qa_errors(client, model_name, config, description, exception_type):
+def test_aleph_alpha_client_qa_errors(
+    client, model_name, config, description, exception_type
+):
     if "model" in config:
         if config["model"] == "test_model":
             config["model"] = model_name
@@ -375,3 +379,21 @@ def test_aleph_alpha_client_qa_errors(client, model_name, config, description, e
         client.host + "qa", headers=client.request_headers, json=config
     )
     assert response.status_code == 400, description
+
+
+# setting a fixed port for httpserver
+@pytest.fixture(scope="session")
+def httpserver_listen_address():
+    return ("127.0.0.1", 8000)
+
+
+def test_timeout(httpserver):
+
+    httpserver.expect_request("/version").respond_with_handler(
+        lambda request: time.sleep(2)
+    )
+    """Ensures Timeouts works. AlephAlphaClient constructor calls version endpoint."""
+    with pytest.raises(requests.exceptions.Timeout):
+        AlephAlphaClient(
+            host="http://localhost:8000/", token="AA_TOKEN", request_timeout_seconds=1
+        )
