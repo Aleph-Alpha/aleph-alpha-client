@@ -20,7 +20,9 @@ def test_detokenize_with_client(client: AlephAlphaClient, model_name: str):
 
 def test_detokenize_fails(model: AlephAlphaModel):
     # given a client
-    assert model.model_name in map(lambda model: model["name"], model.client.available_models())
+    assert model.model_name in map(
+        lambda model: model["name"], model.client.available_models()
+    )
 
     # when posting an illegal request
     request = DetokenizationRequest([])
@@ -29,4 +31,4 @@ def test_detokenize_fails(model: AlephAlphaModel):
     with pytest.raises(ValueError) as e:
         response = model.detokenize(request=request)
 
-    e.value.args[0] == 400
+    assert e.value.args[0] == 400

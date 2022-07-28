@@ -1,6 +1,14 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Tuple, Union
-from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import Prompt, _to_prompt_item
+from enum import Enum
+from typing import (
+    Any,
+    Dict,
+    List,
+    Literal,
+    NamedTuple,
+    Optional,
+    Tuple,
+)
+from aleph_alpha_client.prompt import Prompt
 
 
 class EmbeddingRequest(NamedTuple):
@@ -44,6 +52,7 @@ class EmbeddingResponse(NamedTuple):
     model_version: str
     embeddings: Optional[Dict[Tuple[str, str], List[float]]]
     tokens: Optional[List[str]]
+    message: Optional[str] = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "EmbeddingResponse":
@@ -55,4 +64,63 @@ class EmbeddingResponse(NamedTuple):
                 for pooling, embedding in pooling_dict.items()
             },
             tokens=json.get("tokens"),
+            message=json.get("message"),
         )
+
+
+class SemanticRepresentation(Enum):
+    """
+    Available types of semantic representations that prompts can be embedded with.
+
+    Symmetric:
+        `Symmetric` is useful for comparing prompts to each other, in use cases such as clustering, classification, similarity, etc. `Symmetric` embeddings should be compared with other `Symmetric` embeddings.
+    Document:
+        `Document` and `Query` are used together in use cases such as search where you want to compare shorter queries against larger documents.
+
+        `Document` embeddings are optimized for larger pieces of text to compare queries against.
+    Query:
+        `Document` and `Query` are used together in use cases such as search where you want to compare shorter queries against larger documents.
+
+        `Query` embeddings are optimized for shorter texts, such as questions or keywords.
+    """
+
+    Symmetric = "symmetric"
+    Document = "document"
+    Query = "query"
+
+
+class SemanticEmbeddingRequest(NamedTuple):
+    """
+    Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
+
+    Parameters:
+        prompt
+            The text and/or image(s) to be embedded.
+        representation
+            Semantic representation to embed the prompt with.
+        compress_to_size
+            Options available: 128
+
+            The default behavior is to return the full embedding, but you can optionally request an embedding compressed to a smaller set of dimensions.
+
+            Full embedding sizes for supported models:
+              - luminous-base: 5120
+
+            The 128 size is expected to have a small drop in accuracy performance (4-6%), with the benefit of being much smaller, which makes comparing these embeddings much faster for use cases where speed is critical.
+
+            The 128 size can also perform better if you are embedding really short texts or documents.
+    """
+
+    prompt: Prompt
+    representation: SemanticRepresentation
+    compress_to_size: Optional[Literal[128]] = None
+
+
+class SemanticEmbeddingResponse(NamedTuple):
+    model_version: str
+    embedding: List[float]
+    message: Optional[str] = None
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "SemanticEmbeddingResponse":
+        return SemanticEmbeddingResponse(**json)

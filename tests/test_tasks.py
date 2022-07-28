@@ -2,7 +2,7 @@ import pytest
 import time
 import requests
 from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt, Document
-from tests.common import client
+from tests.common import client, model_name
 
 
 def validate_completion_task_output(task, output):
@@ -198,9 +198,10 @@ def validate_qa_task_output(task, output):
 
 
 @pytest.mark.parametrize(
-    "endpoint,task_definition",
+    "model_name,endpoint,task_definition",
     [
         (
+            "luminous-base",
             "complete",
             {
                 "model": "test_model",
@@ -211,6 +212,7 @@ def validate_qa_task_output(task, output):
             },
         ),
         (
+            "luminous-base",
             "complete",
             {
                 "model": "test_model",
@@ -221,6 +223,7 @@ def validate_qa_task_output(task, output):
             },
         ),
         (
+            "luminous-base",
             "complete",
             {
                 "model": "test_model",
@@ -231,10 +234,12 @@ def validate_qa_task_output(task, output):
             },
         ),
         (
+            "luminous-base",
             "evaluate",
             {"model": "test_model", "prompt": "", "completion_expected": "abc"},
         ),
         (
+            "luminous-extended",
             "qa",
             {
                 "model": "test_model",
@@ -244,6 +249,7 @@ def validate_qa_task_output(task, output):
             },
         ),
         (
+            "luminous-extended",
             "qa",
             {
                 "model": "test_model",
@@ -254,10 +260,10 @@ def validate_qa_task_output(task, output):
         ),
     ],
 )
-def test_task(client, endpoint, task_definition):
+def test_task(client, model_name, endpoint, task_definition):
     if "model" in task_definition:
         if task_definition["model"] == "test_model":
-            task_definition["model"] = client.test_model
+            task_definition["model"] = model_name
 
     # start a task in a thread in order to run worker in between
     if endpoint == "complete":
@@ -279,11 +285,11 @@ def test_task(client, endpoint, task_definition):
         validate_qa_task_output(task_definition, result)
 
 
-def test_should_answer_question_about_image(client):
+def test_should_answer_question_about_image(client, model_name):
 
     # Only execute this test if the model has multimodal support
     models = client.available_models()
-    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    model = next(filter(lambda model: model["name"] == model_name, models))
     if not model["image_support"]:
         return
 
@@ -293,7 +299,7 @@ def test_should_answer_question_about_image(client):
     ]
 
     result = client.complete(
-        model=client.test_model, prompt=prompt, maximum_tokens=64, tokens=False
+        model=model_name, prompt=prompt, maximum_tokens=64, tokens=False
     )
     print(result)
 
@@ -301,10 +307,10 @@ def test_should_answer_question_about_image(client):
 
 
 # pytest tests/testcases/test_tasks.py::test_should_entertain_image_cropping_params -s
-def test_should_entertain_image_cropping_params(client):
+def test_should_entertain_image_cropping_params(client, model_name):
     # Only execute this test if the model has multimodal support
     models = client.available_models()
-    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    model = next(filter(lambda model: model["name"] == model_name, models))
     if not model["image_support"]:
         return
 
@@ -313,18 +319,18 @@ def test_should_entertain_image_cropping_params(client):
     ]
 
     result = client.complete(
-        model=client.test_model, prompt=prompt, maximum_tokens=64, tokens=False
+        model=model_name, prompt=prompt, maximum_tokens=64, tokens=False
     )
     print(result)
 
     assert "dog" in result["completions"][0]["completion"].lower()
 
 
-def test_should_answer_query_about_docx_document(client):
+def test_should_answer_query_about_docx_document(client, model_name):
 
     # Only execute this test if the model has qa support
     models = client.available_models()
-    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    model = next(filter(lambda model: model["name"] == model_name, models))
     if not model["qa_support"]:
         return
 
@@ -336,17 +342,17 @@ def test_should_answer_query_about_docx_document(client):
     documents = [document]
 
     result = client.qa(
-        model=client.test_model, query=query, documents=documents, maximum_tokens=64
+        model=model_name, query=query, documents=documents, maximum_tokens=64
     )
 
     assert "Markus" in result["answers"][0]["answer"]
 
 
-def test_should_answer_query_about_docx_bytes_document(client):
+def test_should_answer_query_about_docx_bytes_document(client, model_name):
 
     # Only execute this test if the model has qa & multimodal support
     models = client.available_models()
-    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    model = next(filter(lambda model: model["name"] == model_name, models))
     if not model["qa_support"]:
         return
 
@@ -363,17 +369,17 @@ def test_should_answer_query_about_docx_bytes_document(client):
         documents = [document]
 
         result = client.qa(
-            model=client.test_model, query=query, documents=documents, maximum_tokens=64
+            model=model_name, query=query, documents=documents, maximum_tokens=64
         )
 
         assert "Markus" in result["answers"][0]["answer"]
 
 
-def test_should_answer_query_about_prompt_document(client):
+def test_should_answer_query_about_prompt_document(client, model_name):
 
     # Only execute this test if the model has qa support
     models = client.available_models()
-    model = next(filter(lambda model: model["name"] == client.test_model, models))
+    model = next(filter(lambda model: model["name"] == model_name, models))
     if not (model["qa_support"] and model["image_support"]):
         return
 
@@ -384,7 +390,7 @@ def test_should_answer_query_about_prompt_document(client):
     documents = [document]
 
     result = client.qa(
-        model=client.test_model, query=query, documents=documents, maximum_tokens=64
+        model=model_name, query=query, documents=documents, maximum_tokens=64
     )
 
     assert "Markus" in result["answers"][0]["answer"]

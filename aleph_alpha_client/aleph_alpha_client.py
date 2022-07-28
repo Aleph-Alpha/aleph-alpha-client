@@ -1,10 +1,13 @@
 from socket import timeout
-from typing import List, Optional, Dict, Sequence, Union
+from typing import Any, List, Optional, Dict, Sequence, Union
 
 import requests
 import logging
+
+from requests import Response
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
+from aleph_alpha_client.embedding import SemanticEmbeddingRequest
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
@@ -239,7 +242,7 @@ class AlephAlphaClient:
 
     def embed(
         self,
-        model,
+        model: str,
         prompt: Union[str, Sequence[Union[str, ImagePrompt]]],
         pooling: List[str],
         layers: List[int],
@@ -302,6 +305,44 @@ class AlephAlphaClient:
         }
         response = requests.post(
             self.host + "embed", headers=self.request_headers, json=payload
+        )
+        return self._translate_errors(response)
+
+    def semantic_embed(
+        self,
+        model: str,
+        hosting: str,
+        request: SemanticEmbeddingRequest,
+    ):
+        """
+        Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
+
+        Parameters:
+            model (str, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
+
+            hosting (str, required):
+                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+                executed on any of our servers. An error will be returned if the specified hosting is not available.
+                Check available_models() for available hostings.
+
+            request (SemanticEmbeddingRequest, required)
+                NamedTuple containing all necessary request parameters.
+        """
+
+        serializable_prompt = _to_serializable_prompt(
+            prompt=request.prompt.items, at_least_one_token=True
+        )
+
+        payload: Dict[str, Any] = {
+            "model": model,
+            "hosting": hosting,
+            "prompt": serializable_prompt,
+            "representation": request.representation.value,
+            "compress_to_size": request.compress_to_size,
+        }
+        response = requests.post(
+            self.host + "semantic_embed", headers=self.request_headers, json=payload
         )
         return self._translate_errors(response)
 
@@ -402,7 +443,9 @@ class AlephAlphaClient:
         payload = {
             "model": model,
             "query": query,
-            "documents": [document._to_serializable_document() for document in documents],
+            "documents": [
+                document._to_serializable_document() for document in documents
+            ],
             "maximum_tokens": maximum_tokens,
             "max_answers": max_answers,
             "min_score": min_score,
@@ -420,21 +463,24 @@ class AlephAlphaClient:
         response_json = self._translate_errors(response)
         return response_json
 
-    def _explain(self, model: str, request: ExplanationRequest, hosting: Optional[str] = None):
+    def _explain(
+        self, model: str, request: ExplanationRequest, hosting: Optional[str] = None
+    ):
         body = {
             "model": model,
             "prompt": [_to_prompt_item(item) for item in request.prompt.items],
             "target": request.target,
             "suppression_factor": request.suppression_factor,
             "directional": request.directional,
-            "conceptual_suppression_threshold": request.conceptual_suppression_threshold
+            "conceptual_suppression_threshold": request.conceptual_suppression_threshold,
         }
-        response = requests.post(f"{self.host}explain", headers=self.request_headers, json=body)
+        response = requests.post(
+            f"{self.host}explain", headers=self.request_headers, json=body
+        )
         return self._translate_errors(response)
-        
 
     @staticmethod
-    def _translate_errors(response):
+    def _translate_errors(response: Response):
         if response.status_code == 200:
             return response.json()
         else:

@@ -6,7 +6,12 @@ from aleph_alpha_client.detokenization import (
     DetokenizationRequest,
     DetokenizationResponse,
 )
-from aleph_alpha_client.embedding import EmbeddingRequest, EmbeddingResponse
+from aleph_alpha_client.embedding import (
+    EmbeddingRequest,
+    EmbeddingResponse,
+    SemanticEmbeddingRequest,
+    SemanticEmbeddingResponse,
+)
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.qa import QaRequest, QaResponse
@@ -42,6 +47,14 @@ class AlephAlphaModel:
             model=self.model_name, hosting=self.hosting, **self.as_request_dict(request)
         )
         return EmbeddingResponse.from_json(response_json)
+
+    def semantic_embed(
+        self, request: SemanticEmbeddingRequest
+    ) -> SemanticEmbeddingResponse:
+        response_json = self.client.semantic_embed(
+            model=self.model_name, hosting=self.hosting, request=request
+        )
+        return SemanticEmbeddingResponse.from_json(response_json)
 
     def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
         response_json = self.client.evaluate(
