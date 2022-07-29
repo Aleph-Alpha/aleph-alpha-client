@@ -63,7 +63,7 @@ def test_qa_with_client(client: AlephAlphaClient):
     assert response["model_version"] is not None
 
 
-def test_qa_fails(luminous_extended: AlephAlphaModel):
+def test_text(luminous_extended: AlephAlphaModel):
     # given a client
     assert luminous_extended.model_name in map(
         lambda model: model["name"], luminous_extended.client.available_models()
@@ -72,11 +72,12 @@ def test_qa_fails(luminous_extended: AlephAlphaModel):
     # when posting an illegal request
     request = QaRequest(
         query="Who likes pizza?",
-        documents=[Document.from_prompt(["Andreas likes pizza."]) for _ in range(21)],
+        documents=[Document.from_text("Andreas likes pizza.")],
     )
 
     # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(ValueError) as e:
-        response = luminous_extended.qa(request)
+    response = luminous_extended.qa(request)
 
-    assert e.value.args[0] == 400
+    # The response should exist in the form of a json dict
+    assert len(response["answers"]) == 1
+    assert response["model_version"] is not None
