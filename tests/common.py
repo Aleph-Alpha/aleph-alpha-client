@@ -7,21 +7,6 @@ from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 
 
 @pytest.fixture(scope="session")
-def model(client: AlephAlphaClient, model_name: str) -> AlephAlphaModel:
-    return AlephAlphaModel(client, model_name)
-
-
-@pytest.fixture(scope="session")
-def luminous_base(client: AlephAlphaClient) -> AlephAlphaModel:
-    return AlephAlphaModel(client, "luminous-base")
-
-
-@pytest.fixture(scope="session")
-def luminous_extended(client: AlephAlphaClient) -> AlephAlphaModel:
-    return AlephAlphaModel(client, "luminous-extended")
-
-
-@pytest.fixture(scope="session")
 def client() -> Iterable[AlephAlphaClient]:
     config = dotenv_values(".env")
 
@@ -60,3 +45,18 @@ def model_name() -> str:
             "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_MODEL."
         )
     return model
+
+
+@pytest.fixture(scope="session")
+def model(client: AlephAlphaClient, model_name: str) -> AlephAlphaModel:
+    return AlephAlphaModel(client, model_name)
+
+
+@pytest.fixture(scope="session")
+def luminous_base(client: AlephAlphaClient) -> AlephAlphaModel:
+    return AlephAlphaModel(client, "luminous-base")
+
+
+@pytest.fixture(scope="session")
+def luminous_extended(client: AlephAlphaClient) -> AlephAlphaModel:
+    return AlephAlphaModel(client, "luminous-extended")

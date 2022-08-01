@@ -14,11 +14,13 @@ class Document:
         self,
         docx: Optional[str] = None,
         prompt: Optional[Sequence[Union[str, ImagePrompt]]] = None,
+        text: Optional[str] = None,
     ):
         # We use a base_64 representation for docx documents, because we want to embed the file
         # into a prompt send in JSON.
         self.docx = docx
         self.prompt = prompt
+        self.text = text
 
     @classmethod
     def from_docx_bytes(cls, bytes: bytes):
@@ -49,8 +51,7 @@ class Document:
         """
         Pass a single text and prepare it to be used as a document
         """
-        prompt = [text]
-        return cls(prompt=prompt)
+        return cls(text=text)
 
     def _to_serializable_document(self) -> Dict[str, Any]:
         """
@@ -65,5 +66,9 @@ class Document:
             # Serialize prompt to Document JSON format
             prompt_data = [_to_prompt_item(prompt_item) for prompt_item in self.prompt]
             return {"prompt": prompt_data}
+        elif self.text is not None:
+            return {
+                "text": self.text,
+            }
         else:
             raise NotImplementedError("unsupported document type")
