@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.1
+
+* Improved handling of text-based Documents in Q&A
+
 ## 1.7.0
 
 * Introduce `semantic_embed` endpoint on client and model.
