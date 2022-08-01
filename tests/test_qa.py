@@ -79,5 +79,6 @@ def test_text(luminous_extended: AlephAlphaModel):
     response = luminous_extended.qa(request)
 
     # The response should exist in the form of a json dict
-    assert len(response["answers"]) == 1
-    assert response["model_version"] is not None
+    assert len(response.answers) == 1
+    assert response.model_version is not None
+    assert response.answers[0].score > 0.5
