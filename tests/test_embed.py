@@ -101,3 +101,20 @@ def test_embed_semantic(luminous_base: AlephAlphaModel):
     assert result.model_version is not None
     assert result.embedding
     assert len(result.embedding) == 128
+
+
+def test_embed_semantic_client(client: AlephAlphaClient):
+    request = SemanticEmbeddingRequest(
+        prompt=Prompt.from_text("hello"),
+        representation=SemanticRepresentation.Symmetric,
+        compress_to_size=128,
+    )
+    result = client.semantic_embed(
+        model="luminous-base",
+        request=request,
+    )
+    # result = luminous_base.semantic_embed(request=request)
+
+    assert result["model_version"] is not None
+    assert result["embedding"]
+    assert len(result["embedding"]) == 128

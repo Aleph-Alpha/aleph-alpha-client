@@ -320,8 +320,8 @@ class AlephAlphaClient:
     def semantic_embed(
         self,
         model: str,
-        hosting: str,
         request: SemanticEmbeddingRequest,
+        hosting: str = "cloud",
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
