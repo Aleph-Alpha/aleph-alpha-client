@@ -1,7 +1,6 @@
-from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence, Union
+from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence
 
-from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
+from aleph_alpha_client.prompt import Prompt
 
 
 class CompletionRequest(NamedTuple):
@@ -84,6 +83,8 @@ class CompletionRequest(NamedTuple):
     frequency_penalty: float = 0.0
     repetition_penalties_include_prompt: bool = False
     use_multiplicative_presence_penalty: bool = False
+    penalty_bias: Optional[str] = None
+    penalty_exceptions: Optional[List[str]] = None
     best_of: Optional[int] = None
     n: int = 1
     logit_bias: Optional[Dict[int, float]] = None
@@ -109,6 +110,7 @@ class CompletionResponse(NamedTuple):
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "CompletionResponse":
         return CompletionResponse(
-            model_version=json["model_version"], 
+            model_version=json["model_version"],
             completions=[CompletionResult(**item) for item in json["completions"]],
-            optimized_prompt=json.get("optimized_prompt"))
+            optimized_prompt=json.get("optimized_prompt"),
+        )
