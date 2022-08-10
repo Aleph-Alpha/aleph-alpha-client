@@ -1,4 +1,4 @@
-name: Run Python Tests
+name: Test things on pushes
 
 on: push
 
@@ -18,5 +18,8 @@ jobs:
           pip install types-requests
           mypy aleph_alpha_client
           mypy --ignore-missing-imports tests
-
-# run tests
+      - name: Run tests
+        run: pytest
+        env:
+          TEST_API_URL: https://api.aleph-alpha.com
+          TEST_TOKEN: ${{ secrets.AA_API_TOKEN }}
