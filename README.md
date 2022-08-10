@@ -419,7 +419,7 @@ python -m http.server --directory htmlcov 8000
 
 To update the readme, do the following:
 
-1. `pip install -r requirements-dev.txt`
+1. `pip install -e .[dev]`
 
 2. Edit the notebook in your favorite jupyter editor and run all python cells to verify that the code examples still work.
 
