@@ -1,6 +1,16 @@
 # Changelog
 
+## 2.1.0
+
+### New feature
+
+* Add new parameters to control how repetition penalties are applied for completion requests (see [docs](https://docs.aleph-alpha.com/api/#/paths/~1complete/post) for more information):
+  * `penalty_bias`
+  * `penalty_exceptions`
+  * `penalty_exceptions_include_stop_sequences`
+
 ## 2.0.0
+
 ### Breaking change
 
 * Make hosting parameter optional in semantic_embed on client. Changed order of parameters `hosting` and `request`.
