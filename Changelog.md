@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.0
+
+### New feature
+
+* Retry failed HTTP requests via urllib for status codes 408, 429, 500, 502, 503, 504
+
 ## 2.1.0
 
 ### New feature
