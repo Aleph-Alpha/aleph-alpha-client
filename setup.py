@@ -14,7 +14,7 @@ def version():
 tests_require = [
     "pytest",
     "pytest-cov",
-    "python-dotenv",
+    "pytest-dotenv",
     "pytest-httpserver",
 ]
 

@@ -1,24 +1,22 @@
+import os
 from typing import Iterable
 import pytest
 from aleph_alpha_client import AlephAlphaClient
-from dotenv import dotenv_values
 
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 
 
 @pytest.fixture(scope="session")
 def client() -> Iterable[AlephAlphaClient]:
-    config = dotenv_values(".env")
-
-    api_url = config.get("TEST_API_URL")
+    api_url = os.environ.get("TEST_API_URL")
     if api_url is None:
         raise ValueError(
             "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_API_URL."
         )
 
-    username = config.get("TEST_USERNAME")
-    password = config.get("TEST_PASSWORD")
-    token = config.get("TEST_TOKEN")
+    username = os.environ.get("TEST_USERNAME")
+    password = os.environ.get("TEST_PASSWORD")
+    token = os.environ.get("TEST_TOKEN")
     if username is not None and password is not None:
         token = None
     elif token is not None:
@@ -38,8 +36,7 @@ def client() -> Iterable[AlephAlphaClient]:
 
 @pytest.fixture(scope="session")
 def model_name() -> str:
-    config = dotenv_values(".env")
-    model = config.get("TEST_MODEL")
+    model = os.environ.get("TEST_MODEL")
     if model is None:
         raise ValueError(
             "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_MODEL."
