@@ -5,6 +5,9 @@ import requests
 import logging
 
 from requests import Response
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.embedding import SemanticEmbeddingRequest
@@ -29,6 +32,17 @@ class AlephAlphaClient:
         self.host = host
 
         self.request_timeout_seconds = request_timeout_seconds
+
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=0.1,
+            status_forcelist=[408, 429, 500, 502, 503, 504],
+            allowed_methods=["POST", "GET"],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.requests_session = requests.Session()
+        self.requests_session.mount("https://", adapter)
+        self.requests_session.mount("http://", adapter)
 
         # check server version
         expect_release = "1"
@@ -57,10 +71,12 @@ class AlephAlphaClient:
             raise ValueError("cannot get token")
 
     def get_request(self, url, headers=None):
-        return requests.get(url, headers=headers, timeout=self.request_timeout_seconds)
+        return self.requests_session.get(
+            url, headers=headers, timeout=self.request_timeout_seconds
+        )
 
     def post_request(self, url, json, headers=None):
-        return requests.post(
+        return self.requests_session.post(
             url, headers=headers, json=json, timeout=self.request_timeout_seconds
         )
 
@@ -115,7 +131,7 @@ class AlephAlphaClient:
         self,
         model: str,
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
-        hosting: str = "cloud",
+        hosting: Optional[str] = None,
         maximum_tokens: Optional[int] = 64,
         temperature: Optional[float] = 0.0,
         top_k: Optional[int] = 0,
@@ -145,8 +161,8 @@ class AlephAlphaClient:
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be started with an empty string (default). The prompt may contain a zero shot or few shot task.
 
-            hosting (str, optional, default "cloud"):
-                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+            hosting (str, optional, default None):
+                Specifies where the computation will take place. This defaults to None, meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
 
@@ -255,7 +271,6 @@ class AlephAlphaClient:
         payload = {
             "model": model,
             "prompt": _to_serializable_prompt(prompt=prompt),
-            "hosting": hosting,
             "maximum_tokens": maximum_tokens,
             "temperature": temperature,
             "top_k": top_k,
@@ -276,6 +291,9 @@ class AlephAlphaClient:
             "disable_optimizations": disable_optimizations,
         }
 
+        if hosting is not None:
+            payload["hosting"] = hosting
+
         response = self.post_request(
             self.host + "complete",
             headers=self.request_headers,
@@ -295,7 +313,7 @@ class AlephAlphaClient:
         prompt: Union[str, Sequence[Union[str, ImagePrompt]]],
         pooling: List[str],
         layers: List[int],
-        hosting: str = "cloud",
+        hosting: Optional[str] = None,
         tokens: Optional[bool] = False,
         type: Optional[str] = None,
     ):
@@ -323,8 +341,8 @@ class AlephAlphaClient:
                     * last_token: just use the last token
                     * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
 
-            hosting (str, optional, default "cloud"):
-                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+            hosting (str, optional, default None):
+                Specifies where the computation will take place. This defaults to None, meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
 
@@ -346,12 +364,15 @@ class AlephAlphaClient:
         payload = {
             "model": model,
             "prompt": serializable_prompt,
-            "hosting": hosting,
             "layers": layers,
             "tokens": tokens,
             "pooling": pooling,
             "type": type,
         }
+
+        if hosting is not None:
+            payload["hosting"] = hosting
+
         response = self.post_request(
             self.host + "embed", headers=self.request_headers, json=payload
         )
@@ -361,7 +382,7 @@ class AlephAlphaClient:
         self,
         model: str,
         request: SemanticEmbeddingRequest,
-        hosting: str = "cloud",
+        hosting: Optional[str] = None,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -371,7 +392,7 @@ class AlephAlphaClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
             hosting (str, required):
-                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+                Specifies where the computation will take place. This defaults to None, meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
 
@@ -385,11 +406,14 @@ class AlephAlphaClient:
 
         payload: Dict[str, Any] = {
             "model": model,
-            "hosting": hosting,
             "prompt": serializable_prompt,
             "representation": request.representation.value,
             "compress_to_size": request.compress_to_size,
         }
+
+        if hosting is not None:
+            payload["hosting"] = hosting
+
         response = self.post_request(
             self.host + "semantic_embed", headers=self.request_headers, json=payload
         )
@@ -399,7 +423,7 @@ class AlephAlphaClient:
         self,
         model,
         completion_expected,
-        hosting: str = "cloud",
+        hosting: Optional[str] = None,
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
     ):
         """
@@ -412,8 +436,8 @@ class AlephAlphaClient:
             completion_expected (str, required):
                 The ground truth completion expected to be produced given the prompt.
 
-            hosting (str, optional, default "cloud"):
-                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+            hosting (str, optional, default None):
+                Specifies where the computation will take place. This defaults to None, meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
 
@@ -426,9 +450,12 @@ class AlephAlphaClient:
         payload = {
             "model": model,
             "prompt": serializable_prompt,
-            "hosting": hosting,
             "completion_expected": completion_expected,
         }
+
+        if hosting is not None:
+            payload["hosting"] = hosting
+
         response = self.post_request(
             self.host + "evaluate", headers=self.request_headers, json=payload
         )
@@ -444,7 +471,7 @@ class AlephAlphaClient:
         disable_optimizations: bool = False,
         max_answers: int = 0,
         min_score: float = 0.0,
-        hosting: str = "cloud",
+        hosting: Optional[str] = None,
     ):
         """
         Answers a question about a prompt.
@@ -483,8 +510,8 @@ class AlephAlphaClient:
             min_score (float, default 0.0):
                 The lower limit of minimum score for every answer.
 
-            hosting (str, default "cloud"):
-                Specifies where the computation will take place. This defaults to "cloud", meaning that it can be
+            hosting (str, default None):
+                Specifies where the computation will take place. This defaults to None, meaning that it can be
                 executed on any of our servers. An error will be returned if the specified hosting is not available.
                 Check available_models() for available hostings.
         """
@@ -500,8 +527,10 @@ class AlephAlphaClient:
             "min_score": min_score,
             "max_chunk_size": max_chunk_size,
             "disable_optimizations": disable_optimizations,
-            "hosting": hosting,
         }
+
+        if hosting is not None:
+            payload["hosting"] = hosting
 
         response = self.post_request(
             self.host + "qa",
