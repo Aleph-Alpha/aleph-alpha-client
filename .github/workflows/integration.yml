@@ -29,3 +29,4 @@ jobs:
         env:
           TEST_API_URL: https://api.aleph-alpha.com
           TEST_TOKEN: ${{ secrets.AA_API_TOKEN }}
+          TEST_MODEL: luminous-base
