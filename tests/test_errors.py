@@ -388,7 +388,6 @@ def httpserver_listen_address():
 
 
 def test_timeout(httpserver):
-
     def handler(foo):
         time.sleep(2)
 
@@ -400,3 +399,18 @@ def test_timeout(httpserver):
             host="http://localhost:8000/", token="AA_TOKEN", request_timeout_seconds=0.1
         )
 
+
+def test_retry_on_503(httpserver):
+    httpserver.expect_request("/version").respond_with_data("busy", status=503)
+
+    """Ensures Timeouts works. AlephAlphaClient constructor calls version endpoint."""
+    with pytest.raises(requests.exceptions.RetryError):
+        AlephAlphaClient(host="http://localhost:8000/", token="AA_TOKEN")
+
+
+def test_retry_on_408(httpserver):
+    httpserver.expect_request("/version").respond_with_data("busy", status=408)
+
+    """Ensures Timeouts works. AlephAlphaClient constructor calls version endpoint."""
+    with pytest.raises(requests.exceptions.RetryError):
+        AlephAlphaClient(host="http://localhost:8000/", token="AA_TOKEN")
