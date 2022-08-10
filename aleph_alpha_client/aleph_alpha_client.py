@@ -5,6 +5,9 @@ import requests
 import logging
 
 from requests import Response
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.embedding import SemanticEmbeddingRequest
@@ -40,6 +43,16 @@ class AlephAlphaClient:
 
         assert token is not None or (email is not None and password is not None)
         self.token = token or self.get_token(email, password)
+
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[408],
+            method_whitelist=["POST", "GET"],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.requests_session = requests.Session()
+        self.requests_session.mount("https://", adapter)
+        self.requests_session.mount("http://", adapter)
 
     def get_version(self):
         response = self.get_request(self.host + "version")
