@@ -3,3 +3,5 @@ nbconvert
 ipykernel
 black
 pytest-httpserver
+types-requests
+pytest
