@@ -46,7 +46,8 @@ class AlephAlphaClient:
 
         retry_strategy = Retry(
             total=3,
-            status_forcelist=[408, 503],
+            backoff_factor=0.1,
+            status_forcelist=[408, 429, 500, 502, 503, 504],
             method_whitelist=["POST", "GET"],
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
