@@ -53,7 +53,6 @@ def test_qa_with_client(client: AlephAlphaClient):
     # when posting a QA request with explicit parameters
     response = client.qa(
         model_name,
-        hosting="cloud",
         query="Who likes pizza?",
         documents=[Document.from_prompt(["Andreas likes pizza."])],
     )

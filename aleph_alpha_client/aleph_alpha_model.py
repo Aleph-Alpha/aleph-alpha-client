@@ -1,5 +1,5 @@
 from collections import ChainMap
-from typing import Any, Mapping, Union
+from typing import Any, Mapping, Optional, Union
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
 from aleph_alpha_client.detokenization import (
@@ -20,7 +20,7 @@ from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationRes
 
 class AlephAlphaModel:
     def __init__(
-        self, client: AlephAlphaClient, model_name: str, hosting: str = "cloud"
+        self, client: AlephAlphaClient, model_name: str, hosting: Optional[str] = None
     ) -> None:
         self.client = client
         self.model_name = model_name
