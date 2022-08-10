@@ -33,6 +33,17 @@ class AlephAlphaClient:
 
         self.request_timeout_seconds = request_timeout_seconds
 
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=0.1,
+            status_forcelist=[408, 429, 500, 502, 503, 504],
+            allowed_methods=["POST", "GET"],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.requests_session = requests.Session()
+        self.requests_session.mount("https://", adapter)
+        self.requests_session.mount("http://", adapter)
+
         # check server version
         expect_release = "1"
         version = self.get_version()
@@ -43,17 +54,6 @@ class AlephAlphaClient:
 
         assert token is not None or (email is not None and password is not None)
         self.token = token or self.get_token(email, password)
-
-        retry_strategy = Retry(
-            total=3,
-            backoff_factor=0.1,
-            status_forcelist=[408, 429, 500, 502, 503, 504],
-            method_whitelist=["POST", "GET"],
-        )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.requests_session = requests.Session()
-        self.requests_session.mount("https://", adapter)
-        self.requests_session.mount("http://", adapter)
 
     def get_version(self):
         response = self.get_request(self.host + "version")
@@ -71,10 +71,12 @@ class AlephAlphaClient:
             raise ValueError("cannot get token")
 
     def get_request(self, url, headers=None):
-        return requests.get(url, headers=headers, timeout=self.request_timeout_seconds)
+        return self.requests_session.get(
+            url, headers=headers, timeout=self.request_timeout_seconds
+        )
 
     def post_request(self, url, json, headers=None):
-        return requests.post(
+        return self.requests_session.post(
             url, headers=headers, json=json, timeout=self.request_timeout_seconds
         )
 

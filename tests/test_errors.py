@@ -389,11 +389,14 @@ def httpserver_listen_address():
 
 def test_timeout(httpserver):
 
-    httpserver.expect_request("/version").respond_with_handler(
-        lambda request: time.sleep(2)
-    )
+    def handler(foo):
+        time.sleep(2)
+
+    httpserver.expect_request("/version").respond_with_handler(handler)
+
     """Ensures Timeouts works. AlephAlphaClient constructor calls version endpoint."""
-    with pytest.raises(requests.exceptions.Timeout):
+    with pytest.raises(requests.exceptions.ConnectionError):
         AlephAlphaClient(
-            host="http://localhost:8000/", token="AA_TOKEN", request_timeout_seconds=1
+            host="http://localhost:8000/", token="AA_TOKEN", request_timeout_seconds=0.1
         )
+
