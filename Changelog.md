@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.1
+
+### Bugfix
+
+* Restore original error handling of HTTP status codes to before 2.2.0
+* Add dedicated exception BusyError for status code 503
+
 ## 2.2.0
 
 ### New feature

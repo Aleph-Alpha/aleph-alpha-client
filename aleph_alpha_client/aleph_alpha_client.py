@@ -23,6 +23,11 @@ class QuotaError(Exception):
         super().__init__(*args, **kwargs)
 
 
+class BusyError(Exception):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
 class AlephAlphaClient:
     def __init__(
         self, host, token=None, email=None, password=None, request_timeout_seconds=180
@@ -38,6 +43,7 @@ class AlephAlphaClient:
             backoff_factor=0.1,
             status_forcelist=[408, 429, 500, 502, 503, 504],
             allowed_methods=["POST", "GET"],
+            raise_on_status=False,
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.requests_session = requests.Session()
@@ -57,8 +63,7 @@ class AlephAlphaClient:
 
     def get_version(self):
         response = self.get_request(self.host + "version")
-        response.raise_for_status()
-        return response.text
+        return self._translate_errors(response).text
 
     def get_token(self, email, password):
         response = self.post_request(
@@ -94,7 +99,7 @@ class AlephAlphaClient:
         response = self.get_request(
             self.host + "models_available", headers=self.request_headers
         )
-        return self._translate_errors(response)
+        return self._translate_errors(response).json()
 
     def tokenize(
         self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True
@@ -113,7 +118,7 @@ class AlephAlphaClient:
             headers=self.request_headers,
             json=payload,
         )
-        return self._translate_errors(response)
+        return self._translate_errors(response).json()
 
     def detokenize(self, model: str, token_ids: List[int]):
         """
@@ -125,7 +130,7 @@ class AlephAlphaClient:
             headers=self.request_headers,
             json=payload,
         )
-        return self._translate_errors(response)
+        return self._translate_errors(response).json()
 
     def complete(
         self,
@@ -299,7 +304,7 @@ class AlephAlphaClient:
             headers=self.request_headers,
             json=payload,
         )
-        response_json = self._translate_errors(response)
+        response_json = self._translate_errors(response).json()
         if response_json.get("optimized_prompt") is not None:
             # Return a message to the user that we optimized their prompt
             print(
@@ -376,7 +381,7 @@ class AlephAlphaClient:
         response = self.post_request(
             self.host + "embed", headers=self.request_headers, json=payload
         )
-        return self._translate_errors(response)
+        return self._translate_errors(response).json()
 
     def semantic_embed(
         self,
@@ -417,7 +422,7 @@ class AlephAlphaClient:
         response = self.post_request(
             self.host + "semantic_embed", headers=self.request_headers, json=payload
         )
-        return self._translate_errors(response)
+        return self._translate_errors(response).json()
 
     def evaluate(
         self,
@@ -459,7 +464,7 @@ class AlephAlphaClient:
         response = self.post_request(
             self.host + "evaluate", headers=self.request_headers, json=payload
         )
-        return self._translate_errors(response)
+        return self._translate_errors(response).json()
 
     def qa(
         self,
@@ -537,7 +542,7 @@ class AlephAlphaClient:
             headers=self.request_headers,
             json=payload,
         )
-        response_json = self._translate_errors(response)
+        response_json = self._translate_errors(response).json()
         return response_json
 
     def _explain(
@@ -554,20 +559,22 @@ class AlephAlphaClient:
         response = self.post_request(
             f"{self.host}explain", headers=self.request_headers, json=body
         )
-        return self._translate_errors(response)
+        return self._translate_errors(response).json()
 
     @staticmethod
-    def _translate_errors(response: Response):
+    def _translate_errors(response: Response) -> Response:
         if response.status_code == 200:
-            return response.json()
+            return response
         else:
             if response.status_code == 400:
-                raise ValueError(response.status_code, response.json())
+                raise ValueError(response.status_code, response.text)
             elif response.status_code == 401:
-                raise PermissionError(response.status_code, response.json())
+                raise PermissionError(response.status_code, response.text)
             elif response.status_code == 402:
-                raise QuotaError(response.status_code, response.json())
+                raise QuotaError(response.status_code, response.text)
             elif response.status_code == 408:
-                raise TimeoutError(response.status_code, response.json())
+                raise TimeoutError(response.status_code, response.text)
+            elif response.status_code == 503:
+                raise BusyError(response.status_code, response.text)
             else:
-                raise RuntimeError(response.status_code, response.json())
+                raise RuntimeError(response.status_code, response.text)
