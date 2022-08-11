@@ -1,9 +1,9 @@
-from http.server import HTTPServer
 import time
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, BusyError
 import pytest
 import requests
 from tests.common import client, model_name
+from pytest_httpserver import HTTPServer
 
 
 @pytest.mark.parametrize(
