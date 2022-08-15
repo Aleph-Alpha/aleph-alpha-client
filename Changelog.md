@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.3
+
+### Bugfix
+
+* Remove `message` field from CompletionResult
+
 ## 2.2.2
 
 ### Bugfix
