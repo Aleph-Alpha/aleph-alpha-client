@@ -134,7 +134,6 @@ class CompletionResult(NamedTuple):
     completion: Optional[str] = None
     completion_tokens: Optional[Sequence[str]] = None
     finish_reason: Optional[str] = None
-    message: Optional[str] = None
 
 
 class CompletionResponse(NamedTuple):
