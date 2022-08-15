@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.2.2
+
+### Bugfix
+
+* Document `hosting` parameter.
+* The hosting parameter determines in which datacenters the request may be processed.
+* Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
+* Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
+
 ## 2.2.1
 
 ### Bugfix
