@@ -189,8 +189,13 @@ class AlephAlphaClient:
 
             hosting (str, optional, default None):
                 Determines in which datacenters the request may be processed.
-                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
-                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
 
             maximum_tokens (int, optional, default 64):
                 The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
@@ -369,8 +374,13 @@ class AlephAlphaClient:
 
             hosting (str, optional, default None):
                 Determines in which datacenters the request may be processed.
-                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
-                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
 
             tokens (bool, optional, default False)
                 Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
@@ -419,8 +429,13 @@ class AlephAlphaClient:
 
             hosting (str, optional, default None):
                 Determines in which datacenters the request may be processed.
-                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
-                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
@@ -464,8 +479,13 @@ class AlephAlphaClient:
 
             hosting (str, optional, default None):
                 Determines in which datacenters the request may be processed.
-                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
-                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
@@ -538,8 +558,13 @@ class AlephAlphaClient:
 
             hosting (str, optional, default None):
                 Determines in which datacenters the request may be processed.
-                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
-                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
         """
 
         payload = {

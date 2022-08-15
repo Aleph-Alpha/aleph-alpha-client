@@ -34,8 +34,13 @@ class AlephAlphaModel:
 
             hosting (str, optional, default None):
                 Determines in which datacenters the request may be processed.
-                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
-                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
         """
 
         self.client = client

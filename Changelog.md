@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.4
+
+### Documentation
+
+* Update documentation for `hosting` parameter
+
 ## 2.2.3
 
 ### Bugfix
