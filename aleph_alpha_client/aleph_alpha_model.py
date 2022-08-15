@@ -22,6 +22,22 @@ class AlephAlphaModel:
     def __init__(
         self, client: AlephAlphaClient, model_name: str, hosting: Optional[str] = None
     ) -> None:
+        """
+        Construct a context object for a specific model.
+
+        Parameters:
+            client (AlephAlphaClient, required):
+                An AlephAlphaClient object that holds the API host information and user credentials.
+
+            model_name (str, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
+
+            hosting (str, optional, default None):
+                Determines in which datacenters the request may be processed.
+                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
+                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
+        """
+
         self.client = client
         self.model_name = model_name
         self.hosting = hosting

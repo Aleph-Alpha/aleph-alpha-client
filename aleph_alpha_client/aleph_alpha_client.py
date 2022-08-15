@@ -32,6 +32,27 @@ class AlephAlphaClient:
     def __init__(
         self, host, token=None, email=None, password=None, request_timeout_seconds=180
     ):
+        """
+        Construct a context object for a specific API and user.
+
+        Parameters:
+            host (string, required):
+                The hostname of the API host.
+
+            token (string, optional, default None):
+                The API token that will be used for authentication.
+                This is optional because we also support password authentication.
+                If token is None, email and password must be set.
+
+            email (str, optional, default None):
+                Email address for authentication at the API. If token is None then email and password will be used for authentication.
+
+            password (str, optional, default None):
+                Password for authentication with the email address at the API. If token is None then email and password will be used for authentication.
+
+            request_timeout_seconds (int, optional, default 180):
+                Client timeout that will be set for HTTP requests in the `requests` library's API calls.
+        """
         if host[-1] != "/":
             host += "/"
         self.host = host
@@ -167,9 +188,9 @@ class AlephAlphaClient:
                 The text to be completed. Unconditional completion can be started with an empty string (default). The prompt may contain a zero shot or few shot task.
 
             hosting (str, optional, default None):
-                Specifies where the computation will take place. This defaults to None, meaning that it can be
-                executed on any of our servers. An error will be returned if the specified hosting is not available.
-                Check available_models() for available hostings.
+                Determines in which datacenters the request may be processed.
+                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
+                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
 
             maximum_tokens (int, optional, default 64):
                 The maximum number of tokens to be generated. Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts. A text is split into tokens. Usually there are more tokens than words. The summed number of tokens of prompt and maximum_tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
@@ -347,9 +368,9 @@ class AlephAlphaClient:
                     * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
 
             hosting (str, optional, default None):
-                Specifies where the computation will take place. This defaults to None, meaning that it can be
-                executed on any of our servers. An error will be returned if the specified hosting is not available.
-                Check available_models() for available hostings.
+                Determines in which datacenters the request may be processed.
+                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
+                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
 
             tokens (bool, optional, default False)
                 Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
@@ -396,10 +417,10 @@ class AlephAlphaClient:
             model (str, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
 
-            hosting (str, required):
-                Specifies where the computation will take place. This defaults to None, meaning that it can be
-                executed on any of our servers. An error will be returned if the specified hosting is not available.
-                Check available_models() for available hostings.
+            hosting (str, optional, default None):
+                Determines in which datacenters the request may be processed.
+                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
+                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
@@ -442,9 +463,9 @@ class AlephAlphaClient:
                 The ground truth completion expected to be produced given the prompt.
 
             hosting (str, optional, default None):
-                Specifies where the computation will take place. This defaults to None, meaning that it can be
-                executed on any of our servers. An error will be returned if the specified hosting is not available.
-                Check available_models() for available hostings.
+                Determines in which datacenters the request may be processed.
+                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
+                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
@@ -515,10 +536,10 @@ class AlephAlphaClient:
             min_score (float, default 0.0):
                 The lower limit of minimum score for every answer.
 
-            hosting (str, default None):
-                Specifies where the computation will take place. This defaults to None, meaning that it can be
-                executed on any of our servers. An error will be returned if the specified hosting is not available.
-                Check available_models() for available hostings.
+            hosting (str, optional, default None):
+                Determines in which datacenters the request may be processed.
+                Currently, we only support setting it to "aleph-alpha", which allows us to only process the request in our own datacenters.
+                Not setting this value, or setting it to null, allows us to process the request in both our own as well as external datacenters.
         """
 
         payload = {
