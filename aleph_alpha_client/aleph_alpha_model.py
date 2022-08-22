@@ -16,6 +16,7 @@ from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.qa import QaRequest, QaResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
+from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
 
 
 class AlephAlphaModel:
@@ -93,6 +94,12 @@ class AlephAlphaModel:
         return self.client._explain(
             model=self.model_name, hosting=self.hosting, request=request
         )
+
+    def summarize(self, request: SummarizationRequest) -> SummarizationResponse:
+        response_json = self.client.summarize(
+            self.model_name, request, hosting=self.hosting
+        )
+        return SummarizationResponse.from_json(response_json)
 
     @staticmethod
     def as_request_dict(
