@@ -11,7 +11,6 @@ def test_explanation(model: AlephAlphaModel):
     request = ExplanationRequest(
         prompt=Prompt.from_text("An apple a day"),
         target=" keeps the doctor away",
-        directional=False,
         suppression_factor=0.1,
     )
 
@@ -23,13 +22,14 @@ def test_explanation(model: AlephAlphaModel):
 
 def test_explain_fails(model: AlephAlphaModel):
     # given a client
-    assert model.model_name in map(lambda model: model["name"], model.client.available_models())
+    assert model.model_name in map(
+        lambda model: model["name"], model.client.available_models()
+    )
 
     # when posting an illegal request
     request = ExplanationRequest(
         prompt=Prompt.from_text("An apple a day"),
         target=" keeps the doctor away",
-        directional=False,
         suppression_factor=0.1,
         conceptual_suppression_threshold=-1,
     )
