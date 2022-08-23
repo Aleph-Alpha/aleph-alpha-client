@@ -348,7 +348,7 @@ request = SummarizationRequest(document)
 
 result = model.summarize(request)
 
-print(result)
+print(result.summary)
 ```
 
 
@@ -365,14 +365,23 @@ model = AlephAlphaModel(
     model_name = "luminous-extended"
 )
 
-prompt = "In imperative programming, a computer program is a sequence of instructions in a programming language that a computer can execute or interpret."
+# https://en.wikipedia.org/wiki/Imperative_programming
+prompt = """In computer science, imperative programming is a programming paradigm of software that uses statements that change a program's state. In much the same way that the imperative mood in natural languages expresses commands, an imperative program consists of commands for the computer to perform. Imperative programming focuses on describing how a program operates step by step, rather than on high-level descriptions of its expected results.
+
+The term is often used in contrast to declarative programming, which focuses on what the program should accomplish without specifying all the details of how the program should achieve the result.[1]
+
+Imperative and procedural programming
+
+Procedural programming is a type of imperative programming in which the program is built from one or more procedures (also termed subroutines or functions). The terms are often used as synonyms, but the use of procedures has a dramatic effect on how imperative programs appear and how they are constructed. Heavy procedural programming, in which state changes are localized to procedures or restricted to explicit arguments and returns from procedures, is a form of structured programming. From the 1960s onwards, structured programming and modular programming in general have been promoted as techniques to improve the maintainability and overall quality of imperative programs. The concepts behind object-oriented programming attempt to extend this approach.
+
+Procedural programming could be considered a step toward declarative programming. A programmer can often tell, simply by looking at the names, arguments, and return types of procedures (and related comments), what a particular procedure is supposed to do, without necessarily looking at the details of how it achieves its result. At the same time, a complete program is still imperative since it fixes the statements to be executed and their order of execution to a large extent."""
 document = Document.from_text(prompt)
 
 request = SummarizationRequest(document)
 
 result = model.summarize(request)
 
-print(result)
+print(result.summary)
 ```
 
 
@@ -399,7 +408,7 @@ request = SummarizationRequest(document)
 
 result = model.summarize(request)
 
-print(result)
+print(result.summary)
 ```
 
 
