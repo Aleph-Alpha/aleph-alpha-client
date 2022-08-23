@@ -14,6 +14,7 @@ from aleph_alpha_client.embedding import SemanticEmbeddingRequest
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
+from aleph_alpha_client.summarization import SummarizationRequest
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
@@ -590,6 +591,46 @@ class AlephAlphaClient:
         )
         response_json = self._translate_errors(response).json()
         return response_json
+
+    def summarize(
+        self,
+        model: str,
+        request: SummarizationRequest,
+        hosting: Optional[str] = None,
+    ):
+        """
+        Summarizes a document.
+
+        Parameters:
+            model (str, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
+
+            hosting (str, optional, default None):
+                Determines in which datacenters the request may be processed.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
+
+            request (SemanticEmbeddingRequest, required)
+                NamedTuple containing all necessary request parameters.
+        """
+        payload: Dict[str, Any] = {
+            "model": model,
+            "document": request.document._to_serializable_document(),
+            "disable_optimizations": request.disable_optimizations,
+        }
+
+        if hosting is not None:
+            payload["hosting"] = hosting
+
+        response = self.post_request(
+            self.host + "summarize", headers=self.request_headers, json=payload
+        )
+        return self._translate_errors(response).json()
 
     def _explain(
         self, model: str, request: ExplanationRequest, hosting: Optional[str] = None

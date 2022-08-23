@@ -327,6 +327,82 @@ print(result)
 ```
 
 
+### Summary with a Docx Document
+
+
+
+```python
+from aleph_alpha_client import Document, AlephAlphaClient, AlephAlphaModel, SummarizationRequest
+import os
+
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with qa support for this example.
+    model_name = "luminous-extended"
+)
+
+docx_file = "./tests/sample.docx"
+document = Document.from_docx_file(docx_file)
+
+request = SummarizationRequest(document)
+
+result = model.summarize(request)
+
+print(result)
+```
+
+
+### Summary with a Text
+
+
+```python
+from aleph_alpha_client import AlephAlphaClient, AlephAlphaModel, SummarizationRequest
+import os
+
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with qa support for this example.
+    model_name = "luminous-extended"
+)
+
+prompt = "In imperative programming, a computer program is a sequence of instructions in a programming language that a computer can execute or interpret."
+document = Document.from_text(prompt)
+
+request = SummarizationRequest(document)
+
+result = model.summarize(request)
+
+print(result)
+```
+
+
+### Summary with a multimodal prompt
+
+
+
+```python
+from aleph_alpha_client import Document, ImagePrompt, AlephAlphaClient, AlephAlphaModel, SummarizationRequest
+import os
+
+model = AlephAlphaModel(
+    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
+    # You need to choose a model with qa support for this example.
+    model_name = "luminous-extended"
+)
+
+url = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/2008-09-24_Blockbuster_in_Durham.jpg/330px-2008-09-24_Blockbuster_in_Durham.jpg"
+image = ImagePrompt.from_url(url)
+prompt = [image]
+document = Document.from_prompt(prompt)
+
+request = SummarizationRequest(document)
+
+result = model.summarize(request)
+
+print(result)
+```
+
+
 ### Tokenize a text prompt
 
 

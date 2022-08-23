@@ -72,16 +72,6 @@ def validate_completion_task_output(task, output):
 def validate_evaluation_task_output(task, output):
     assert isinstance(output, dict), "result is a dict, got " + str(type(output))
 
-    for field_name in ["message"]:
-        assert field_name in output, field_name + " in output"
-        assert (
-            isinstance(output.get(field_name), str) or output.get(field_name) is None
-        ), (
-            field_name
-            + " is not a str or None; got "
-            + str(type(output.get(field_name)))
-        )
-
     assert "model_version" in output, "model_version in evaluation result"
     assert "result" in output, "result dict in evaluation output"
 
@@ -128,16 +118,6 @@ def validate_embedding_task_output(task, output):
         task["pooling"] = None
 
     assert isinstance(output, dict), "output is a dict, got " + str(type(output))
-
-    for field_name in ["message"]:
-        assert field_name in output, field_name + " in output"
-        assert (
-            isinstance(output.get(field_name), str) or output.get(field_name) is None
-        ), (
-            field_name
-            + " is not a str or None; got "
-            + str(type(output.get(field_name)))
-        )
 
     assert "model_version" in output, "model_version in evaluation result"
 
