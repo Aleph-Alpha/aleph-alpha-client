@@ -640,9 +640,15 @@ class AlephAlphaClient:
             "prompt": [_to_prompt_item(item) for item in request.prompt.items],
             "target": request.target,
             "suppression_factor": request.suppression_factor,
-            "directional": request.directional,
             "conceptual_suppression_threshold": request.conceptual_suppression_threshold,
+            "normalize": request.normalize,
+            "square_outputs": request.square_outputs,
+            "prompt_explain_indices": request.prompt_explain_indices,
         }
+
+        if hosting is not None:
+            body["hosting"] = hosting
+
         response = self.post_request(
             f"{self.host}explain", headers=self.request_headers, json=body
         )
