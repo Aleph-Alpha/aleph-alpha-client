@@ -5,7 +5,12 @@ from aleph_alpha_client import (
     SummarizationRequest,
 )
 
-from tests.common import client, model_name, luminous_extended
+from tests.common import (
+    client,
+    model_name,
+    luminous_extended,
+    summarization_checkpoint_name,
+)
 
 
 def test_summarize(luminous_extended: AlephAlphaModel):
@@ -37,6 +42,23 @@ def test_summarization_with_client(client: AlephAlphaClient):
         SummarizationRequest(
             document=Document.from_prompt(["Andreas likes pizza."]),
         ),
+    )
+
+    # The response should exist in the form of a json dict
+    assert response["summary"] is not None
+    assert response["model_version"] is not None
+
+
+def test_summarization_with_client_against_checkpoint(
+    client: AlephAlphaClient, summarization_checkpoint_name
+):
+    # when posting a Summarization request
+    response = client.summarize(
+        model=None,
+        request=SummarizationRequest(
+            document=Document.from_prompt(["Andreas likes pizza."]),
+        ),
+        checkpoint=summarization_checkpoint_name,
     )
 
     # The response should exist in the form of a json dict

@@ -55,6 +55,26 @@ def checkpoint_name() -> str:
 
 
 @pytest.fixture(scope="session")
+def qa_checkpoint_name() -> str:
+    checkpoint = os.environ.get("TEST_CHECKPOINT_QA")
+    if checkpoint is None:
+        raise ValueError(
+            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_CHECKPOINT_QA"
+        )
+    return checkpoint
+
+
+@pytest.fixture(scope="session")
+def summarization_checkpoint_name() -> str:
+    checkpoint = os.environ.get("TEST_CHECKPOINT_SUMMARIZATION")
+    if checkpoint is None:
+        raise ValueError(
+            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_CHECKPOINT_SUMMARIZATION"
+        )
+    return checkpoint
+
+
+@pytest.fixture(scope="session")
 def model(client: AlephAlphaClient, model_name: str) -> AlephAlphaModel:
     return AlephAlphaModel(client, model_name)
 
