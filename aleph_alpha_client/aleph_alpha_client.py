@@ -102,9 +102,13 @@ class AlephAlphaClient:
             url, headers=headers, timeout=self.request_timeout_seconds
         )
 
-    def post_request(self, url, json, headers=None):
+    def post_request(self, url, json, params=None, headers=None):
         return self.requests_session.post(
-            url, headers=headers, json=json, timeout=self.request_timeout_seconds
+            url,
+            headers=headers,
+            params=params,
+            json=json,
+            timeout=self.request_timeout_seconds,
         )
 
     @property
@@ -156,7 +160,7 @@ class AlephAlphaClient:
 
     def complete(
         self,
-        model: str,
+        model: Optional[str],
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
         hosting: Optional[str] = None,
         maximum_tokens: Optional[int] = 64,
@@ -177,6 +181,7 @@ class AlephAlphaClient:
         stop_sequences: Optional[List[str]] = None,
         tokens: Optional[bool] = False,
         disable_optimizations: Optional[bool] = False,
+        checkpoint: Optional[str] = None,
     ):
         """
         Generates samples from a prompt.
@@ -281,27 +286,16 @@ class AlephAlphaClient:
             tokens (bool, optional, default False)
                 return tokens of completion
 
-            disable_optimizations  (bool, optional, default False)
+            disable_optimizations (bool, optional, default False)
                 We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
 
                 Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
+
+            checkpoint (str, optional, default None)
+                Experimental parameter for internal users to use instead of the model parameter.
         """
 
-        # validate data types
-        if not isinstance(model, str):
-            raise ValueError("model must be a string")
-
-        if isinstance(temperature, int):
-            temperature = float(temperature)
-        if isinstance(top_p, int):
-            top_p = float(top_p)
-        if isinstance(presence_penalty, int):
-            presence_penalty = float(presence_penalty)
-        if isinstance(frequency_penalty, int):
-            frequency_penalty = float(frequency_penalty)
-
         payload = {
-            "model": model,
             "prompt": _to_serializable_prompt(prompt=prompt),
             "maximum_tokens": maximum_tokens,
             "temperature": temperature,
@@ -323,12 +317,21 @@ class AlephAlphaClient:
             "disable_optimizations": disable_optimizations,
         }
 
+        if model is not None:
+            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
+
+        # Query parameters
+        params = {}
+
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "complete",
             headers=self.request_headers,
+            params=params,
             json=payload,
         )
         response_json = self._translate_errors(response).json()

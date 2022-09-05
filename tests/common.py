@@ -45,6 +45,16 @@ def model_name() -> str:
 
 
 @pytest.fixture(scope="session")
+def checkpoint_name() -> str:
+    checkpoint = os.environ.get("TEST_CHECKPOINT")
+    if checkpoint is None:
+        raise ValueError(
+            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_CHECKPOINT."
+        )
+    return checkpoint
+
+
+@pytest.fixture(scope="session")
 def model(client: AlephAlphaClient, model_name: str) -> AlephAlphaModel:
     return AlephAlphaModel(client, model_name)
 
