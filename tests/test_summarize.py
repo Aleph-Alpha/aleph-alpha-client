@@ -31,6 +31,19 @@ def test_summarize(luminous_extended: AlephAlphaModel):
     assert response.model_version is not None
 
 
+def test_summarize_against_checkpoint(
+    client: AlephAlphaClient, summarization_checkpoint_name: str
+):
+    model = AlephAlphaModel(client, checkpoint_name=summarization_checkpoint_name)
+    request = SummarizationRequest(
+        document=Document.from_prompt(["Andreas likes pizza."]),
+    )
+    response = model.summarize(request)
+
+    assert response.summary is not None
+    assert response.model_version is not None
+
+
 def test_summarization_with_client(client: AlephAlphaClient):
     model_name = "luminous-extended"
     # given a client

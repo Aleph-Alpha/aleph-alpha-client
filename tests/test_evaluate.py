@@ -20,6 +20,19 @@ def test_evaluate(model: AlephAlphaModel):
     assert result.result is not None
 
 
+def test_evaluate_against_checkpoint(client: AlephAlphaClient, checkpoint_name: str):
+    model = AlephAlphaModel(client, checkpoint_name=checkpoint_name)
+
+    request = EvaluationRequest(
+        prompt=Prompt.from_text("hello"), completion_expected="world"
+    )
+
+    result = model.evaluate(request)
+
+    assert result.model_version is not None
+    assert result.result is not None
+
+
 def test_evaluate_with_client(client: AlephAlphaClient, model_name: str):
     result = client.evaluate(model_name, prompt="hello", completion_expected="world")
 

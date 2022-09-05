@@ -26,6 +26,21 @@ def test_qa(luminous_extended: AlephAlphaModel):
     assert response.model_version is not None
 
 
+def test_qa_against_checkpoint(client: AlephAlphaClient, qa_checkpoint_name: str):
+    model = AlephAlphaModel(client, checkpoint_name=qa_checkpoint_name)
+
+    request = QaRequest(
+        query="Who likes pizza?",
+        documents=[Document.from_prompt(["Andreas likes pizza."])],
+    )
+
+    response = model.qa(request)
+
+    # the response should exist and be in the form of a named tuple class
+    assert len(response.answers) == 1
+    assert response.model_version is not None
+
+
 def test_qa_no_answer_found(luminous_extended: AlephAlphaModel):
     # given a client
     assert luminous_extended.model_name in map(
