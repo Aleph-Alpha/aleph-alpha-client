@@ -102,9 +102,13 @@ class AlephAlphaClient:
             url, headers=headers, timeout=self.request_timeout_seconds
         )
 
-    def post_request(self, url, json, headers=None):
+    def post_request(self, url, json, params=None, headers=None):
         return self.requests_session.post(
-            url, headers=headers, json=json, timeout=self.request_timeout_seconds
+            url,
+            headers=headers,
+            params=params,
+            json=json,
+            timeout=self.request_timeout_seconds,
         )
 
     @property
@@ -124,39 +128,54 @@ class AlephAlphaClient:
         return self._translate_errors(response).json()
 
     def tokenize(
-        self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True
+        self, model: Optional[str], prompt: str, tokens: bool = True, token_ids: bool = True, checkpoint: Optional[str] = None
     ):
         """
         Tokenizes the given prompt for the given model.
         """
         payload = {
-            "model": model,
             "prompt": prompt,
             "tokens": tokens,
             "token_ids": token_ids,
         }
+        if model is not None:
+            payload["model"] = model
+
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
             self.host + "tokenize",
             headers=self.request_headers,
             json=payload,
+            params=params,
         )
         return self._translate_errors(response).json()
 
-    def detokenize(self, model: str, token_ids: List[int]):
+    def detokenize(self, model: Optional[str], token_ids: List[int], checkpoint: Optional[str] = None):
         """
         Detokenizes the given tokens.
         """
-        payload = {"model": model, "token_ids": token_ids}
+        payload: Dict[str, Any] = {"token_ids": token_ids}
+        if model is not None:
+            payload["model"] = model
+
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
             self.host + "detokenize",
             headers=self.request_headers,
             json=payload,
+            params=params,
         )
         return self._translate_errors(response).json()
 
     def complete(
         self,
-        model: str,
+        model: Optional[str],
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
         hosting: Optional[str] = None,
         maximum_tokens: Optional[int] = 64,
@@ -177,6 +196,7 @@ class AlephAlphaClient:
         stop_sequences: Optional[List[str]] = None,
         tokens: Optional[bool] = False,
         disable_optimizations: Optional[bool] = False,
+        checkpoint: Optional[str] = None,
     ):
         """
         Generates samples from a prompt.
@@ -281,27 +301,16 @@ class AlephAlphaClient:
             tokens (bool, optional, default False)
                 return tokens of completion
 
-            disable_optimizations  (bool, optional, default False)
+            disable_optimizations (bool, optional, default False)
                 We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
 
                 Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
+
+            checkpoint (str, optional, default None)
+                Experimental parameter for internal users to use instead of the model parameter.
         """
 
-        # validate data types
-        if not isinstance(model, str):
-            raise ValueError("model must be a string")
-
-        if isinstance(temperature, int):
-            temperature = float(temperature)
-        if isinstance(top_p, int):
-            top_p = float(top_p)
-        if isinstance(presence_penalty, int):
-            presence_penalty = float(presence_penalty)
-        if isinstance(frequency_penalty, int):
-            frequency_penalty = float(frequency_penalty)
-
         payload = {
-            "model": model,
             "prompt": _to_serializable_prompt(prompt=prompt),
             "maximum_tokens": maximum_tokens,
             "temperature": temperature,
@@ -323,12 +332,21 @@ class AlephAlphaClient:
             "disable_optimizations": disable_optimizations,
         }
 
+        if model is not None:
+            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
+
+        # Query parameters
+        params = {}
+
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "complete",
             headers=self.request_headers,
+            params=params,
             json=payload,
         )
         response_json = self._translate_errors(response).json()
@@ -341,13 +359,14 @@ class AlephAlphaClient:
 
     def embed(
         self,
-        model: str,
+        model: Optional[str],
         prompt: Union[str, Sequence[Union[str, ImagePrompt]]],
         pooling: List[str],
         layers: List[int],
         hosting: Optional[str] = None,
         tokens: Optional[bool] = False,
         type: Optional[str] = None,
+        checkpoint: Optional[str] = None,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -389,6 +408,8 @@ class AlephAlphaClient:
             type
                 Type of the embedding (e.g. symmetric or asymmetric)
 
+            checkpoint (str, optional, default None)
+                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         serializable_prompt = _to_serializable_prompt(
@@ -399,7 +420,6 @@ class AlephAlphaClient:
             tokens = False
 
         payload = {
-            "model": model,
             "prompt": serializable_prompt,
             "layers": layers,
             "tokens": tokens,
@@ -407,19 +427,31 @@ class AlephAlphaClient:
             "type": type,
         }
 
+        if model is not None:
+            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
 
+        # Query parameters
+        params = {}
+
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
-            self.host + "embed", headers=self.request_headers, json=payload
+            self.host + "embed",
+            headers=self.request_headers,
+            json=payload,
+            params=params,
         )
         return self._translate_errors(response).json()
 
     def semantic_embed(
         self,
-        model: str,
+        model: Optional[str],
         request: SemanticEmbeddingRequest,
         hosting: Optional[str] = None,
+        checkpoint: Optional[str] = None,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -440,6 +472,9 @@ class AlephAlphaClient:
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
+
+            checkpoint (str, optional, default None)
+                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         serializable_prompt = _to_serializable_prompt(
@@ -447,26 +482,36 @@ class AlephAlphaClient:
         )
 
         payload: Dict[str, Any] = {
-            "model": model,
             "prompt": serializable_prompt,
             "representation": request.representation.value,
             "compress_to_size": request.compress_to_size,
         }
 
+        if model is not None:
+            payload["model"] = model
+
         if hosting is not None:
             payload["hosting"] = hosting
 
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
-            self.host + "semantic_embed", headers=self.request_headers, json=payload
+            self.host + "semantic_embed",
+            headers=self.request_headers,
+            json=payload,
+            params=params,
         )
         return self._translate_errors(response).json()
 
     def evaluate(
         self,
-        model,
+        model: Optional[str],
         completion_expected,
         hosting: Optional[str] = None,
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
+        checkpoint: Optional[str] = None,
     ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
@@ -490,27 +535,38 @@ class AlephAlphaClient:
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
+
+            checkpoint (str, optional, default None)
+                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         serializable_prompt = _to_serializable_prompt(prompt=prompt)
 
         payload = {
-            "model": model,
             "prompt": serializable_prompt,
             "completion_expected": completion_expected,
         }
 
+        if model is not None:
+            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
 
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
-            self.host + "evaluate", headers=self.request_headers, json=payload
+            self.host + "evaluate",
+            headers=self.request_headers,
+            json=payload,
+            params=params,
         )
         return self._translate_errors(response).json()
 
     def qa(
         self,
-        model: str,
+        model: Optional[str],
         query: str,
         documents: List[Document],
         maximum_tokens: int = 64,
@@ -519,6 +575,7 @@ class AlephAlphaClient:
         max_answers: int = 0,
         min_score: float = 0.0,
         hosting: Optional[str] = None,
+        checkpoint: Optional[str] = None,
     ):
         """
         Answers a question about a prompt.
@@ -566,10 +623,12 @@ class AlephAlphaClient:
 
                 Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
                 Choose this option for maximal data privacy.
+
+            checkpoint (str, optional, default None)
+                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         payload = {
-            "model": model,
             "query": query,
             "documents": [
                 document._to_serializable_document() for document in documents
@@ -581,22 +640,31 @@ class AlephAlphaClient:
             "disable_optimizations": disable_optimizations,
         }
 
+        if model is not None:
+            payload["model"] = model
+
         if hosting is not None:
             payload["hosting"] = hosting
+
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "qa",
             headers=self.request_headers,
             json=payload,
+            params=params,
         )
         response_json = self._translate_errors(response).json()
         return response_json
 
     def summarize(
         self,
-        model: str,
+        model: Optional[str],
         request: SummarizationRequest,
         hosting: Optional[str] = None,
+        checkpoint: Optional[str] = None,
     ):
         """
         Summarizes a document.
@@ -617,26 +685,40 @@ class AlephAlphaClient:
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
+
+            checkpoint (str, optional, default None)
+                Experimental parameter for internal users to use instead of the model parameter.
         """
         payload: Dict[str, Any] = {
-            "model": model,
             "document": request.document._to_serializable_document(),
             "disable_optimizations": request.disable_optimizations,
         }
 
+        if model is not None:
+            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
 
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
-            self.host + "summarize", headers=self.request_headers, json=payload
+            self.host + "summarize",
+            headers=self.request_headers,
+            json=payload,
+            params=params,
         )
         return self._translate_errors(response).json()
 
     def _explain(
-        self, model: str, request: ExplanationRequest, hosting: Optional[str] = None
+        self,
+        model: Optional[str],
+        request: ExplanationRequest,
+        hosting: Optional[str] = None,
+        checkpoint: Optional[str] = None,
     ):
         body = {
-            "model": model,
             "prompt": [_to_prompt_item(item) for item in request.prompt.items],
             "target": request.target,
             "suppression_factor": request.suppression_factor,
@@ -646,11 +728,21 @@ class AlephAlphaClient:
             "prompt_explain_indices": request.prompt_explain_indices,
         }
 
+        if model is not None:
+            body["model"] = model
+
         if hosting is not None:
             body["hosting"] = hosting
 
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
-            f"{self.host}explain", headers=self.request_headers, json=body
+            f"{self.host}explain",
+            headers=self.request_headers,
+            json=body,
+            params=params,
         )
         return self._translate_errors(response).json()
 
