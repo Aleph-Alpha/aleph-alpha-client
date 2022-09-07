@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.4.0
+
+### New feature
+
+- Internal clients can now select a checkpoints directly and don't have to select a model that processes their requests
+- Replaced fields `normalize`, `square_outputs` and `prompt_explain_indices` with `directional` in hidden explain endpoint
+
 ## 2.3.0
 
 ### New feature
