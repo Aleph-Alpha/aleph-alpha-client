@@ -77,16 +77,12 @@ class AlephAlphaModel:
         return CompletionResponse.from_json(response_json)
 
     def tokenize(self, request: TokenizationRequest) -> TokenizationResponse:
-        assert self.model_name is not None, "tokenize does not yet support checkpoints"
-        response_json = self.client.tokenize(model=self.model_name, **request._asdict())
+        response_json = self.client.tokenize(model=self.model_name, **request._asdict(), checkpoint=self.checkpoint_name)
         return TokenizationResponse.from_json(response_json)
 
     def detokenize(self, request: DetokenizationRequest) -> DetokenizationResponse:
-        assert (
-            self.model_name is not None
-        ), "detokenize does not yet support checkpoints"
         response_json = self.client.detokenize(
-            model=self.model_name, **request._asdict()
+            model=self.model_name, **request._asdict(), checkpoint=self.checkpoint_name
         )
         return DetokenizationResponse.from_json(response_json)
 

@@ -128,33 +128,48 @@ class AlephAlphaClient:
         return self._translate_errors(response).json()
 
     def tokenize(
-        self, model: str, prompt: str, tokens: bool = True, token_ids: bool = True
+        self, model: Optional[str], prompt: str, tokens: bool = True, token_ids: bool = True, checkpoint: Optional[str] = None
     ):
         """
         Tokenizes the given prompt for the given model.
         """
         payload = {
-            "model": model,
             "prompt": prompt,
             "tokens": tokens,
             "token_ids": token_ids,
         }
+        if model is not None:
+            payload["model"] = model
+
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
             self.host + "tokenize",
             headers=self.request_headers,
             json=payload,
+            params=params,
         )
         return self._translate_errors(response).json()
 
-    def detokenize(self, model: str, token_ids: List[int]):
+    def detokenize(self, model: Optional[str], token_ids: List[int], checkpoint: Optional[str] = None):
         """
         Detokenizes the given tokens.
         """
-        payload = {"model": model, "token_ids": token_ids}
+        payload: Dict[str, Any] = {"token_ids": token_ids}
+        if model is not None:
+            payload["model"] = model
+
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
         response = self.post_request(
             self.host + "detokenize",
             headers=self.request_headers,
             json=payload,
+            params=params,
         )
         return self._translate_errors(response).json()
 
