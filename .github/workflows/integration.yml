@@ -30,6 +30,6 @@ jobs:
           TEST_API_URL: https://api.aleph-alpha.com
           TEST_TOKEN: ${{ secrets.AA_API_TOKEN }}
           TEST_MODEL: luminous-base
-          TEST_CHECKPOINT: luminous-base
-          TEST_CHECKPOINT_QA: luminous-extended
-          TEST_CHECKPOINT_SUMMARIZATION: luminous-extended
+          TEST_CHECKPOINT: ${{ secrets.TEST_CHECKPOINT }}
+          TEST_CHECKPOINT_QA: ${{ secrets.TEST_CHECKPOINT_QA }}
+          TEST_CHECKPOINT_SUMMARIZATION: ${{ secrets.TEST_CHECKPOINT_SUMMARIZATION }}
