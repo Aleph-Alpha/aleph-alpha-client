@@ -36,7 +36,8 @@ setup(
     author="Aleph Alpha",
     author_email="support@aleph-alpha.com",
     packages=["aleph_alpha_client"],
-    install_requires=["requests >= 2.28"],
+    # urllib is used directly for retries
+    install_requires=["requests >= 2.28", "urllib3 >= 1.26" ],
     tests_require=tests_require,
     extras_require={"test": tests_require, "types": types_require, "dev": dev_require},
     license="MIT",

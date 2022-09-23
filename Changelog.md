@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.3
+
+- Fix: Dependency `urllib` is specified to be at least of version `1.26`.
+
 ## 2.4.2
 
 - Fix: Dependency `requests` is specified to be at least of version `2.28`.
