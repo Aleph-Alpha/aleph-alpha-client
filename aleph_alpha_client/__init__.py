@@ -9,7 +9,6 @@ from .embedding import (
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
     SemanticRepresentation,
-    SemanticEmbeddingCompression,
 )
 from .completion import CompletionRequest, CompletionResponse
 from .qa import QaRequest, QaResponse

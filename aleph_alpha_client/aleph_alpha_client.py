@@ -1,5 +1,4 @@
 from socket import timeout
-from tkinter import W
 from typing import Any, List, Optional, Dict, Sequence, Union
 
 import requests
