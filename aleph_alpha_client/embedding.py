@@ -88,24 +88,6 @@ class SemanticRepresentation(Enum):
     Query = "query"
 
 
-class SemanticEmbeddingCompression(Enum):
-    """
-    The default behavior is to return the full embedding, but you can optionally request an embedding compressed to a smaller set of dimensions.
-
-    Full embedding sizes for supported models:
-        - luminous-base: 5120
-
-    The 128 size is expected to have a small drop in accuracy performance (4-6%), with the benefit of being much smaller, which makes comparing these embeddings much faster for use cases where speed is critical.
-
-    The 128 size can also perform better if you are embedding really short texts or documents.
-    """
-
-    C128 = 128
-
-    def __int__(self):
-        return self.value
-
-
 class SemanticEmbeddingRequest(NamedTuple):
     """
     Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -130,7 +112,7 @@ class SemanticEmbeddingRequest(NamedTuple):
 
     prompt: Prompt
     representation: SemanticRepresentation
-    compress_to_size: Optional[SemanticEmbeddingCompression] = None
+    compress_to_size: Optional[int] = None
 
 
 class SemanticEmbeddingResponse(NamedTuple):
