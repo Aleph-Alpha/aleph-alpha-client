@@ -3,7 +3,6 @@ from typing import (
     Any,
     Dict,
     List,
-    Literal,
     NamedTuple,
     Optional,
     Tuple,
@@ -113,7 +112,7 @@ class SemanticEmbeddingRequest(NamedTuple):
 
     prompt: Prompt
     representation: SemanticRepresentation
-    compress_to_size: Optional[Literal[128]] = None
+    compress_to_size: Optional[int] = None
 
 
 class SemanticEmbeddingResponse(NamedTuple):

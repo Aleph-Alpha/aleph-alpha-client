@@ -80,9 +80,10 @@ def test_qa_with_client(client: AlephAlphaClient):
 def test_qa_with_client_against_checkpoint(
     client: AlephAlphaClient, qa_checkpoint_name: str
 ):
-    model_name = "luminous-extended"
     # given a client
-    assert model_name in map(lambda model: model["name"], client.available_models())
+    assert qa_checkpoint_name in map(
+        lambda checkpoint: checkpoint["name"], client.available_checkpoints()
+    )
 
     # when posting a QA request with explicit parameters
     response = client.qa(

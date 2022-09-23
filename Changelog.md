@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.4.1
+
+### Python support
+
+- Minimal supported Python version is now 3.7
+- Previously we only supported version 3.8
+
 ## 2.4.0
 
 ### New feature
