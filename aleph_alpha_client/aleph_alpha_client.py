@@ -127,8 +127,22 @@ class AlephAlphaClient:
         )
         return self._translate_errors(response).json()
 
+    def available_checkpoints(self):
+        """
+        Queries all checkpoints which are currently available.
+        """
+        response = self.get_request(
+            self.host + "checkpoints_available", headers=self.request_headers
+        )
+        return self._translate_errors(response).json()
+
     def tokenize(
-        self, model: Optional[str], prompt: str, tokens: bool = True, token_ids: bool = True, checkpoint: Optional[str] = None
+        self,
+        model: Optional[str],
+        prompt: str,
+        tokens: bool = True,
+        token_ids: bool = True,
+        checkpoint: Optional[str] = None,
     ):
         """
         Tokenizes the given prompt for the given model.
@@ -153,7 +167,12 @@ class AlephAlphaClient:
         )
         return self._translate_errors(response).json()
 
-    def detokenize(self, model: Optional[str], token_ids: List[int], checkpoint: Optional[str] = None):
+    def detokenize(
+        self,
+        model: Optional[str],
+        token_ids: List[int],
+        checkpoint: Optional[str] = None,
+    ):
         """
         Detokenizes the given tokens.
         """
