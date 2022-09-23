@@ -88,7 +88,7 @@ class SemanticRepresentation(Enum):
     Query = "query"
 
 
-class Compression(Enum):
+class SemanticEmbeddingCompression(Enum):
     """
     The default behavior is to return the full embedding, but you can optionally request an embedding compressed to a smaller set of dimensions.
 
@@ -101,6 +101,9 @@ class Compression(Enum):
     """
 
     C128 = 128
+
+    def __int__(self):
+        return self.value
 
 
 class SemanticEmbeddingRequest(NamedTuple):
@@ -127,7 +130,7 @@ class SemanticEmbeddingRequest(NamedTuple):
 
     prompt: Prompt
     representation: SemanticRepresentation
-    compress_to_size: Optional[Compression] = None
+    compress_to_size: Optional[SemanticEmbeddingCompression] = None
 
 
 class SemanticEmbeddingResponse(NamedTuple):

@@ -5,6 +5,7 @@ from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticRepresentation,
+    SemanticEmbeddingCompression,
 )
 from aleph_alpha_client.prompt import Prompt
 from tests.common import client, checkpoint_name, model_name, luminous_base, model
@@ -130,7 +131,7 @@ def test_embed_semantic(luminous_base: AlephAlphaModel):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
         representation=SemanticRepresentation.Symmetric,
-        compress_to_size=128,
+        compress_to_size=SemanticEmbeddingCompression(128),
     )
 
     result = luminous_base.semantic_embed(request=request)
@@ -148,7 +149,7 @@ def test_embed_semantic_against_checkpoint(
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
         representation=SemanticRepresentation.Symmetric,
-        compress_to_size=128,
+        compress_to_size=SemanticEmbeddingCompression(128),
     )
 
     result = model.semantic_embed(request=request)
@@ -162,7 +163,7 @@ def test_embed_semantic_client(client: AlephAlphaClient):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
         representation=SemanticRepresentation.Symmetric,
-        compress_to_size=128,
+        compress_to_size=SemanticEmbeddingCompression(128),
     )
     result = client.semantic_embed(
         model="luminous-base",
@@ -181,7 +182,7 @@ def test_semantic_embed_with_client_against_checkpoint(
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
         representation=SemanticRepresentation.Symmetric,
-        compress_to_size=128,
+        compress_to_size=SemanticEmbeddingCompression(128),
     )
 
     result = client.semantic_embed(

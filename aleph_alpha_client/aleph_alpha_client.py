@@ -1,4 +1,5 @@
 from socket import timeout
+from tkinter import W
 from typing import Any, List, Optional, Dict, Sequence, Union
 
 import requests
@@ -503,8 +504,10 @@ class AlephAlphaClient:
         payload: Dict[str, Any] = {
             "prompt": serializable_prompt,
             "representation": request.representation.value,
-            "compress_to_size": request.compress_to_size,
         }
+
+        if request.compress_to_size is not None:
+            payload["compress_to_size"] = int(request.compress_to_size)
 
         if model is not None:
             payload["model"] = model
