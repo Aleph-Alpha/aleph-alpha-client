@@ -67,6 +67,27 @@ class AlephAlphaModel:
         self.hosting = hosting
         self.checkpoint_name = checkpoint_name
 
+
+    @classmethod
+    def from_model_name(cls, model_name: str, token: str, hosting: Optional[str]=None):
+        """
+        Construct a context object for a specific model.
+
+        :param model_name: Name of model to use. A model name refers to a model architecture (number
+            of parameters among others). Always the latest version of model is used. The model
+            output contains information as to the model version.
+        :param token: API token used for authentication. To acquire a token log into the playground
+            https://app.aleph-alpha.com and navigate to your profile.
+        :param hosting: Determines in which datacenters the request may be processed. You can either
+            set the parameter to "aleph-alpha" or omit it (defaulting to None). Not setting this
+            value, or setting it to None, gives us maximal flexibility in processing your request in
+            our own datacenters and on servers hosted with other providers. Choose this option for
+            maximal availability. Setting it to "aleph-alpha" allows us to only process the request
+            in our own datacenters. Choose this option for maximal data privacy.
+        """
+        client = AlephAlphaClient(token=token)
+        return cls(client=client, model_name=model_name, hosting=hosting)
+
     def complete(self, request: CompletionRequest) -> CompletionResponse:
         response_json = self.client.complete(
             model=self.model_name,
