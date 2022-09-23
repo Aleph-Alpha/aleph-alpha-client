@@ -36,7 +36,7 @@ setup(
     author="Aleph Alpha",
     author_email="support@aleph-alpha.com",
     packages=["aleph_alpha_client"],
-    install_requires=["requests"],
+    install_requires=["requests >= 2.28"],
     tests_require=tests_require,
     extras_require={"test": tests_require, "types": types_require, "dev": dev_require},
     license="MIT",
