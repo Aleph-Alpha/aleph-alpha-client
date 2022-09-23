@@ -3,6 +3,7 @@
 ## 2.4.3
 
 - Fix: Dependency `urllib` is specified to be at least of version `1.26`.
+- Add constructor `AlephAlphaModel::from_model_name`.
 
 ## 2.4.2
 
