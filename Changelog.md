@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.2
+
+- Fix: Dependency `requests` is specified to be at least of version `2.28`.
+
 ## 2.4.1
 
 ### Python support
