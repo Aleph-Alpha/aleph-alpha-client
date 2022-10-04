@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.4
+
+- Fix: ImagePrompt.from_url raises if status-code not OK
+
 ## 2.4.3
 
 - Fix: Dependency `urllib` is specified to be at least of version `1.26`.
