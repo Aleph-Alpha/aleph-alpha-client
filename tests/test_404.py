@@ -3,6 +3,7 @@ import requests
 from tests.common import client
 
 
+@pytest.mark.needs_api
 def test_404(client):
     response = requests.get(client.host + "something_not_existing")
     assert response.status_code == 404, "requesting unknown endpoint returns status 404"

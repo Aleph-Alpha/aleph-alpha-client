@@ -6,6 +6,7 @@ from aleph_alpha_client.prompt import Prompt
 from tests.common import client, model_name, model, checkpoint_name
 
 
+@pytest.mark.needs_api
 def test_explanation(model: AlephAlphaModel):
     request = ExplanationRequest(
         prompt=Prompt.from_text("An apple a day"),
@@ -18,6 +19,7 @@ def test_explanation(model: AlephAlphaModel):
     assert len(explanation["result"]) > 0
 
 
+@pytest.mark.needs_api
 def test_explanation_against_checkpoint(client: AlephAlphaClient, checkpoint_name: str):
     model = AlephAlphaModel(client, checkpoint_name=checkpoint_name)
     request = ExplanationRequest(
@@ -30,6 +32,7 @@ def test_explanation_against_checkpoint(client: AlephAlphaClient, checkpoint_nam
     assert len(explanation["result"]) > 0
 
 
+@pytest.mark.needs_api
 def test_explain_fails(model: AlephAlphaModel):
     # given a client
     assert model.model_name in map(
@@ -51,6 +54,7 @@ def test_explain_fails(model: AlephAlphaModel):
     assert e.value.args[0] == 400
 
 
+@pytest.mark.needs_api
 def test_explanation_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):

@@ -222,6 +222,7 @@ from pytest_httpserver import HTTPServer
         ),
     ],
 )
+@pytest.mark.needs_api
 def test_aleph_alpha_client_completion_errors(
     client, model_name, config, description, exception_type
 ):
@@ -278,6 +279,7 @@ def test_aleph_alpha_client_completion_errors(
         ),
     ],
 )
+@pytest.mark.needs_api
 def test_aleph_alpha_client_evaluation_errors(
     client, model_name, config, description, exception_type
 ):
@@ -366,6 +368,7 @@ def test_aleph_alpha_client_evaluation_errors(
         ),
     ],
 )
+@pytest.mark.needs_api
 def test_aleph_alpha_client_qa_errors(
     client, model_name, config, description, exception_type
 ):
