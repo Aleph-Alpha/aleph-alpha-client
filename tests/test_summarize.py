@@ -11,8 +11,10 @@ from tests.common import (
     luminous_extended,
     summarization_checkpoint_name,
 )
+import pytest
 
 
+@pytest.mark.needs_api
 def test_summarize(luminous_extended: AlephAlphaModel):
     # given a client
     assert luminous_extended.model_name in map(
@@ -31,6 +33,7 @@ def test_summarize(luminous_extended: AlephAlphaModel):
     assert response.model_version is not None
 
 
+@pytest.mark.needs_api
 def test_summarize_against_checkpoint(
     client: AlephAlphaClient, summarization_checkpoint_name: str
 ):
@@ -44,6 +47,7 @@ def test_summarize_against_checkpoint(
     assert response.model_version is not None
 
 
+@pytest.mark.needs_api
 def test_summarization_with_client(client: AlephAlphaClient):
     model_name = "luminous-extended"
     # given a client
@@ -62,6 +66,7 @@ def test_summarization_with_client(client: AlephAlphaClient):
     assert response["model_version"] is not None
 
 
+@pytest.mark.needs_api
 def test_summarization_with_client_against_checkpoint(
     client: AlephAlphaClient, summarization_checkpoint_name
 ):
@@ -79,6 +84,7 @@ def test_summarization_with_client_against_checkpoint(
     assert response["model_version"] is not None
 
 
+@pytest.mark.needs_api
 def test_text(luminous_extended: AlephAlphaModel):
     # given a client
     assert luminous_extended.model_name in map(

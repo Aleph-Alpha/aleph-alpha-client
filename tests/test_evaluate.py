@@ -8,6 +8,7 @@ from aleph_alpha_client.prompt import Prompt
 from tests.common import client, model_name, model, checkpoint_name
 
 
+@pytest.mark.needs_api
 def test_evaluate(model: AlephAlphaModel):
 
     request = EvaluationRequest(
@@ -20,6 +21,7 @@ def test_evaluate(model: AlephAlphaModel):
     assert result.result is not None
 
 
+@pytest.mark.needs_api
 def test_evaluate_against_checkpoint(client: AlephAlphaClient, checkpoint_name: str):
     model = AlephAlphaModel(client, checkpoint_name=checkpoint_name)
 
@@ -33,6 +35,7 @@ def test_evaluate_against_checkpoint(client: AlephAlphaClient, checkpoint_name: 
     assert result.result is not None
 
 
+@pytest.mark.needs_api
 def test_evaluate_with_client(client: AlephAlphaClient, model_name: str):
     result = client.evaluate(model_name, prompt="hello", completion_expected="world")
 
@@ -40,6 +43,7 @@ def test_evaluate_with_client(client: AlephAlphaClient, model_name: str):
     assert result["result"] is not None
 
 
+@pytest.mark.needs_api
 def test_evaluate_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
@@ -54,6 +58,7 @@ def test_evaluate_with_client_against_checkpoint(
     assert result["result"] is not None
 
 
+@pytest.mark.needs_api
 def test_evaluate_fails(model: AlephAlphaModel):
     # given a client
     assert model.model_name in map(

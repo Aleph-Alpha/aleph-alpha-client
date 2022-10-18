@@ -7,6 +7,7 @@ from aleph_alpha_client.qa import QaRequest
 from tests.common import client, model_name, luminous_extended, qa_checkpoint_name
 
 
+@pytest.mark.needs_api
 def test_qa(luminous_extended: AlephAlphaModel):
     # given a client
     assert luminous_extended.model_name in map(
@@ -26,6 +27,7 @@ def test_qa(luminous_extended: AlephAlphaModel):
     assert response.model_version is not None
 
 
+@pytest.mark.needs_api
 def test_qa_against_checkpoint(client: AlephAlphaClient, qa_checkpoint_name: str):
     model = AlephAlphaModel(client, checkpoint_name=qa_checkpoint_name)
 
@@ -41,6 +43,7 @@ def test_qa_against_checkpoint(client: AlephAlphaClient, qa_checkpoint_name: str
     assert response.model_version is not None
 
 
+@pytest.mark.needs_api
 def test_qa_no_answer_found(luminous_extended: AlephAlphaModel):
     # given a client
     assert luminous_extended.model_name in map(
@@ -60,6 +63,7 @@ def test_qa_no_answer_found(luminous_extended: AlephAlphaModel):
     assert response.model_version is not None
 
 
+@pytest.mark.needs_api
 def test_qa_with_client(client: AlephAlphaClient):
     model_name = "luminous-extended"
     # given a client
@@ -77,6 +81,7 @@ def test_qa_with_client(client: AlephAlphaClient):
     assert response["model_version"] is not None
 
 
+@pytest.mark.needs_api
 def test_qa_with_client_against_checkpoint(
     client: AlephAlphaClient, qa_checkpoint_name: str
 ):
@@ -98,6 +103,7 @@ def test_qa_with_client_against_checkpoint(
     assert response["model_version"] is not None
 
 
+@pytest.mark.needs_api
 def test_text(luminous_extended: AlephAlphaModel):
     # given a client
     assert luminous_extended.model_name in map(

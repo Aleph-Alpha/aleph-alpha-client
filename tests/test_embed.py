@@ -10,6 +10,7 @@ from aleph_alpha_client.prompt import Prompt
 from tests.common import client, checkpoint_name, model_name, luminous_base, model
 
 
+@pytest.mark.needs_api
 def test_embed(model: AlephAlphaModel):
 
     request = EmbeddingRequest(
@@ -25,6 +26,7 @@ def test_embed(model: AlephAlphaModel):
     assert result.tokens is None
 
 
+@pytest.mark.needs_api
 def test_embed_against_checkpoint(client: AlephAlphaClient, checkpoint_name: str):
     model = AlephAlphaModel(client, checkpoint_name=checkpoint_name)
 
@@ -41,6 +43,7 @@ def test_embed_against_checkpoint(client: AlephAlphaClient, checkpoint_name: str
     assert result.tokens is None
 
 
+@pytest.mark.needs_api
 def test_embed_with_client(client: AlephAlphaClient, model_name: str):
     layers = [0, -1]
     pooling = ["mean", "max"]
@@ -54,6 +57,7 @@ def test_embed_with_client(client: AlephAlphaClient, model_name: str):
     assert result["tokens"] is None
 
 
+@pytest.mark.needs_api
 def test_embed_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
@@ -75,6 +79,7 @@ def test_embed_with_client_against_checkpoint(
     assert result["tokens"] is None
 
 
+@pytest.mark.needs_api
 def test_embedding_of_one_token_aggregates_identically(model: AlephAlphaModel):
     request = EmbeddingRequest(
         prompt=Prompt.from_text(
@@ -93,6 +98,7 @@ def test_embedding_of_one_token_aggregates_identically(model: AlephAlphaModel):
     )
 
 
+@pytest.mark.needs_api
 def test_embed_with_tokens(model: AlephAlphaModel):
     request = EmbeddingRequest(
         prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
@@ -107,6 +113,7 @@ def test_embed_with_tokens(model: AlephAlphaModel):
     assert result.tokens is not None
 
 
+@pytest.mark.needs_api
 def test_failing_embedding_request(model: AlephAlphaModel):
     # given a client
     assert model.model_name in (
@@ -125,6 +132,7 @@ def test_failing_embedding_request(model: AlephAlphaModel):
     assert e.value.args[0] == 400
 
 
+@pytest.mark.needs_api
 def test_embed_semantic(luminous_base: AlephAlphaModel):
 
     request = SemanticEmbeddingRequest(
@@ -140,6 +148,7 @@ def test_embed_semantic(luminous_base: AlephAlphaModel):
     assert len(result.embedding) == 128
 
 
+@pytest.mark.needs_api
 def test_embed_semantic_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
@@ -158,6 +167,7 @@ def test_embed_semantic_against_checkpoint(
     assert len(result.embedding) == 128
 
 
+@pytest.mark.needs_api
 def test_embed_semantic_client(client: AlephAlphaClient):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
@@ -175,6 +185,7 @@ def test_embed_semantic_client(client: AlephAlphaClient):
     assert len(result["embedding"]) == 128
 
 
+@pytest.mark.needs_api
 def test_semantic_embed_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
