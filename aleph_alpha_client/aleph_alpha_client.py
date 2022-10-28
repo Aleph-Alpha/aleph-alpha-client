@@ -31,7 +31,12 @@ class BusyError(Exception):
 
 class AlephAlphaClient:
     def __init__(
-        self, host="https://api.aleph-alpha.com", token=None, email=None, password=None, request_timeout_seconds=180
+        self,
+        host="https://api.aleph-alpha.com",
+        token=None,
+        email=None,
+        password=None,
+        request_timeout_seconds=180,
     ):
         """
         Construct a context object for a specific API and user.
