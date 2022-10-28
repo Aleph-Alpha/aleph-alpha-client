@@ -1,9 +1,21 @@
+from multiprocessing.sharedctypes import Value
 import time
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, BusyError
 import pytest
 import requests
 from tests.common import client, model_name
 from pytest_httpserver import HTTPServer
+from requests.models import Response
+
+
+def test_translate_errors():
+    response = Response()
+    response.code = "bad request"
+    response.error_type = "bad request"
+    response.status_code = 400
+    response._content = b'{ "key" : "a" }'
+    with pytest.raises(ValueError):
+        AlephAlphaClient._translate_errors(response)
 
 
 # setting a fixed port for httpserver
