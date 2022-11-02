@@ -114,25 +114,6 @@ def test_embed_with_tokens(model: AlephAlphaModel):
 
 
 @pytest.mark.needs_api
-def test_failing_embedding_request(model: AlephAlphaModel):
-    # given a client
-    assert model.model_name in (
-        model["name"] for model in model.client.available_models()
-    )
-
-    # when posting an illegal request
-    request = EmbeddingRequest(
-        prompt=Prompt.from_text("abc"), layers=[0, 1, 2], pooling=["mean"]
-    )
-
-    # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(ValueError) as e:
-        model.embed(request)
-
-    assert e.value.args[0] == 400
-
-
-@pytest.mark.needs_api
 def test_embed_semantic(luminous_base: AlephAlphaModel):
 
     request = SemanticEmbeddingRequest(

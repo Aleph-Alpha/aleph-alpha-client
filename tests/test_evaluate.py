@@ -58,21 +58,3 @@ def test_evaluate_with_client_against_checkpoint(
     assert result["result"] is not None
 
 
-@pytest.mark.needs_api
-def test_evaluate_fails(model: AlephAlphaModel):
-    # given a client
-    assert model.model_name in map(
-        lambda model: model["name"], model.client.available_models()
-    )
-
-    # when posting an illegal request
-    request = EvaluationRequest(
-        prompt=Prompt.from_text("hello"),
-        completion_expected="",
-    )
-
-    # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(ValueError) as e:
-        response = model.evaluate(request=request)
-
-    assert e.value.args[0] == 400

@@ -33,28 +33,6 @@ def test_explanation_against_checkpoint(client: AlephAlphaClient, checkpoint_nam
 
 
 @pytest.mark.needs_api
-def test_explain_fails(model: AlephAlphaModel):
-    # given a client
-    assert model.model_name in map(
-        lambda model: model["name"], model.client.available_models()
-    )
-
-    # when posting an illegal request
-    request = ExplanationRequest(
-        prompt=Prompt.from_text("An apple a day"),
-        target=" keeps the doctor away",
-        suppression_factor=0.1,
-        conceptual_suppression_threshold=-1,
-    )
-
-    # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(ValueError) as e:
-        response = model._explain(request)
-
-    assert e.value.args[0] == 400
-
-
-@pytest.mark.needs_api
 def test_explanation_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
