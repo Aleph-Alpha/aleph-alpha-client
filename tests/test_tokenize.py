@@ -50,20 +50,3 @@ def test_tokenize_with_client_against_checkpoint(
 
     assert len(response["tokens"]) == 1
     assert len(response["token_ids"]) == 1
-
-
-@pytest.mark.needs_api
-def test_tokenize_fails(model: AlephAlphaModel):
-    # given a client
-    assert model.model_name in map(
-        lambda model: model["name"], model.client.available_models()
-    )
-
-    # when posting an illegal request
-    request = TokenizationRequest("hello", False, False)
-
-    # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(ValueError) as e:
-        response = model.tokenize(request)
-
-    assert e.value.args[0] == 400

@@ -37,20 +37,3 @@ def test_detokenize_with_client_against_checkpoint(
     )
 
     assert response["result"] is not None
-
-
-@pytest.mark.needs_api
-def test_detokenize_fails(model: AlephAlphaModel):
-    # given a client
-    assert model.model_name in map(
-        lambda model: model["name"], model.client.available_models()
-    )
-
-    # when posting an illegal request
-    request = DetokenizationRequest([])
-
-    # then we expect an exception tue to a bad request response from the API
-    with pytest.raises(ValueError) as e:
-        response = model.detokenize(request=request)
-
-    assert e.value.args[0] == 400
