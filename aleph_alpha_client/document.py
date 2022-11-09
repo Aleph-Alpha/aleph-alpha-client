@@ -34,6 +34,10 @@ class Document:
     def from_docx_file(cls, path: str):
         """
         Load a docx file from disk and prepare it to be used as a document
+
+        Examples
+            >>> docx_file = "./tests/sample.docx"
+            >>> document = Document.from_docx_file(docx_file)
         """
         with open(path, "rb") as f:
             docx_bytes = f.read()
@@ -50,6 +54,10 @@ class Document:
     def from_text(cls, text: str):
         """
         Pass a single text and prepare it to be used as a document
+
+        Example:
+            >>> prompt = "This is an example."
+            >>> document = Document.from_text(prompt)
         """
         return cls(text=text)
 

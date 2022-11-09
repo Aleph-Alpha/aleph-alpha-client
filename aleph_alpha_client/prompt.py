@@ -4,6 +4,14 @@ from aleph_alpha_client.image import ImagePrompt
 
 
 class Prompt(NamedTuple):
+    """
+    Examples
+        >>> prompt = Prompt.from_text("Provide a short description of AI:")
+        >>> prompt = Prompt([
+                ImagePrompt.from_url(url),
+                "Provide a short description of AI:",
+            ])
+    """
     items: List[Union[str, ImagePrompt]]
 
     @staticmethod
@@ -14,7 +22,7 @@ class Prompt(NamedTuple):
     def from_image(image: ImagePrompt) -> "Prompt":
         return Prompt([image])
 
-    
+
 def _to_prompt_item(item: Union[str, ImagePrompt]) -> Dict[str, str]:
     if isinstance(item, str):
         return {"type": "text", "data": item}

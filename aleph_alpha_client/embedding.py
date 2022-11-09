@@ -38,6 +38,9 @@ class EmbeddingRequest(NamedTuple):
         tokens
             Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
 
+    Examples
+        >>> prompt = Prompt.from_text("This is an example.")
+        >>> EmbeddingRequest(prompt=prompt, layers=[-1], pooling=["mean"])
     """
 
     prompt: Prompt
@@ -108,6 +111,20 @@ class SemanticEmbeddingRequest(NamedTuple):
             The 128 size is expected to have a small drop in accuracy performance (4-6%), with the benefit of being much smaller, which makes comparing these embeddings much faster for use cases where speed is critical.
 
             The 128 size can also perform better if you are embedding really short texts or documents.
+
+    Examples
+        >>> texts = [ 
+                "deep learning", 
+                "artificial intelligence", 
+                "deep diving", 
+                "artificial snow", 
+            ]
+        # Texts to compare 
+        >>> embeddings = [] 
+        >>> for text in texts: 
+                request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric) 
+                result = model.semantic_embed(request) 
+                embeddings.append(result.embedding)
     """
 
     prompt: Prompt

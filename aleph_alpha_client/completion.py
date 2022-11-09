@@ -106,6 +106,10 @@ class CompletionRequest(NamedTuple):
             We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
 
             Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
+
+    Examples
+        >>> prompt = Prompt.from_text("Provide a short description of AI:")
+        >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
     """
 
     prompt: Prompt

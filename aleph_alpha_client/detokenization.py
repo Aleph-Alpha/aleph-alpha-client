@@ -3,10 +3,13 @@ from typing import Any, Dict, List, NamedTuple, Optional, Sequence
 
 class DetokenizationRequest(NamedTuple):
     """Describes a detokenization request.
-    
+
     Parameters
         token_ids (Sequence[int])
             Ids of the tokens for which the text should be returned.
+
+    Examples
+        >>> DetokenizationRequest(token_ids=[1730, 387, 300, 4377, 17])
     """
     token_ids: Sequence[int]
 

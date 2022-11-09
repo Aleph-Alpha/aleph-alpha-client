@@ -67,9 +67,8 @@ class AlephAlphaModel:
         self.hosting = hosting
         self.checkpoint_name = checkpoint_name
 
-
     @classmethod
-    def from_model_name(cls, model_name: str, token: str, hosting: Optional[str]=None):
+    def from_model_name(cls, model_name: str, token: str, hosting: Optional[str] = None):
         """
         Construct a context object for a specific model.
 
@@ -84,11 +83,23 @@ class AlephAlphaModel:
             our own datacenters and on servers hosted with other providers. Choose this option for
             maximal availability. Setting it to "aleph-alpha" allows us to only process the request
             in our own datacenters. Choose this option for maximal data privacy.
+
+        Examples
+        >>> model = AlephAlphaModel.from_model_name(
+                model_name = "luminous-extended",
+                token=os.getenv("AA_TOKEN")
+            )
         """
         client = AlephAlphaClient(token=token)
         return cls(client=client, model_name=model_name, hosting=hosting)
 
     def complete(self, request: CompletionRequest) -> CompletionResponse:
+        """
+        Examples
+            >>> prompt = Prompt(["Provide a short description of AI:"])
+            >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
+            >>> result = model.complete(request)
+        """
         response_json = self.client.complete(
             model=self.model_name,
             hosting=self.hosting,
@@ -128,6 +139,11 @@ class AlephAlphaModel:
         return SemanticEmbeddingResponse.from_json(response_json)
 
     def evaluate(self, request: EvaluationRequest) -> EvaluationResponse:
+        """
+        Examples
+            >>> request = EvaluationRequest(prompt=Prompt.from_text("The api works"), completion_expected=" well")
+            >>> result = model.evaluate(request)
+        """
         response_json = self.client.evaluate(
             model=self.model_name,
             hosting=self.hosting,

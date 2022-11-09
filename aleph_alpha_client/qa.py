@@ -41,6 +41,12 @@ class QaRequest(NamedTuple):
 
         min_score (float, default 0.0):
             The lower limit of minimum score for every answer.
+
+        Examples
+            >>> request = QaRequest(
+                    query = "What is a computer program?",
+                    documents = [document]
+                )
     """
 
     query: str
