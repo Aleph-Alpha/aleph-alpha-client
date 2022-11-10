@@ -11,7 +11,12 @@ class DetokenizationRequest(NamedTuple):
     Examples
         >>> DetokenizationRequest(token_ids=[1730, 387, 300, 4377, 17])
     """
+
     token_ids: Sequence[int]
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        return payload
 
 
 class DetokenizationResponse(NamedTuple):

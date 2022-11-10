@@ -7,7 +7,7 @@ from typing import (
     Optional,
     Tuple,
 )
-from aleph_alpha_client.prompt import Prompt
+from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
 
 
 class EmbeddingRequest(NamedTuple):
@@ -48,6 +48,11 @@ class EmbeddingRequest(NamedTuple):
     pooling: List[str]
     type: Optional[str] = None
     tokens: bool = False
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        payload["prompt"] = _to_serializable_prompt(self.prompt.items)
+        return payload
 
 
 class EmbeddingResponse(NamedTuple):
@@ -113,23 +118,28 @@ class SemanticEmbeddingRequest(NamedTuple):
             The 128 size can also perform better if you are embedding really short texts or documents.
 
     Examples
-        >>> texts = [ 
-                "deep learning", 
-                "artificial intelligence", 
-                "deep diving", 
-                "artificial snow", 
+        >>> texts = [
+                "deep learning",
+                "artificial intelligence",
+                "deep diving",
+                "artificial snow",
             ]
-        # Texts to compare 
-        >>> embeddings = [] 
-        >>> for text in texts: 
-                request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric) 
-                result = model.semantic_embed(request) 
+        # Texts to compare
+        >>> embeddings = []
+        >>> for text in texts:
+                request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric)
+                result = model.semantic_embed(request)
                 embeddings.append(result.embedding)
     """
 
     prompt: Prompt
     representation: SemanticRepresentation
     compress_to_size: Optional[int] = None
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        payload["prompt"] = _to_serializable_prompt(self.prompt.items)
+        return payload
 
 
 class SemanticEmbeddingResponse(NamedTuple):

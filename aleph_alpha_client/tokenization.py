@@ -20,9 +20,14 @@ class TokenizationRequest(NamedTuple):
     Examples
         >>> request = TokenizationRequest(prompt="This is an example.", tokens=True, token_ids=True)
     """
+
     prompt: str
     tokens: bool
     token_ids: bool
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        return payload
 
 
 class TokenizationResponse(NamedTuple):

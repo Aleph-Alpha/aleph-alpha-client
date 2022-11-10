@@ -16,10 +16,15 @@ from aleph_alpha_client.document import Document
 from aleph_alpha_client.embedding import SemanticEmbeddingRequest
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
+from aleph_alpha_client.prompt import Prompt, _to_prompt_item, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
+from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
+from aleph_alpha_client.detokenization import (
+    DetokenizationRequest,
+    DetokenizationResponse,
+)
 from aleph_alpha_client.embedding import (
     EmbeddingRequest,
     EmbeddingResponse,
@@ -922,6 +927,43 @@ class AsyncClient:
                 _raise_for_status(response.status, await response.text())
             return await response.json()
 
+    def _params_and_payload(
+        self,
+        request: Union[
+            CompletionRequest,
+            EmbeddingRequest,
+            EvaluationRequest,
+            TokenizationRequest,
+            DetokenizationRequest,
+        ],
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        """
+        Convert a request and metadata into appropriate http body and query
+        params for a task request.
+        """
+        if (model is None and checkpoint is None) or (
+            model is not None and checkpoint is not None
+        ):
+            raise ValueError("Need to set exactly one of model and checkpoint.")
+
+        # Default payload with correct prompt representation
+        payload = request.to_json()
+
+        # Add appropriate metadata
+        if model is not None:
+            payload["model"] = model
+        if self.hosting is not None:
+            payload["hosting"] = self.hosting
+
+        # Query parameters
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
+        return params, payload
+
     async def complete(
         self,
         request: CompletionRequest,
@@ -937,34 +979,38 @@ class AsyncClient:
         )
         return CompletionResponse.from_json(response)
 
-    def _params_and_payload(
+    async def tokenize(
         self,
-        request: Union[CompletionRequest, EmbeddingRequest, EvaluationRequest],
+        request: TokenizationRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
-    ):
+    ) -> TokenizationResponse:
         """
-        Convert a request and metadata into appropriate http body and query
-        params for a task request.
+        Tokenizes the given prompt for the given model.
         """
-        if (model is None and checkpoint is None) or (
-            model is not None and checkpoint is not None
-        ):
-            raise ValueError("Need to set exactly one of model and checkpoint.")
+        params, json = self._params_and_payload(request, model, checkpoint)
 
-        # Default payload with correct prompt representation
-        payload = request._asdict()
-        payload["prompt"] = _to_serializable_prompt(request.prompt.items)
+        response = await self.post_request(
+            "tokenize",
+            json=json,
+            params=params,
+        )
+        return TokenizationResponse.from_json(response)
 
-        # Add appropriate metadata
-        if model is not None:
-            payload["model"] = model
-        if self.hosting is not None:
-            payload["hosting"] = self.hosting
+    async def detokenize(
+        self,
+        request: DetokenizationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> DetokenizationResponse:
+        """
+        Detokenizes the given prompt for the given model.
+        """
+        params, json = self._params_and_payload(request, model, checkpoint)
 
-        # Query parameters
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
-
-        return params, payload
+        response = await self.post_request(
+            "detokenize",
+            json=json,
+            params=params,
+        )
+        return DetokenizationResponse.from_json(response)
