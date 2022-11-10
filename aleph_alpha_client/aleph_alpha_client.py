@@ -935,6 +935,7 @@ class AsyncClient:
             EvaluationRequest,
             TokenizationRequest,
             DetokenizationRequest,
+            SemanticEmbeddingRequest,
         ],
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
@@ -1014,3 +1015,33 @@ class AsyncClient:
             params=params,
         )
         return DetokenizationResponse.from_json(response)
+
+    async def embed(
+        self,
+        request: EmbeddingRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "embed",
+            json=json,
+            params=params,
+        )
+        return EmbeddingResponse.from_json(response)
+
+    async def semantic_embed(
+        self,
+        request: SemanticEmbeddingRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "semantic_embed",
+            json=json,
+            params=params,
+        )
+        return SemanticEmbeddingResponse.from_json(response)

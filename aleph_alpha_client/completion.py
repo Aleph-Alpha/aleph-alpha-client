@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Sequence
+from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence
 
 from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
 
