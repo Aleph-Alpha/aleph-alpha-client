@@ -1,5 +1,14 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Sequence, Tuple, Union
-from aleph_alpha_client.prompt import Prompt
+from typing import (
+    Any,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
+from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
 
 
 class EvaluationRequest(NamedTuple):
@@ -19,6 +28,11 @@ class EvaluationRequest(NamedTuple):
 
     prompt: Prompt
     completion_expected: str
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        payload["prompt"] = _to_serializable_prompt(self.prompt.items)
+        return payload
 
 
 class EvaluationResponse(NamedTuple):

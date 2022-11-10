@@ -1,5 +1,5 @@
-from typing import List, NamedTuple, Optional
-from aleph_alpha_client.prompt import Prompt
+from typing import Any, List, Dict, NamedTuple, Optional
+from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
 
 
 class ExplanationRequest(NamedTuple):
@@ -10,3 +10,20 @@ class ExplanationRequest(NamedTuple):
     normalize: Optional[bool] = None
     square_outputs: Optional[bool] = None
     prompt_explain_indices: Optional[List[int]] = None
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        payload["prompt"] = _to_serializable_prompt(self.prompt.items)
+        return payload
+
+
+class ExplanationResponse(NamedTuple):
+    model_version: str
+    result: List[Any]
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "ExplanationResponse":
+        return ExplanationResponse(
+            model_version=json["model_version"],
+            result=json["result"],
+        )

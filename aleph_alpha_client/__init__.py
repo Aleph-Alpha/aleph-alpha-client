@@ -1,4 +1,9 @@
-from .aleph_alpha_client import AlephAlphaClient, QuotaError, POOLING_OPTIONS
+from .aleph_alpha_client import (
+    AlephAlphaClient,
+    QuotaError,
+    POOLING_OPTIONS,
+    AsyncClient,
+)
 from .aleph_alpha_model import AlephAlphaModel
 from .image import ImagePrompt
 from .prompt import Prompt

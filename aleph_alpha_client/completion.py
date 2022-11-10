@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence
 
-from aleph_alpha_client.prompt import Prompt
+from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
 
 
 class CompletionRequest(NamedTuple):
@@ -131,6 +131,11 @@ class CompletionRequest(NamedTuple):
     stop_sequences: Optional[List[str]] = None
     tokens: bool = False
     disable_optimizations: bool = False
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        payload["prompt"] = _to_serializable_prompt(self.prompt.items)
+        return payload
 
 
 class CompletionResult(NamedTuple):

@@ -1,20 +1,36 @@
 from socket import timeout
-from typing import Any, List, Optional, Dict, Sequence, Union
-
+from types import TracebackType
+from typing import Any, List, Optional, Dict, Sequence, Type, Union, Mapping
+from collections import ChainMap
 import requests
 import logging
+import asyncio
 
 from requests import Response
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+import aiohttp
 
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
-from aleph_alpha_client.embedding import SemanticEmbeddingRequest
-from aleph_alpha_client.explanation import ExplanationRequest
+from aleph_alpha_client.explanation import ExplanationRequest, ExplanationResponse
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
-from aleph_alpha_client.summarization import SummarizationRequest
+from aleph_alpha_client.prompt import Prompt, _to_prompt_item, _to_serializable_prompt
+from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
+from aleph_alpha_client.qa import QaRequest, QaResponse
+from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
+from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
+from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
+from aleph_alpha_client.detokenization import (
+    DetokenizationRequest,
+    DetokenizationResponse,
+)
+from aleph_alpha_client.embedding import (
+    EmbeddingRequest,
+    EmbeddingResponse,
+    SemanticEmbeddingRequest,
+    SemanticEmbeddingResponse,
+)
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
@@ -27,6 +43,22 @@ class QuotaError(Exception):
 class BusyError(Exception):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+def _raise_for_status(status_code: int, text: str):
+    if status_code >= 400:
+        if status_code == 400:
+            raise ValueError(status_code, text)
+        elif status_code == 401:
+            raise PermissionError(status_code, text)
+        elif status_code == 402:
+            raise QuotaError(status_code, text)
+        elif status_code == 408:
+            raise TimeoutError(status_code, text)
+        elif status_code == 503:
+            raise BusyError(status_code, text)
+        else:
+            raise RuntimeError(status_code, text)
 
 
 class AlephAlphaClient:
@@ -90,7 +122,8 @@ class AlephAlphaClient:
 
     def get_version(self):
         response = self.get_request(self.host + "version")
-        return self._translate_errors(response).text
+        _raise_for_status(response.status_code, response.text)
+        return response.text
 
     def get_token(self, email, password):
         response = self.post_request(
@@ -130,7 +163,8 @@ class AlephAlphaClient:
         response = self.get_request(
             self.host + "models_available", headers=self.request_headers
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def available_checkpoints(self):
         """
@@ -139,7 +173,8 @@ class AlephAlphaClient:
         response = self.get_request(
             self.host + "checkpoints_available", headers=self.request_headers
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def tokenize(
         self,
@@ -170,7 +205,8 @@ class AlephAlphaClient:
             json=payload,
             params=params,
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def detokenize(
         self,
@@ -195,7 +231,8 @@ class AlephAlphaClient:
             json=payload,
             params=params,
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def complete(
         self,
@@ -373,7 +410,8 @@ class AlephAlphaClient:
             params=params,
             json=payload,
         )
-        response_json = self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        response_json = response.json()
         if response_json.get("optimized_prompt") is not None:
             # Return a message to the user that we optimized their prompt
             print(
@@ -468,7 +506,8 @@ class AlephAlphaClient:
             json=payload,
             params=params,
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def semantic_embed(
         self,
@@ -527,7 +566,8 @@ class AlephAlphaClient:
             json=payload,
             params=params,
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def evaluate(
         self,
@@ -586,7 +626,8 @@ class AlephAlphaClient:
             json=payload,
             params=params,
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def qa(
         self,
@@ -680,8 +721,8 @@ class AlephAlphaClient:
             json=payload,
             params=params,
         )
-        response_json = self._translate_errors(response).json()
-        return response_json
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def summarize(
         self,
@@ -733,7 +774,8 @@ class AlephAlphaClient:
             json=payload,
             params=params,
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def _explain(
         self,
@@ -768,22 +810,301 @@ class AlephAlphaClient:
             json=body,
             params=params,
         )
-        return self._translate_errors(response).json()
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
-    @staticmethod
-    def _translate_errors(response: Response) -> Response:
-        if response.status_code == 200:
-            return response
-        else:
-            if response.status_code == 400:
-                raise ValueError(response.status_code, response.text)
-            elif response.status_code == 401:
-                raise PermissionError(response.status_code, response.text)
-            elif response.status_code == 402:
-                raise QuotaError(response.status_code, response.text)
-            elif response.status_code == 408:
-                raise TimeoutError(response.status_code, response.text)
-            elif response.status_code == 503:
-                raise BusyError(response.status_code, response.text)
-            else:
-                raise RuntimeError(response.status_code, response.text)
+
+class AsyncClient:
+    def __init__(
+        self,
+        token: str,
+        host: str = "https://api.aleph-alpha.com",
+        hosting: Optional[str] = None,
+        request_timeout_seconds: int = 180,
+    ):
+        """
+        Construct a context object for aynchronous reqeuests a given user token
+
+        Parameters:
+            token (string):
+                The API token that will be used for authentication.
+                This is optional because we also support password authentication.
+                If token is None, email and password must be set.
+
+            host (string, required):
+                The hostname of the API host.
+
+            hosting(string, optional, default None):
+                Determines in which datacenters the request may be processed.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
+
+            request_timeout_seconds (int, optional, default 180):
+                Client timeout that will be set for HTTP requests in the `requests` library's API calls.
+        """
+        if host[-1] != "/":
+            host += "/"
+        self.host = host
+        self.hosting = hosting
+        self.request_timeout_seconds = request_timeout_seconds
+
+        assert token is not None
+        self.token = token
+
+        self.request_headers = {
+            "Authorization": "Bearer " + self.token,
+            "User-Agent": "Aleph-Alpha-Python-Client-" + aleph_alpha_client.__version__,
+        }
+
+        self.session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(self.request_timeout_seconds),
+            headers=self.request_headers,
+        )
+
+    async def open(self):
+        await self._check_version()
+        return self
+
+    async def close(self):
+        await self.session.close()
+
+    def __enter__(self) -> None:
+        raise TypeError("Use async with instead")
+
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ) -> None:
+        # __exit__ should exist in pair with __enter__ but never executed
+        pass  # pragma: no cover
+
+    async def __aenter__(self):
+        await self.session.__aenter__()
+        await self.open()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
+    ):
+        await self.session.__aexit__(exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb)
+
+    async def get_version(self) -> str:
+        async with self.session.get(
+            self.host + "version",
+        ) as response:
+            if not response.ok:
+                _raise_for_status(response.status, await response.text())
+            return await response.text()
+
+    async def _check_version(self):
+        """
+        Verify that the major version of the API matches what we are expecting.
+        """
+        expect_release = "1"
+        version = await self.get_version()
+        if not version.startswith(expect_release):
+            logging.warning(
+                f"Expected API version {expect_release}.x.x, got {version}. Please update client."
+            )
+
+    async def post_request(
+        self, endpoint: str, json: Any, params: Optional[Dict[str, str]] = None
+    ) -> Dict[str, Any]:
+        async with self.session.post(
+            self.host + endpoint, json=json, params=params
+        ) as response:
+            if not response.ok:
+                _raise_for_status(response.status, await response.text())
+            return await response.json()
+
+    def _params_and_payload(
+        self,
+        request: Union[
+            CompletionRequest,
+            EmbeddingRequest,
+            EvaluationRequest,
+            TokenizationRequest,
+            DetokenizationRequest,
+            SemanticEmbeddingRequest,
+            QaRequest,
+            SummarizationRequest,
+            ExplanationRequest,
+        ],
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        """
+        Convert a request and metadata into appropriate http body and query
+        params for a task request.
+        """
+        if (model is None and checkpoint is None) or (
+            model is not None and checkpoint is not None
+        ):
+            raise ValueError("Need to set exactly one of model and checkpoint.")
+
+        # Default payload with correct prompt representation
+        payload = request.to_json()
+
+        # Add appropriate metadata
+        if model is not None:
+            payload["model"] = model
+        if self.hosting is not None:
+            payload["hosting"] = self.hosting
+
+        # Query parameters
+        params = {}
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
+        return params, payload
+
+    async def complete(
+        self,
+        request: CompletionRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> CompletionResponse:
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "complete",
+            json=json,
+            params=params,
+        )
+        return CompletionResponse.from_json(response)
+
+    async def tokenize(
+        self,
+        request: TokenizationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> TokenizationResponse:
+        """
+        Tokenizes the given prompt for the given model.
+        """
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "tokenize",
+            json=json,
+            params=params,
+        )
+        return TokenizationResponse.from_json(response)
+
+    async def detokenize(
+        self,
+        request: DetokenizationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> DetokenizationResponse:
+        """
+        Detokenizes the given prompt for the given model.
+        """
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "detokenize",
+            json=json,
+            params=params,
+        )
+        return DetokenizationResponse.from_json(response)
+
+    async def embed(
+        self,
+        request: EmbeddingRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "embed",
+            json=json,
+            params=params,
+        )
+        return EmbeddingResponse.from_json(response)
+
+    async def semantic_embed(
+        self,
+        request: SemanticEmbeddingRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "semantic_embed",
+            json=json,
+            params=params,
+        )
+        return SemanticEmbeddingResponse.from_json(response)
+
+    async def evaluate(
+        self,
+        request: EvaluationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "evaluate",
+            json=json,
+            params=params,
+        )
+        return EvaluationResponse.from_json(response)
+
+    async def qa(
+        self,
+        request: QaRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "qa",
+            json=json,
+            params=params,
+        )
+        return QaResponse.from_json(response)
+
+    async def summarize(
+        self,
+        request: SummarizationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "summarize",
+            json=json,
+            params=params,
+        )
+        return SummarizationResponse.from_json(response)
+
+    async def _explain(
+        self,
+        request: ExplanationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "explain",
+            json=json,
+            params=params,
+        )
+        return ExplanationResponse.from_json(response)
