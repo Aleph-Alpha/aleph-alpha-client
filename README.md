@@ -1,8 +1,8 @@
 # Aleph Alpha Client
 
-<center>
+<p align="center">
     <img src="https://app.aleph-alpha.com/assets/logo.svg" width="50%" />
-</center>
+</p>
 
 [![Licence](https://img.shields.io/crates/l/aleph-alpha-client)](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/main/LICENSE)
 [![PyPI version](https://badge.fury.io/py/aleph-alpha-client.svg)](https://pypi.org/project/aleph-alpha-client/)
