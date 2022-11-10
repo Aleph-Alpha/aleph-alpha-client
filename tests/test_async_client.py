@@ -13,6 +13,7 @@ from aleph_alpha_client.embedding import (
 from aleph_alpha_client.summarization import SummarizationRequest
 from aleph_alpha_client.evaluation import EvaluationRequest
 from aleph_alpha_client.qa import QaRequest
+from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.document import Document
 from .common import (
     model_name,
@@ -244,4 +245,32 @@ async def test_can_summarize_with_async_client_against_checkpoint(
         assert response.summary is not None
         assert response.model_version is not None
 
+@pytest.mark.needs_api
+async def test_can_explain_with_async_client(model_name):
+    token = os.environ.get("TEST_TOKEN")
+    request = ExplanationRequest(
+        prompt=Prompt.from_text("An apple a day"),
+        target=" keeps the doctor away",
+        suppression_factor=0.1,
+    )
+    async with AsyncClient(token) as client:
+        response = await client._explain(request, model=model_name)
+        assert response.result
+
+
+@pytest.mark.needs_api
+async def test_can_explain_with_async_client_against_checkpoint(
+    checkpoint_name,
+):
+    token = os.environ.get("TEST_TOKEN")
+    request = ExplanationRequest(
+        prompt=Prompt.from_text("An apple a day"),
+        target=" keeps the doctor away",
+        suppression_factor=0.1,
+    )
+    async with AsyncClient(token) as client:
+        response = await client._explain(
+            request, checkpoint=checkpoint_name
+        )
+        assert response.result
     

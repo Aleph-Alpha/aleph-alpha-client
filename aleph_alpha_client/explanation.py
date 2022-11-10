@@ -15,3 +15,15 @@ class ExplanationRequest(NamedTuple):
         payload = self._asdict()
         payload["prompt"] = _to_serializable_prompt(self.prompt.items)
         return payload
+
+
+class ExplanationResponse(NamedTuple):
+    model_version: str
+    result: List[Any]
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "ExplanationResponse":
+        return ExplanationResponse(
+            model_version=json["model_version"],
+            result=json["result"],
+        )

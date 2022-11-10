@@ -13,8 +13,7 @@ import aiohttp
 
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
-from aleph_alpha_client.embedding import SemanticEmbeddingRequest
-from aleph_alpha_client.explanation import ExplanationRequest
+from aleph_alpha_client.explanation import ExplanationRequest, ExplanationResponse
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import Prompt, _to_prompt_item, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
@@ -939,6 +938,7 @@ class AsyncClient:
             SemanticEmbeddingRequest,
             QaRequest,
             SummarizationRequest,
+            ExplanationRequest,
         ],
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
@@ -1093,3 +1093,18 @@ class AsyncClient:
             params=params,
         )
         return SummarizationResponse.from_json(response)
+
+    async def _explain(
+        self,
+        request: ExplanationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "explain",
+            json=json,
+            params=params,
+        )
+        return ExplanationResponse.from_json(response)
