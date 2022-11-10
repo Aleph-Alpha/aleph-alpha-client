@@ -10,8 +10,16 @@ from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticRepresentation,
 )
+from aleph_alpha_client.summarization import SummarizationRequest
 from aleph_alpha_client.evaluation import EvaluationRequest
-from .common import model_name, checkpoint_name
+from aleph_alpha_client.qa import QaRequest
+from aleph_alpha_client.document import Document
+from .common import (
+    model_name,
+    checkpoint_name,
+    qa_checkpoint_name,
+    summarization_checkpoint_name,
+)
 
 
 @pytest.mark.needs_api
@@ -180,5 +188,60 @@ async def test_can_evaluate_with_async_client_against_checkpoint(checkpoint_name
         assert response.model_version is not None
         assert response.result is not None
 
+
+@pytest.mark.needs_api
+async def test_can_qa_with_async_client():
+    token = os.environ.get("TEST_TOKEN")
+    request = QaRequest(
+        query="Who likes pizza?",
+        documents=[Document.from_text("Andreas likes pizza.")],
+    )
+    async with AsyncClient(token) as client:
+        response = await client.qa(request, model="luminous-extended")
+        assert len(response.answers) == 1
+        assert response.model_version is not None
+        assert response.answers[0].score > 0.0
+
+
+@pytest.mark.needs_api
+async def test_can_qa_with_async_client_against_checkpoint(qa_checkpoint_name):
+    token = os.environ.get("TEST_TOKEN")
+    request = QaRequest(
+        query="Who likes pizza?",
+        documents=[Document.from_text("Andreas likes pizza.")],
+    )
+    async with AsyncClient(token) as client:
+        response = await client.qa(request, checkpoint=qa_checkpoint_name)
+        assert len(response.answers) == 1
+        assert response.model_version is not None
+        assert response.answers[0].score > 0.5
+
+
+@pytest.mark.needs_api
+async def test_can_summarize_with_async_client():
+    token = os.environ.get("TEST_TOKEN")
+    request = SummarizationRequest(
+        document=Document.from_text("Andreas likes pizza."),
+    )
+    async with AsyncClient(token) as client:
+        response = await client.summarize(request, model="luminous-extended")
+        assert response.summary is not None
+        assert response.model_version is not None
+
+
+@pytest.mark.needs_api
+async def test_can_summarize_with_async_client_against_checkpoint(
+    summarization_checkpoint_name,
+):
+    token = os.environ.get("TEST_TOKEN")
+    request = SummarizationRequest(
+        document=Document.from_text("Andreas likes pizza."),
+    )
+    async with AsyncClient(token) as client:
+        response = await client.summarize(
+            request, checkpoint=summarization_checkpoint_name
+        )
+        assert response.summary is not None
+        assert response.model_version is not None
 
     

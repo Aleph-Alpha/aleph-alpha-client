@@ -17,7 +17,8 @@ from aleph_alpha_client.embedding import SemanticEmbeddingRequest
 from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import Prompt, _to_prompt_item, _to_serializable_prompt
-from aleph_alpha_client.summarization import SummarizationRequest
+from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
+from aleph_alpha_client.qa import QaRequest, QaResponse
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
@@ -936,6 +937,8 @@ class AsyncClient:
             TokenizationRequest,
             DetokenizationRequest,
             SemanticEmbeddingRequest,
+            QaRequest,
+            SummarizationRequest,
         ],
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
@@ -1060,3 +1063,33 @@ class AsyncClient:
             params=params,
         )
         return EvaluationResponse.from_json(response)
+
+    async def qa(
+        self,
+        request: QaRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "qa",
+            json=json,
+            params=params,
+        )
+        return QaResponse.from_json(response)
+
+    async def summarize(
+        self,
+        request: SummarizationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "summarize",
+            json=json,
+            params=params,
+        )
+        return SummarizationResponse.from_json(response)

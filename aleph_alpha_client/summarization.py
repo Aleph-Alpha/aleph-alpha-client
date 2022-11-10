@@ -1,4 +1,4 @@
-from typing import Any, Mapping, NamedTuple, Sequence
+from typing import Any, Dict, Mapping, NamedTuple, Sequence
 
 from aleph_alpha_client.document import Document
 
@@ -32,6 +32,11 @@ class SummarizationRequest(NamedTuple):
 
     document: Document
     disable_optimizations: bool = False
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        payload["document"] = self.document._to_serializable_document()
+        return payload
 
 
 class SummarizationResponse(NamedTuple):

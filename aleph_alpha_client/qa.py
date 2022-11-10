@@ -1,4 +1,4 @@
-from typing import Any, Mapping, NamedTuple, Sequence
+from typing import Any, Dict, Mapping, NamedTuple, Sequence
 
 from aleph_alpha_client.document import Document
 
@@ -56,6 +56,13 @@ class QaRequest(NamedTuple):
     disable_optimizations: bool = False
     max_answers: int = 0
     min_score: float = 0.0
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        payload["documents"] = [
+            document._to_serializable_document() for document in self.documents
+        ]
+        return payload
 
 
 class QaAnswer(NamedTuple):
