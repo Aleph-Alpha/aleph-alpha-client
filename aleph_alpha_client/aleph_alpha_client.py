@@ -1045,3 +1045,18 @@ class AsyncClient:
             params=params,
         )
         return SemanticEmbeddingResponse.from_json(response)
+
+    async def evaluate(
+        self,
+        request: EvaluationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        params, json = self._params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "evaluate",
+            json=json,
+            params=params,
+        )
+        return EvaluationResponse.from_json(response)

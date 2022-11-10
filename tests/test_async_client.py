@@ -10,6 +10,7 @@ from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticRepresentation,
 )
+from aleph_alpha_client.evaluation import EvaluationRequest
 from .common import model_name, checkpoint_name
 
 
@@ -154,3 +155,30 @@ async def test_can_semantic_embed_with_async_client_against_checkpoint(checkpoin
         assert response.model_version is not None
         assert response.embedding
         assert len(response.embedding) == 128
+
+
+@pytest.mark.needs_api
+async def test_can_evaluate_with_async_client(model_name):
+    token = os.environ.get("TEST_TOKEN")
+    request = EvaluationRequest(
+        prompt=Prompt.from_text("hello"), completion_expected="world"
+    )
+    async with AsyncClient(token) as client:
+        response = await client.evaluate(request, model=model_name)
+        assert response.model_version is not None
+        assert response.result is not None
+
+
+@pytest.mark.needs_api
+async def test_can_evaluate_with_async_client_against_checkpoint(checkpoint_name):
+    token = os.environ.get("TEST_TOKEN")
+    request = EvaluationRequest(
+        prompt=Prompt.from_text("hello"), completion_expected="world"
+    )
+    async with AsyncClient(token) as client:
+        response = await client.evaluate(request, checkpoint=checkpoint_name)
+        assert response.model_version is not None
+        assert response.result is not None
+
+
+    
