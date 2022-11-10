@@ -721,8 +721,8 @@ class AlephAlphaClient:
             json=payload,
             params=params,
         )
-        response_json = _raise_for_status(response.status_code, response.text).json()
-        return response_json
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def summarize(
         self,
