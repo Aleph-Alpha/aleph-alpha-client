@@ -9,3 +9,4 @@ build-backend = "setuptools.build_meta"
 markers = [
     "needs_api: Marks a test that needs the actual AlephAlpha API endpoint"
 ]
+asyncio_mode = "auto"
