@@ -1,6 +1,5 @@
 import pytest
-import os
-from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, AsyncClient
+from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.completion import CompletionRequest
 from aleph_alpha_client.prompt import Prompt
@@ -68,10 +67,3 @@ def test_complete_with_client_against_checkpoint(
 
     assert len(response["completions"]) == 1
     assert response["model_version"] is not None
-
-
-@pytest.mark.needs_api
-async def test_complete_with_async_client():
-    token = os.environ.get("TEST_TOKEN")
-    async with AsyncClient(token) as client:
-        pass

@@ -1,9 +1,10 @@
 from socket import timeout
 from types import TracebackType
-from typing import Any, List, Optional, Dict, Sequence, Type, Union
-
+from typing import Any, List, Optional, Dict, Sequence, Type, Union, Mapping
+from collections import ChainMap
 import requests
 import logging
+import asyncio
 
 from requests import Response
 from requests.adapters import HTTPAdapter
@@ -17,6 +18,14 @@ from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.image import ImagePrompt
 from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest
+from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
+from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
+from aleph_alpha_client.embedding import (
+    EmbeddingRequest,
+    EmbeddingResponse,
+    SemanticEmbeddingRequest,
+    SemanticEmbeddingResponse,
+)
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 
@@ -836,7 +845,7 @@ class AsyncClient:
         if host[-1] != "/":
             host += "/"
         self.host = host
-
+        self.hosting = hosting
         self.request_timeout_seconds = request_timeout_seconds
 
         assert token is not None
@@ -847,7 +856,17 @@ class AsyncClient:
             "User-Agent": "Aleph-Alpha-Python-Client-" + aleph_alpha_client.__version__,
         }
 
-        self._session: Optional[aiohttp.ClientSession] = None
+        self.session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(self.request_timeout_seconds),
+            headers=self.request_headers,
+        )
+
+    async def open(self):
+        await self._check_version()
+        return self
+
+    async def close(self):
+        await self.session.close()
 
     def __enter__(self) -> None:
         raise TypeError("Use async with instead")
@@ -862,18 +881,8 @@ class AsyncClient:
         pass  # pragma: no cover
 
     async def __aenter__(self):
-        self._session = await aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(self.request_timeout_seconds),
-            headers=self.request_headers,
-        ).__aenter__()
-
-        expect_release = "1"
-        version = await self.get_version()
-        if not version.startswith(expect_release):
-            logging.warning(
-                f"Expected API version {expect_release}.x.x, got {version}. Please update client."
-            )
-
+        await self.session.__aenter__()
+        await self.open()
         return self
 
     async def __aexit__(
@@ -882,26 +891,83 @@ class AsyncClient:
         exc_val: Optional[BaseException],
         exc_tb: Optional[TracebackType],
     ):
-        if self._session is not None:
-            await self._session.__aexit__(
-                exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb
-            )
-
-    def session(self) -> aiohttp.ClientSession:
-        if not self._session:
-            raise RuntimeError("AsyncClient created without async context manager")
-        return self._session
+        await self.session.__aexit__(exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb)
 
     async def get_version(self) -> str:
-        async with self.session().get(
+        async with self.session.get(
             self.host + "version",
         ) as response:
             if not response.ok:
                 _raise_for_status(response.status, await response.text())
             return await response.text()
 
-    async def post_request(self, endpoint: str, json: Any) -> Dict[str, Any]:
-        async with self.session().post(self.host + endpoint, json=json) as response:
+    async def _check_version(self):
+        """
+        Verify that the major version of the API matches what we are expecting.
+        """
+        expect_release = "1"
+        version = await self.get_version()
+        if not version.startswith(expect_release):
+            logging.warning(
+                f"Expected API version {expect_release}.x.x, got {version}. Please update client."
+            )
+
+    async def post_request(
+        self, endpoint: str, json: Any, params: Optional[Dict[str, str]] = None
+    ) -> Dict[str, Any]:
+        async with self.session.post(
+            self.host + endpoint, json=json, params=params
+        ) as response:
             if not response.ok:
                 _raise_for_status(response.status, await response.text())
             return await response.json()
+
+    async def complete(
+        self,
+        request: CompletionRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> CompletionResponse:
+        params, json = self.params_and_payload(request, model, checkpoint)
+
+        response = await self.post_request(
+            "complete",
+            json=json,
+            params=params,
+        )
+        return CompletionResponse.from_json(response)
+
+    def params_and_payload(
+        self,
+        request: Union[CompletionRequest, EmbeddingRequest, EvaluationRequest],
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ):
+        if (model is None and checkpoint is None) or (
+            model is not None and checkpoint is not None
+        ):
+            raise ValueError("Need to set exactly one of model and checkpoint.")
+
+        payload = self.as_request_dict(request)
+        if model is not None:
+            payload["model"] = model
+        if self.hosting is not None:
+            payload["hosting"] = self.hosting
+
+        # Query parameters
+        params = {}
+
+        if checkpoint is not None:
+            params["checkpoint"] = checkpoint
+
+        return params, payload
+
+    @staticmethod
+    def as_request_dict(
+        request: Union[CompletionRequest, EmbeddingRequest, EvaluationRequest]
+    ) -> Dict[str, Any]:
+        return {
+            **request._asdict(),
+            "prompt": _to_serializable_prompt(request.prompt.items),
+        }
+        return dict(ChainMap({"prompt": request.prompt.items}, request._asdict()))
