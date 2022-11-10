@@ -928,7 +928,7 @@ class AsyncClient:
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
     ) -> CompletionResponse:
-        params, json = self.params_and_payload(request, model, checkpoint)
+        params, json = self._params_and_payload(request, model, checkpoint)
 
         response = await self.post_request(
             "complete",
@@ -937,18 +937,26 @@ class AsyncClient:
         )
         return CompletionResponse.from_json(response)
 
-    def params_and_payload(
+    def _params_and_payload(
         self,
         request: Union[CompletionRequest, EmbeddingRequest, EvaluationRequest],
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
     ):
+        """
+        Convert a request and metadata into appropriate http body and query
+        params for a task request.
+        """
         if (model is None and checkpoint is None) or (
             model is not None and checkpoint is not None
         ):
             raise ValueError("Need to set exactly one of model and checkpoint.")
 
-        payload = self.as_request_dict(request)
+        # Default payload with correct prompt representation
+        payload = request._asdict()
+        payload["prompt"] = _to_serializable_prompt(request.prompt.items)
+
+        # Add appropriate metadata
         if model is not None:
             payload["model"] = model
         if self.hosting is not None:
@@ -956,18 +964,7 @@ class AsyncClient:
 
         # Query parameters
         params = {}
-
         if checkpoint is not None:
             params["checkpoint"] = checkpoint
 
         return params, payload
-
-    @staticmethod
-    def as_request_dict(
-        request: Union[CompletionRequest, EmbeddingRequest, EvaluationRequest]
-    ) -> Dict[str, Any]:
-        return {
-            **request._asdict(),
-            "prompt": _to_serializable_prompt(request.prompt.items),
-        }
-        return dict(ChainMap({"prompt": request.prompt.items}, request._asdict()))
