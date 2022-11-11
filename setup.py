@@ -43,6 +43,7 @@ setup(
         "urllib3 >= 1.26",
         "aiohttp >= 3.8.3",
         "aiodns >= 3.0.0",
+        "aiohttp-retry >= 2.8.3",
     ],
     tests_require=tests_require,
     extras_require={"test": tests_require, "types": types_require, "dev": dev_require},

@@ -1,21 +1,18 @@
-from socket import timeout
 from types import TracebackType
-from typing import Any, List, Optional, Dict, Sequence, Type, Union, Mapping
-from collections import ChainMap
+from typing import Any, List, Mapping, Optional, Dict, Sequence, Tuple, Type, Union
 import requests
 import logging
-import asyncio
 
-from requests import Response
+import aiohttp
+from aiohttp_retry import RetryClient, ExponentialRetry
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-import aiohttp
 
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.explanation import ExplanationRequest, ExplanationResponse
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import Prompt, _to_prompt_item, _to_serializable_prompt
+from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
 from aleph_alpha_client.qa import QaRequest, QaResponse
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
@@ -33,6 +30,7 @@ from aleph_alpha_client.embedding import (
 )
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
+RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
 
 
 class QuotaError(Exception):
@@ -100,7 +98,7 @@ class AlephAlphaClient:
         retry_strategy = Retry(
             total=3,
             backoff_factor=0.1,
-            status_forcelist=[408, 429, 500, 502, 503, 504],
+            status_forcelist=RETRY_STATUS_CODES,
             allowed_methods=["POST", "GET"],
             raise_on_status=False,
         )
@@ -643,7 +641,7 @@ class AlephAlphaClient:
         checkpoint: Optional[str] = None,
     ):
         """
-        Answers a question about a prompt.
+        Answers a question about documents.
 
         Parameters:
             model (str, required):
@@ -814,14 +812,36 @@ class AlephAlphaClient:
         return response.json()
 
 
+AnyRequest = Union[
+    CompletionRequest,
+    EmbeddingRequest,
+    EvaluationRequest,
+    TokenizationRequest,
+    DetokenizationRequest,
+    SemanticEmbeddingRequest,
+    QaRequest,
+    SummarizationRequest,
+    ExplanationRequest,
+]
+
+
 class AsyncClient:
+    """
+    Example usage:
+    ```
+    request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
+    async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
+        response: CompletionResponse = await client.complete(request, "luminous-base")
+    ```
+    """
+
     def __init__(
         self,
         token: str,
         host: str = "https://api.aleph-alpha.com",
         hosting: Optional[str] = None,
         request_timeout_seconds: int = 180,
-    ):
+    ) -> None:
         """
         Construct a context object for aynchronous reqeuests a given user token
 
@@ -831,7 +851,7 @@ class AsyncClient:
                 This is optional because we also support password authentication.
                 If token is None, email and password must be set.
 
-            host (string, required):
+            host (string, required, default "https://api.aleph-alpha.com"):
                 The hostname of the API host.
 
             hosting(string, optional, default None):
@@ -853,24 +873,22 @@ class AsyncClient:
         self.hosting = hosting
         self.request_timeout_seconds = request_timeout_seconds
 
-        assert token is not None
         self.token = token
 
-        self.request_headers = {
-            "Authorization": "Bearer " + self.token,
-            "User-Agent": "Aleph-Alpha-Python-Client-" + aleph_alpha_client.__version__,
-        }
-
-        self.session = aiohttp.ClientSession(
+        retry_options = ExponentialRetry(attempts=3, statuses=set(RETRY_STATUS_CODES))
+        self.session = RetryClient(
+            raise_for_status=False,
+            retry_options=retry_options,
             timeout=aiohttp.ClientTimeout(self.request_timeout_seconds),
-            headers=self.request_headers,
+            headers={
+                "Authorization": "Bearer " + self.token,
+                "User-Agent": "Aleph-Alpha-Python-Client-"
+                + aleph_alpha_client.__version__,
+            },
         )
 
-    async def open(self):
-        await self._check_version()
-        return self
-
     async def close(self):
+        """Needs to be called at end of lifetime if the AsyncClient object is not used as a context manager."""
         await self.session.close()
 
     def __enter__(self) -> None:
@@ -885,9 +903,8 @@ class AsyncClient:
         # __exit__ should exist in pair with __enter__ but never executed
         pass  # pragma: no cover
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "AsyncClient":
         await self.session.__aenter__()
-        await self.open()
         return self
 
     async def __aexit__(
@@ -899,6 +916,7 @@ class AsyncClient:
         await self.session.__aexit__(exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb)
 
     async def get_version(self) -> str:
+        """Gets version of the AlephAlpha HTTP API."""
         async with self.session.get(
             self.host + "version",
         ) as response:
@@ -906,67 +924,39 @@ class AsyncClient:
                 _raise_for_status(response.status, await response.text())
             return await response.text()
 
-    async def _check_version(self):
-        """
-        Verify that the major version of the API matches what we are expecting.
-        """
-        expect_release = "1"
-        version = await self.get_version()
-        if not version.startswith(expect_release):
-            logging.warning(
-                f"Expected API version {expect_release}.x.x, got {version}. Please update client."
-            )
-
-    async def post_request(
-        self, endpoint: str, json: Any, params: Optional[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
-        async with self.session.post(
-            self.host + endpoint, json=json, params=params
-        ) as response:
-            if not response.ok:
-                _raise_for_status(response.status, await response.text())
-            return await response.json()
-
-    def _params_and_payload(
+    async def _post_request(
         self,
-        request: Union[
-            CompletionRequest,
-            EmbeddingRequest,
-            EvaluationRequest,
-            TokenizationRequest,
-            DetokenizationRequest,
-            SemanticEmbeddingRequest,
-            QaRequest,
-            SummarizationRequest,
-            ExplanationRequest,
-        ],
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
-    ):
-        """
-        Convert a request and metadata into appropriate http body and query
-        params for a task request.
-        """
+        endpoint: str,
+        request: AnyRequest,
+        model: Optional[str],
+        checkpoint: Optional[str],
+    ) -> Dict[str, Any]:
         if (model is None and checkpoint is None) or (
             model is not None and checkpoint is not None
         ):
             raise ValueError("Need to set exactly one of model and checkpoint.")
 
-        # Default payload with correct prompt representation
-        payload = request.to_json()
+        json_body = self._build_json_body(request, model)
 
-        # Add appropriate metadata
+        query_params = dict(checkpoint=checkpoint) if checkpoint else {}
+
+        async with self.session.post(
+            self.host + endpoint, json=json_body, params=query_params
+        ) as response:
+            if not response.ok:
+                _raise_for_status(response.status, await response.text())
+            return await response.json()
+
+    def _build_json_body(
+        self, request: AnyRequest, model: Optional[str]
+    ) -> Mapping[str, Any]:
+        json_body = request.to_json()
+
         if model is not None:
-            payload["model"] = model
+            json_body["model"] = model
         if self.hosting is not None:
-            payload["hosting"] = self.hosting
-
-        # Query parameters
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
-
-        return params, payload
+            json_body["hosting"] = self.hosting
+        return json_body
 
     async def complete(
         self,
@@ -974,12 +964,23 @@ class AsyncClient:
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
     ) -> CompletionResponse:
-        params, json = self._params_and_payload(request, model, checkpoint)
+        """Generates completions given a prompt.
+        ```
+        # create a prompt
+        prompt = Prompt("An apple a day, ")
 
-        response = await self.post_request(
+        # create a completion request
+        request = CompletionRequest(prompt=prompt, maximum_tokens=32, stop_sequences=["###","\n"], temperature=0.12)
+
+        # complete the prompt
+        result = await client.complete(request, model=model_name)
+        ```
+        """
+        response = await self._post_request(
             "complete",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return CompletionResponse.from_json(response)
 
@@ -989,15 +990,18 @@ class AsyncClient:
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
     ) -> TokenizationResponse:
-        """
-        Tokenizes the given prompt for the given model.
-        """
-        params, json = self._params_and_payload(request, model, checkpoint)
+        """Tokenizes the given prompt for the given model.
+        ```
+        request = TokenizationRequest(prompt="hello", token_ids=True, tokens=True)
 
-        response = await self.post_request(
+        response = await client.tokenize(request, model=model_name)
+        ```
+        """
+        response = await self._post_request(
             "tokenize",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return TokenizationResponse.from_json(response)
 
@@ -1007,15 +1011,18 @@ class AsyncClient:
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
     ) -> DetokenizationResponse:
-        """
-        Detokenizes the given prompt for the given model.
-        """
-        params, json = self._params_and_payload(request, model, checkpoint)
+        """Detokenizes the given prompt for the given model.
+        ```
+        request = DetokenizationRequest(token_ids=[2, 3, 4])
 
-        response = await self.post_request(
+        response = await client.detokenize(request, checkpoint=checkpoint_name)
+        ```
+        """
+        response = await self._post_request(
             "detokenize",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return DetokenizationResponse.from_json(response)
 
@@ -1024,13 +1031,18 @@ class AsyncClient:
         request: EmbeddingRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
-    ):
-        params, json = self._params_and_payload(request, model, checkpoint)
-
-        response = await self.post_request(
+    ) -> EmbeddingResponse:
+        """Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
+        ```
+        request = EmbeddingRequest(prompt=Prompt.from_text("This is an example."), layers=[-1], pooling=["mean"])
+        result = await client.embed(request, model=model_name)
+        ```
+        """
+        response = await self._post_request(
             "embed",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return EmbeddingResponse.from_json(response)
 
@@ -1039,13 +1051,43 @@ class AsyncClient:
         request: SemanticEmbeddingRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
-    ):
-        params, json = self._params_and_payload(request, model, checkpoint)
+    ) -> SemanticEmbeddingResponse:
+        """Embeds a text and returns vectors that can be used for downstream tasks
+        (e.g. semantic similarity) and models (e.g. classifiers).
+        ```
+        # function for symmetric embedding
 
-        response = await self.post_request(
+        async def embed_symmetric(text: str):
+            # Create an embeddingrequest with the type set to symmetric
+            request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric)
+            # create the embedding
+            result = await client.semantic_embed(request, model=model_name)
+            return result.embedding
+
+        # function to calculate similarity
+        def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
+            "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+            sumxx, sumxy, sumyy = 0, 0, 0
+            for i in range(len(v1)):
+                x = v1[i]; y = v2[i]
+                sumxx += x*x
+                sumyy += y*y
+                sumxy += x*y
+            return sumxy/math.sqrt(sumxx*sumyy)
+
+        # define the texts
+        text_a = "The sun is shining"
+        text_b = "Il sole splende"
+
+        # show the similarity
+        print(cosine_similarity(await embed_symmetric(text_a), await embed_symmetric(text_b)))
+        ```
+        """
+        response = await self._post_request(
             "semantic_embed",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return SemanticEmbeddingResponse.from_json(response)
 
@@ -1054,13 +1096,22 @@ class AsyncClient:
         request: EvaluationRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
-    ):
-        params, json = self._params_and_payload(request, model, checkpoint)
+    ) -> EvaluationResponse:
+        """Evaluates the model's likelihood to produce a completion given a prompt.
 
-        response = await self.post_request(
+        ```
+        request = EvaluationRequest(
+            prompt=Prompt.from_text("hello"), completion_expected="world"
+        )
+
+        response = await client.evaluate(request, model=model_name)
+        ```
+        """
+        response = await self._post_request(
             "evaluate",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return EvaluationResponse.from_json(response)
 
@@ -1069,13 +1120,22 @@ class AsyncClient:
         request: QaRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
-    ):
-        params, json = self._params_and_payload(request, model, checkpoint)
+    ) -> QaResponse:
+        """Answers a question about documents.
+        ```
+        request = QaRequest(
+            query="Who likes pizza?",
+            documents=[Document.from_text("Andreas likes pizza.")],
+        )
 
-        response = await self.post_request(
+        response = await client.qa(request, model="luminous-extended")
+        ```
+        """
+        response = await self._post_request(
             "qa",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return QaResponse.from_json(response)
 
@@ -1084,13 +1144,21 @@ class AsyncClient:
         request: SummarizationRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
-    ):
-        params, json = self._params_and_payload(request, model, checkpoint)
+    ) -> SummarizationResponse:
+        """Summarizes a document.
+        ```
+        request = SummarizationRequest(
+            document=Document.from_text("Andreas likes pizza."),
+        )
 
-        response = await self.post_request(
+        response = await client.summarize(request, model="luminous-extended")
+        ```
+        """
+        response = await self._post_request(
             "summarize",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return SummarizationResponse.from_json(response)
 
@@ -1099,12 +1167,11 @@ class AsyncClient:
         request: ExplanationRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
-    ):
-        params, json = self._params_and_payload(request, model, checkpoint)
-
-        response = await self.post_request(
+    ) -> ExplanationResponse:
+        response = await self._post_request(
             "explain",
-            json=json,
-            params=params,
+            request,
+            model,
+            checkpoint,
         )
         return ExplanationResponse.from_json(response)
