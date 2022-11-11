@@ -1,21 +1,18 @@
-from socket import timeout
 from types import TracebackType
-from typing import Any, List, Optional, Dict, Sequence, Type, Union, Mapping
-from collections import ChainMap
+from typing import Any, List, Optional, Dict, Sequence, Type, Union
 import requests
 import logging
-import asyncio
 
-from requests import Response
+import aiohttp
+from aiohttp_retry import RetryClient, ExponentialRetry
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-import aiohttp
 
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.explanation import ExplanationRequest, ExplanationResponse
 from aleph_alpha_client.image import ImagePrompt
-from aleph_alpha_client.prompt import Prompt, _to_prompt_item, _to_serializable_prompt
+from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
 from aleph_alpha_client.qa import QaRequest, QaResponse
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
@@ -33,6 +30,7 @@ from aleph_alpha_client.embedding import (
 )
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
+RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
 
 
 class QuotaError(Exception):
@@ -100,7 +98,7 @@ class AlephAlphaClient:
         retry_strategy = Retry(
             total=3,
             backoff_factor=0.1,
-            status_forcelist=[408, 429, 500, 502, 503, 504],
+            status_forcelist=RETRY_STATUS_CODES,
             allowed_methods=["POST", "GET"],
             raise_on_status=False,
         )
@@ -861,7 +859,10 @@ class AsyncClient:
             "User-Agent": "Aleph-Alpha-Python-Client-" + aleph_alpha_client.__version__,
         }
 
-        self.session = aiohttp.ClientSession(
+        retry_options = ExponentialRetry(attempts=3, statuses=set(RETRY_STATUS_CODES))
+        self.session = RetryClient(
+            raise_for_status=False,
+            retry_options=retry_options,
             timeout=aiohttp.ClientTimeout(self.request_timeout_seconds),
             headers=self.request_headers,
         )

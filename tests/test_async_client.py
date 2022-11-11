@@ -1,6 +1,5 @@
 import os
 import pytest
-from aleph_alpha_client.aleph_alpha_client import AsyncClient
 from aleph_alpha_client.completion import CompletionRequest
 from aleph_alpha_client.prompt import Prompt
 from aleph_alpha_client.detokenization import DetokenizationRequest
