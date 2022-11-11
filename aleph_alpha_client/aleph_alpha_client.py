@@ -851,7 +851,6 @@ class AsyncClient:
         self.hosting = hosting
         self.request_timeout_seconds = request_timeout_seconds
 
-        assert token is not None
         self.token = token
 
         self.request_headers = {
@@ -866,10 +865,6 @@ class AsyncClient:
             timeout=aiohttp.ClientTimeout(self.request_timeout_seconds),
             headers=self.request_headers,
         )
-
-    async def open(self):
-        await self._check_version()
-        return self
 
     async def close(self):
         await self.session.close()
@@ -888,7 +883,6 @@ class AsyncClient:
 
     async def __aenter__(self):
         await self.session.__aenter__()
-        await self.open()
         return self
 
     async def __aexit__(
@@ -906,17 +900,6 @@ class AsyncClient:
             if not response.ok:
                 _raise_for_status(response.status, await response.text())
             return await response.text()
-
-    async def _check_version(self):
-        """
-        Verify that the major version of the API matches what we are expecting.
-        """
-        expect_release = "1"
-        version = await self.get_version()
-        if not version.startswith(expect_release):
-            logging.warning(
-                f"Expected API version {expect_release}.x.x, got {version}. Please update client."
-            )
 
     async def post_request(
         self, endpoint: str, json: Any, params: Optional[Dict[str, str]] = None

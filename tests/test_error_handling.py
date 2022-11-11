@@ -79,12 +79,11 @@ async def test_retry_async(httpserver):
     httpserver.expect_ordered_request(path).respond_with_data("ok", status=200)
 
     async with AsyncClient(token="AA_TOKEN", host=httpserver.url_for("")) as client:
-        pass
+        await client.get_version()
 
 
 async def test_retry_async_post(httpserver):
     path = "/complete"
-    httpserver.expect_ordered_request("/version").respond_with_data("busy1", status=200)
     httpserver.expect_ordered_request(path).respond_with_data("busy1", status=503)
     httpserver.expect_ordered_request(path).respond_with_data("busy2", status=503)
     httpserver.expect_ordered_request(path).respond_with_json(
