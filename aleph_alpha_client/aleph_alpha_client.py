@@ -965,6 +965,22 @@ class AsyncClient:
         checkpoint: Optional[str] = None,
     ) -> CompletionResponse:
         """Generates completions given a prompt.
+
+        Parameters:
+            request (CompletionRequest, required):
+                Parameters for the requested completion.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
         ```
         # create a prompt
         prompt = Prompt("An apple a day, ")
@@ -991,6 +1007,22 @@ class AsyncClient:
         checkpoint: Optional[str] = None,
     ) -> TokenizationResponse:
         """Tokenizes the given prompt for the given model.
+
+        Parameters:
+            request (TokenizationRequest, required):
+                Parameters for the requested tokenization.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
         ```
         request = TokenizationRequest(prompt="hello", token_ids=True, tokens=True)
 
@@ -1012,6 +1044,22 @@ class AsyncClient:
         checkpoint: Optional[str] = None,
     ) -> DetokenizationResponse:
         """Detokenizes the given prompt for the given model.
+
+        Parameters:
+            request (DetokenizationRequest, required):
+                Parameters for the requested detokenization.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
         ```
         request = DetokenizationRequest(token_ids=[2, 3, 4])
 
@@ -1033,6 +1081,22 @@ class AsyncClient:
         checkpoint: Optional[str] = None,
     ) -> EmbeddingResponse:
         """Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
+
+        Parameters:
+            request (EmbeddingRequest, required):
+                Parameters for the requested embedding.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
         ```
         request = EmbeddingRequest(prompt=Prompt.from_text("This is an example."), layers=[-1], pooling=["mean"])
         result = await client.embed(request, model=model_name)
@@ -1054,6 +1118,22 @@ class AsyncClient:
     ) -> SemanticEmbeddingResponse:
         """Embeds a text and returns vectors that can be used for downstream tasks
         (e.g. semantic similarity) and models (e.g. classifiers).
+
+        Parameters:
+            request (SemanticEmbeddingRequest, required):
+                Parameters for the requested semnatic embedding.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
         ```
         # function for symmetric embedding
 
@@ -1099,6 +1179,21 @@ class AsyncClient:
     ) -> EvaluationResponse:
         """Evaluates the model's likelihood to produce a completion given a prompt.
 
+        Parameters:
+            request (EvaluationRequest, required):
+                Parameters for the requested evaluation.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
         ```
         request = EvaluationRequest(
             prompt=Prompt.from_text("hello"), completion_expected="world"
@@ -1122,6 +1217,22 @@ class AsyncClient:
         checkpoint: Optional[str] = None,
     ) -> QaResponse:
         """Answers a question about documents.
+
+        Parameters:
+            request (QaRequest, required):
+                Parameters for the qa request.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
         ```
         request = QaRequest(
             query="Who likes pizza?",
@@ -1146,6 +1257,22 @@ class AsyncClient:
         checkpoint: Optional[str] = None,
     ) -> SummarizationResponse:
         """Summarizes a document.
+
+        Parameters:
+            request (SummarizationRequest, required):
+                Parameters for the requested summarization.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
         ```
         request = SummarizationRequest(
             document=Document.from_text("Andreas likes pizza."),
