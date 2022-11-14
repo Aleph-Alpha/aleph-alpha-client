@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.5.0
+
+- Introduce AsyncClient
+- Reworked Readme.md to link to extended examples and Google Colab Notebooks
+
 ## 2.4.4
 
 - Fix: ImagePrompt.from_url raises if status-code not OK
