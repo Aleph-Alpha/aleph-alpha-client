@@ -1,7 +1,7 @@
 # Aleph Alpha Client
 
 <p align="center">
-    <img src="https://app.aleph-alpha.com/assets/logo.svg" width="50%" style="background-color: white" />
+    <img src="https://i.imgur.com/FSM2NNV.png" width="50%" />
 </p>
 
 [![Licence](https://img.shields.io/crates/l/aleph-alpha-client)](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/main/LICENSE)
