@@ -30,6 +30,7 @@ from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
 )
+from aleph_alpha_client.search import SearchRequest, SearchResponse
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
@@ -831,6 +832,7 @@ AnyRequest = Union[
     QaRequest,
     SummarizationRequest,
     ExplanationRequest,
+    SearchRequest,
 ]
 
 
@@ -915,10 +917,6 @@ class Client:
         model: Optional[str],
         checkpoint: Optional[str],
     ) -> Dict[str, Any]:
-        if (model is None and checkpoint is None) or (
-            model is not None and checkpoint is not None
-        ):
-            raise ValueError("Need to set exactly one of model and checkpoint.")
 
         json_body = self._build_json_body(request, model)
 
@@ -1770,3 +1768,13 @@ class AsyncClient:
             checkpoint,
         )
         return ExplanationResponse.from_json(response)
+
+    async def _search(
+        self,
+        request: SearchRequest,
+    ) -> SearchResponse:
+        """
+        For details see https://www.aleph-alpha.com/luminous-explore-a-model-for-world-class-semantic-representation
+        """
+        response = await self._post_request("search", request, None, None)
+        return SearchResponse.from_json(response)
