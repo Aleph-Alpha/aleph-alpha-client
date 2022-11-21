@@ -24,6 +24,19 @@ def test_complete(model: AlephAlphaModel):
 
 
 @pytest.mark.needs_api
+def test_complete_with_token_ids(model: AlephAlphaModel):
+    request = CompletionRequest(
+        prompt=Prompt.from_tokens([49222, 2998]),  # Hello world
+        maximum_tokens=32,
+    )
+
+    response = model.complete(request)
+
+    assert len(response.completions) == 1
+    assert response.model_version is not None
+
+
+@pytest.mark.needs_api
 def test_complete_against_checkpoint(client: AlephAlphaClient, checkpoint_name: str):
 
     model = AlephAlphaModel(client, checkpoint_name=checkpoint_name)

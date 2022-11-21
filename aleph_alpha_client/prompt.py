@@ -1,4 +1,4 @@
-from typing import Dict, List, NamedTuple, Union
+from typing import Any, Dict, List, NamedTuple, Union
 
 from aleph_alpha_client.image import ImagePrompt
 
@@ -12,7 +12,8 @@ class Prompt(NamedTuple):
                 "Provide a short description of AI:",
             ])
     """
-    items: List[Union[str, ImagePrompt]]
+
+    items: List[Union[str, ImagePrompt, List[int]]]
 
     @staticmethod
     def from_text(text: str) -> "Prompt":
@@ -22,11 +23,17 @@ class Prompt(NamedTuple):
     def from_image(image: ImagePrompt) -> "Prompt":
         return Prompt([image])
 
+    @staticmethod
+    def from_tokens(tokens: List[int]) -> "Prompt":
+        return Prompt([tokens])
 
-def _to_prompt_item(item: Union[str, ImagePrompt]) -> Dict[str, str]:
+
+def _to_prompt_item(item: Union[str, ImagePrompt, List[int]]) -> Dict[str, Any]:
     if isinstance(item, str):
         return {"type": "text", "data": item}
-    if hasattr(item, "_to_prompt_item"):
+    elif isinstance(item, List):
+        return {"type": "token_ids", "data": item}
+    elif hasattr(item, "_to_prompt_item"):
         return item._to_prompt_item()
     else:
         raise ValueError(
