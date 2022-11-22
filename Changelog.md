@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.1
+
+- Introduce search endpoint for internal users
+
 ## 2.6.0
 
 - Introduce Client
