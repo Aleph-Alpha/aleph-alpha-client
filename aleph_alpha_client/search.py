@@ -14,6 +14,14 @@ class SearchRequest(NamedTuple):
         corpus (Mapping[str, Prompt], required):
             The corpus of content to be searched.
 
+        max_results (int, optional):
+            Limits the amount of returned search results if not None.
+            If None, all results that match the `min_score` criterion are returned.
+
+        min_score (float, optional):
+            Limits the minimal score of returned results if not None.
+            If None, all results that match the `max_results` critreion are returned.
+
     Examples
         >>> request = SearchRequest(
                 query=Prompt.from_text("banana"),
@@ -23,6 +31,8 @@ class SearchRequest(NamedTuple):
 
     query: Prompt
     corpus: Mapping[str, Prompt]
+    max_results: Optional[int] = None
+    min_score: Optional[float] = None
 
     def to_json(self) -> Dict[str, Any]:
         return {
@@ -30,6 +40,8 @@ class SearchRequest(NamedTuple):
             "corpus": {
                 k: _to_serializable_prompt(v.items) for k, v in self.corpus.items()
             },
+            "max_results": self.max_results,
+            "min_score": self.min_score,
         }
 
 

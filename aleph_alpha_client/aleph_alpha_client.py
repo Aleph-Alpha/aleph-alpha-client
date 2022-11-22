@@ -320,7 +320,7 @@ class AlephAlphaClient:
 
                 *Potential use case for a chatbot-based completion:*
 
-                Instead of using `repetition_penalties_include_prompt`, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. `\nChatbot:`), and all user messages.
+                Instead of using `repetition_penalties_include_prompt`, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. `\\nChatbot:`), and all user messages.
 
                 With this bias, if you turn up the repetition penalties, you can avoid having your chatbot repeat itself, but not penalize the chatbot from mirroring language provided by the user.
 
@@ -338,7 +338,7 @@ class AlephAlphaClient:
                 -
                 ```
 
-                You could set `penalty_exceptions` to `["\n-"]` to not penalize the generation of a new list item, but still increase other penalty settings to encourage the generation of new list items without repeating itself.
+                You could set `penalty_exceptions` to `["\\n-"]` to not penalize the generation of a new list item, but still increase other penalty settings to encourage the generation of new list items without repeating itself.
 
                 By default, we will also include any `stop_sequences` you have set, since completion performance can be degraded if expected stop sequences are penalized. You can disable this behavior by settings `penalty_exceptions_include_stop_sequences` to `false`.
 
@@ -839,12 +839,11 @@ AnyRequest = Union[
 class Client:
     """
     Example usage:
-    ```
-    request = CompletionRequest(
-        prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
-    client = Client(token=os.environ["AA_TOKEN"])
-    response: CompletionResponse = client.complete(request, "luminous-base")
-    ```
+    >>> request = CompletionRequest(
+            prompt=Prompt.from_text(f"Request"), maximum_tokens=64
+        )
+    >>> client = Client(token=os.environ["AA_TOKEN"])
+    >>> response: CompletionResponse = client.complete(request, "luminous-base")
     """
 
     def __init__(
@@ -966,17 +965,20 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        # create a prompt
-        prompt = Prompt("An apple a day, ")
+        Examples:
+        >>> # create a prompt
+            prompt = Prompt("An apple a day, ")
 
-        # create a completion request
-        request = CompletionRequest(prompt=prompt, maximum_tokens=32, stop_sequences=[
-                                    "###","\n"], temperature=0.12)
+        >>> # create a completion request
+            request = CompletionRequest(
+                prompt=prompt,
+                maximum_tokens=32,
+                stop_sequences=["###","\\n"],
+                temperature=0.12
+            )
 
-        # complete the prompt
-        result = client.complete(request, model=model_name)
-        ```
+        >>> # complete the prompt
+            result = client.complete(request, model=model_name)
         """
         response = self._post_request(
             "complete",
@@ -1009,12 +1011,12 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = TokenizationRequest(
-            prompt="hello", token_ids=True, tokens=True)
+        Examples:
+        >>> request = TokenizationRequest(
+                prompt="hello", token_ids=True, tokens=True
+            )
 
-        response = client.tokenize(request, model=model_name)
-        ```
+        >>> response = client.tokenize(request, model=model_name)
         """
         response = self._post_request(
             "tokenize",
@@ -1047,11 +1049,9 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = DetokenizationRequest(token_ids=[2, 3, 4])
-
-        response = client.detokenize(request, checkpoint=checkpoint_name)
-        ```
+        Examples:
+        >>> request = DetokenizationRequest(token_ids=[2, 3, 4])
+        >>> response = client.detokenize(request, checkpoint=checkpoint_name)
         """
         response = self._post_request(
             "detokenize",
@@ -1084,11 +1084,11 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = EmbeddingRequest(prompt=Prompt.from_text(
-            "This is an example."), layers=[-1], pooling=["mean"])
-        result = client.embed(request, model=model_name)
-        ```
+        Examples:
+        >>> request = EmbeddingRequest(prompt=Prompt.from_text(
+                "This is an example."), layers=[-1], pooling=["mean"]
+            )
+        >>> result = client.embed(request, model=model_name)
         """
         response = self._post_request(
             "embed",
@@ -1122,35 +1122,33 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        # function for symmetric embedding
+        Examples:
+        >>> # function for symmetric embedding
+            def embed_symmetric(text: str):
+                # Create an embeddingrequest with the type set to symmetric
+                request = SemanticEmbeddingRequest(prompt=Prompt.from_text(
+                    text), representation=SemanticRepresentation.Symmetric)
+                # create the embedding
+                result = client.semantic_embed(request, model=model_name)
+                return result.embedding
 
-        def embed_symmetric(text: str):
-            # Create an embeddingrequest with the type set to symmetric
-            request = SemanticEmbeddingRequest(prompt=Prompt.from_text(
-                text), representation=SemanticRepresentation.Symmetric)
-            # create the embedding
-            result = client.semantic_embed(request, model=model_name)
-            return result.embedding
+        >>> # function to calculate similarity
+            def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
+                "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+                sumxx, sumxy, sumyy = 0, 0, 0
+                for i in range(len(v1)):
+                    x = v1[i]; y = v2[i]
+                    sumxx += x*x
+                    sumyy += y*y
+                    sumxy += x*y
+                return sumxy/math.sqrt(sumxx*sumyy)
 
-        # function to calculate similarity
-        def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
-            "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
-            sumxx, sumxy, sumyy = 0, 0, 0
-            for i in range(len(v1)):
-                x = v1[i]; y = v2[i]
-                sumxx += x*x
-                sumyy += y*y
-                sumxy += x*y
-            return sumxy/math.sqrt(sumxx*sumyy)
+        >>> # define the texts
+            text_a = "The sun is shining"
+            text_b = "Il sole splende"
 
-        # define the texts
-        text_a = "The sun is shining"
-        text_b = "Il sole splende"
-
-        # show the similarity
-        print(cosine_similarity(embed_symmetric(text_a), embed_symmetric(text_b)))
-        ```
+        >>> # show the similarity
+            print(cosine_similarity(embed_symmetric(text_a), embed_symmetric(text_b)))
         """
         response = self._post_request(
             "semantic_embed",
@@ -1183,13 +1181,12 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = EvaluationRequest(
-            prompt=Prompt.from_text("hello"), completion_expected="world"
-        )
+        Examples:
+        >>> request = EvaluationRequest(
+                prompt=Prompt.from_text("hello"), completion_expected="world"
+            )
 
-        response = client.evaluate(request, model=model_name)
-        ```
+        >>> response = client.evaluate(request, model=model_name)
         """
         response = self._post_request(
             "evaluate",
@@ -1222,14 +1219,13 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = QaRequest(
-            query="Who likes pizza?",
-            documents=[Document.from_text("Andreas likes pizza.")],
-        )
+        Examples:
+        >>> request = QaRequest(
+                query="Who likes pizza?",
+                documents=[Document.from_text("Andreas likes pizza.")],
+            )
 
-        response = client.qa(request, model="luminous-extended")
-        ```
+        >>> response = client.qa(request, model="luminous-extended")
         """
         response = self._post_request(
             "qa",
@@ -1262,13 +1258,12 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = SummarizationRequest(
-            document=Document.from_text("Andreas likes pizza."),
-        )
+        Examples:
+        >>> request = SummarizationRequest(
+                document=Document.from_text("Andreas likes pizza."),
+            )
 
-        response = client.summarize(request, model="luminous-extended")
-        ```
+        >>> response = client.summarize(request, model="luminous-extended")
         """
         response = self._post_request(
             "summarize",
@@ -1292,15 +1287,23 @@ class Client:
         )
         return ExplanationResponse.from_json(response)
 
+    def _search(
+        self,
+        request: SearchRequest,
+    ) -> SearchResponse:
+        """
+        For details see https://www.aleph-alpha.com/luminous-explore-a-model-for-world-class-semantic-representation
+        """
+        response = self._post_request("search", request, None, None)
+        return SearchResponse.from_json(response)
+
 
 class AsyncClient:
     """
     Example usage:
-    ```
-    request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
-    async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
-        response: CompletionResponse = await client.complete(request, "luminous-base")
-    ```
+    >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
+        async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
+            response: CompletionResponse = await client.complete(request, "luminous-base")
     """
 
     def __init__(
@@ -1397,10 +1400,6 @@ class AsyncClient:
         model: Optional[str],
         checkpoint: Optional[str],
     ) -> Dict[str, Any]:
-        if (model is None and checkpoint is None) or (
-            model is not None and checkpoint is not None
-        ):
-            raise ValueError("Need to set exactly one of model and checkpoint.")
 
         json_body = self._build_json_body(request, model)
 
@@ -1447,16 +1446,20 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        # create a prompt
-        prompt = Prompt("An apple a day, ")
+        Examples:
+        >>> # create a prompt
+            prompt = Prompt("An apple a day, ")
 
-        # create a completion request
-        request = CompletionRequest(prompt=prompt, maximum_tokens=32, stop_sequences=["###","\n"], temperature=0.12)
+        >>> # create a completion request
+            request = CompletionRequest(
+                prompt=prompt,
+                maximum_tokens=32,
+                stop_sequences=["###","\\n"],
+                temperature=0.12
+            )
 
-        # complete the prompt
-        result = await client.complete(request, model=model_name)
-        ```
+        >>> # complete the prompt
+            result = await client.complete(request, model=model_name)
         """
         response = await self._post_request(
             "complete",
@@ -1489,11 +1492,9 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = TokenizationRequest(prompt="hello", token_ids=True, tokens=True)
-
-        response = await client.tokenize(request, model=model_name)
-        ```
+        Examples:
+        >>> request = TokenizationRequest(prompt="hello", token_ids=True, tokens=True)
+        >>> response = await client.tokenize(request, model=model_name)
         """
         response = await self._post_request(
             "tokenize",
@@ -1526,11 +1527,9 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = DetokenizationRequest(token_ids=[2, 3, 4])
-
-        response = await client.detokenize(request, checkpoint=checkpoint_name)
-        ```
+        Examples:
+        >>> request = DetokenizationRequest(token_ids=[2, 3, 4])
+        >>> response = await client.detokenize(request, checkpoint=checkpoint_name)
         """
         response = await self._post_request(
             "detokenize",
@@ -1563,10 +1562,9 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = EmbeddingRequest(prompt=Prompt.from_text("This is an example."), layers=[-1], pooling=["mean"])
-        result = await client.embed(request, model=model_name)
-        ```
+        Examples:
+        >>> request = EmbeddingRequest(prompt=Prompt.from_text("This is an example."), layers=[-1], pooling=["mean"])
+        >>> result = await client.embed(request, model=model_name)
         """
         response = await self._post_request(
             "embed",
@@ -1600,34 +1598,32 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        # function for symmetric embedding
+        Examples:
+        >>> # function for symmetric embedding
+            async def embed_symmetric(text: str):
+                # Create an embeddingrequest with the type set to symmetric
+                request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric)
+                # create the embedding
+                result = await client.semantic_embed(request, model=model_name)
+                return result.embedding
 
-        async def embed_symmetric(text: str):
-            # Create an embeddingrequest with the type set to symmetric
-            request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric)
-            # create the embedding
-            result = await client.semantic_embed(request, model=model_name)
-            return result.embedding
+        >>> # function to calculate similarity
+            def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
+                "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+                sumxx, sumxy, sumyy = 0, 0, 0
+                for i in range(len(v1)):
+                    x = v1[i]; y = v2[i]
+                    sumxx += x*x
+                    sumyy += y*y
+                    sumxy += x*y
+                return sumxy/math.sqrt(sumxx*sumyy)
 
-        # function to calculate similarity
-        def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
-            "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
-            sumxx, sumxy, sumyy = 0, 0, 0
-            for i in range(len(v1)):
-                x = v1[i]; y = v2[i]
-                sumxx += x*x
-                sumyy += y*y
-                sumxy += x*y
-            return sumxy/math.sqrt(sumxx*sumyy)
+        >>> # define the texts
+            text_a = "The sun is shining"
+            text_b = "Il sole splende"
 
-        # define the texts
-        text_a = "The sun is shining"
-        text_b = "Il sole splende"
-
-        # show the similarity
-        print(cosine_similarity(await embed_symmetric(text_a), await embed_symmetric(text_b)))
-        ```
+        >>> # show the similarity
+            print(cosine_similarity(await embed_symmetric(text_a), await embed_symmetric(text_b)))
         """
         response = await self._post_request(
             "semantic_embed",
@@ -1660,13 +1656,12 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = EvaluationRequest(
-            prompt=Prompt.from_text("hello"), completion_expected="world"
-        )
+        Examples:
+        >>> request = EvaluationRequest(
+                prompt=Prompt.from_text("hello"), completion_expected="world"
+            )
 
-        response = await client.evaluate(request, model=model_name)
-        ```
+        >>> response = await client.evaluate(request, model=model_name)
         """
         response = await self._post_request(
             "evaluate",
@@ -1699,14 +1694,13 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = QaRequest(
-            query="Who likes pizza?",
-            documents=[Document.from_text("Andreas likes pizza.")],
-        )
+        Examples:
+        >>> request = QaRequest(
+                query="Who likes pizza?",
+                documents=[Document.from_text("Andreas likes pizza.")],
+            )
 
-        response = await client.qa(request, model="luminous-extended")
-        ```
+        >>> response = await client.qa(request, model="luminous-extended")
         """
         response = await self._post_request(
             "qa",
@@ -1739,13 +1733,12 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
-        ```
-        request = SummarizationRequest(
-            document=Document.from_text("Andreas likes pizza."),
-        )
+        Examples:
+        >>> request = SummarizationRequest(
+                document=Document.from_text("Andreas likes pizza."),
+            )
 
-        response = await client.summarize(request, model="luminous-extended")
-        ```
+        >>> response = await client.summarize(request, model="luminous-extended")
         """
         response = await self._post_request(
             "summarize",

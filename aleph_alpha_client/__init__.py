@@ -3,6 +3,7 @@ from .aleph_alpha_client import (
     QuotaError,
     POOLING_OPTIONS,
     AsyncClient,
+    Client,
 )
 from .aleph_alpha_model import AlephAlphaModel
 from .image import ImagePrompt
