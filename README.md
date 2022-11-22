@@ -4,7 +4,7 @@
     <img src="https://i.imgur.com/FSM2NNV.png" width="50%" />
 </p>
 
-[![Licence](https://img.shields.io/crates/l/aleph-alpha-client)](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/main/LICENSE)
+[![License](https://img.shields.io/crates/l/aleph-alpha-client)](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/main/LICENSE)
 [![PyPI version](https://badge.fury.io/py/aleph-alpha-client.svg)](https://pypi.org/project/aleph-alpha-client/)
 
 Python client for the [Aleph Alpha](https://aleph-alpha.com) API.
@@ -14,19 +14,13 @@ Python client for the [Aleph Alpha](https://aleph-alpha.com) API.
 ### Text Completion
 
 ```python
-from aleph_alpha_client import AlephAlphaModel, AlephAlphaClient, CompletionRequest, Prompt
+from aleph_alpha_client import Client, CompletionRequest, Prompt
 import os
 
-model = AlephAlphaModel(
-    AlephAlphaClient(host="https://api.aleph-alpha.com", token=os.getenv("AA_TOKEN")),
-    model_name = "luminous-extended"
-)
-
-prompt = Prompt([
-    "Provide a short description of AI:",
-])
+client = Client(token=os.getenv("AA_TOKEN"))
+prompt = Prompt.from_text("Provide a short description of AI:")
 request = CompletionRequest(prompt=prompt, maximum_tokens=20)
-result = model.complete(request)
+result = client.complete(request, model="luminous-extended")
 
 print(result.completions[0].completion)
 ```
