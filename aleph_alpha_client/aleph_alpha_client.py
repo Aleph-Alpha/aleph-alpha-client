@@ -1,12 +1,13 @@
+import logging
 from types import TracebackType
 from typing import Any, List, Mapping, Optional, Dict, Sequence, Tuple, Type, Union
 import warnings
-import requests
-import logging
 
 import aiohttp
 from aiohttp_retry import RetryClient, ExponentialRetry
+import requests
 from requests.adapters import HTTPAdapter
+from requests.structures import CaseInsensitiveDict
 from urllib3.util.retry import Retry
 
 import aleph_alpha_client
@@ -890,10 +891,13 @@ class Client:
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.session = requests.Session()
-        self.session.headers = {
-            "Authorization": "Bearer " + self.token,
-            "User-Agent": "Aleph-Alpha-Python-Client-" + aleph_alpha_client.__version__,
-        }
+        self.session.headers = CaseInsensitiveDict(
+            {
+                "Authorization": "Bearer " + self.token,
+                "User-Agent": "Aleph-Alpha-Python-Client-"
+                + aleph_alpha_client.__version__,
+            }
+        )
         self.session.mount("https://", adapter)
         self.session.mount("http://", adapter)
 
