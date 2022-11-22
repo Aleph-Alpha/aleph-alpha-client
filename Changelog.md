@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.6.0
+
+- Introduce Client
+- Add DeprecationWarning for AlephAlphaClient and AlephAlphaModel (to be removed in 3.0.0)
+
 ## 2.5.0
 
 - Introduce AsyncClient
