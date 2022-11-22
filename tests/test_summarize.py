@@ -4,8 +4,10 @@ from aleph_alpha_client import (
     Document,
     SummarizationRequest,
 )
+from aleph_alpha_client.aleph_alpha_client import Client
 
 from tests.common import (
+    sync_client,
     client,
     model_name,
     luminous_extended,
@@ -15,18 +17,13 @@ import pytest
 
 
 @pytest.mark.needs_api
-def test_summarize(luminous_extended: AlephAlphaModel):
-    # given a client
-    assert luminous_extended.model_name in map(
-        lambda model: model["name"], luminous_extended.client.available_models()
-    )
-
+def test_summarize(sync_client: Client):
     # when posting a Summarization request
     request = SummarizationRequest(
         document=Document.from_prompt(["Andreas likes pizza."]),
     )
 
-    response = luminous_extended.summarize(request)
+    response = sync_client.summarize(request, model="luminous-extended")
 
     # the response should exist and be in the form of a named tuple class
     assert response.summary is not None
@@ -35,13 +32,12 @@ def test_summarize(luminous_extended: AlephAlphaModel):
 
 @pytest.mark.needs_api
 def test_summarize_against_checkpoint(
-    client: AlephAlphaClient, summarization_checkpoint_name: str
+    sync_client: Client, summarization_checkpoint_name: str
 ):
-    model = AlephAlphaModel(client, checkpoint_name=summarization_checkpoint_name)
     request = SummarizationRequest(
         document=Document.from_prompt(["Andreas likes pizza."]),
     )
-    response = model.summarize(request)
+    response = sync_client.summarize(request, checkpoint=summarization_checkpoint_name)
 
     assert response.summary is not None
     assert response.model_version is not None
@@ -85,17 +81,12 @@ def test_summarization_with_client_against_checkpoint(
 
 
 @pytest.mark.needs_api
-def test_text(luminous_extended: AlephAlphaModel):
-    # given a client
-    assert luminous_extended.model_name in map(
-        lambda model: model["name"], luminous_extended.client.available_models()
-    )
-
+def test_text(sync_client: Client):
     request = SummarizationRequest(
         document=Document.from_text("Andreas likes pizza."),
     )
 
-    response = luminous_extended.summarize(request)
+    response = sync_client.summarize(request, model="luminous-extended")
 
     assert response.summary is not None
     assert response.model_version is not None

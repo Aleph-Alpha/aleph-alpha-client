@@ -4,6 +4,7 @@ from http import HTTPStatus
 from aleph_alpha_client.aleph_alpha_client import (
     AlephAlphaClient,
     AsyncClient,
+    Client,
     _raise_for_status,
 )
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
@@ -34,7 +35,7 @@ def expect_call_respond_error(
         )
 
 
-def test_retry_sync_post(httpserver: HTTPServer):
+def test_retry_deprecated_sync_post(httpserver: HTTPServer):
     path = "/complete"
     httpserver.expect_ordered_request("/version").respond_with_data("busy1", status=200)
     expect_call_respond_error(
@@ -57,7 +58,28 @@ def test_retry_sync_post(httpserver: HTTPServer):
     model.complete(request=request)
 
 
-def test_retry_sync(httpserver: HTTPServer):
+def test_retry_sync_post(httpserver: HTTPServer):
+    path = "/complete"
+    expect_call_respond_error(
+        httpserver,
+        path,
+        num_calls_expected=2,
+        error_code=HTTPStatus.SERVICE_UNAVAILABLE,
+    )
+    httpserver.expect_ordered_request(path).respond_with_json(
+        {"model_version": "1", "completions": []}
+    )
+
+    request = CompletionRequest(
+        prompt=Prompt.from_text(""),
+        maximum_tokens=7,
+    )
+
+    client = Client(host=httpserver.url_for(""), token="AA_TOKEN")
+    client.complete(request=request, model="model")
+
+
+def test_retry_deprecated_sync(httpserver: HTTPServer):
     path = "/version"
     expect_call_respond_error(
         httpserver,
@@ -68,6 +90,20 @@ def test_retry_sync(httpserver: HTTPServer):
     httpserver.expect_ordered_request(path).respond_with_data("ok", status=200)
 
     AlephAlphaClient(host=httpserver.url_for(""), token="AA_TOKEN")
+
+
+def test_retry_sync(httpserver: HTTPServer):
+    path = "/version"
+    expect_call_respond_error(
+        httpserver,
+        path,
+        num_calls_expected=2,
+        error_code=HTTPStatus.SERVICE_UNAVAILABLE,
+    )
+    httpserver.expect_ordered_request(path).respond_with_data("ok", status=200)
+
+    client = Client(token="AA_TOKEN", host=httpserver.url_for(""))
+    client.get_version()
 
 
 async def test_retry_async(httpserver: HTTPServer):

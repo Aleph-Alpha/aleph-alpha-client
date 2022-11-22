@@ -1,22 +1,23 @@
 import pytest
-from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
+from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, Client
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.detokenization import DetokenizationRequest
 
-from tests.common import client, model_name, model, checkpoint_name
+from tests.common import client, model_name, model, checkpoint_name, sync_client
 
 
 @pytest.mark.needs_api
-def test_detokenize(model: AlephAlphaModel):
-    response = model.detokenize(DetokenizationRequest([4711]))
+def test_detokenize(sync_client: Client, model_name: str):
+    response = sync_client.detokenize(DetokenizationRequest([4711]), model=model_name)
 
     assert response.result is not None
 
 
 @pytest.mark.needs_api
-def test_detokenize_against_checkpoint(client: AlephAlphaClient, checkpoint_name):
-    model = AlephAlphaModel(client, model_name=None, checkpoint_name=checkpoint_name)
-    response = model.detokenize(DetokenizationRequest([4711]))
+def test_detokenize_against_checkpoint(sync_client: Client, checkpoint_name: str):
+    response = sync_client.detokenize(
+        DetokenizationRequest([4711]), checkpoint=checkpoint_name
+    )
 
     assert response.result is not None
 

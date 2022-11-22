@@ -15,6 +15,22 @@ from tests.common import (
 
 
 @pytest.mark.needs_api
+def test_deprecated_complete(model: AlephAlphaModel):
+    request = CompletionRequest(
+        prompt=Prompt.from_text(""),
+        maximum_tokens=7,
+        tokens=False,
+        log_probs=0,
+        logit_bias={1: 2.0},
+    )
+
+    response = model.complete(request)
+
+    assert len(response.completions) == 1
+    assert response.model_version is not None
+
+
+@pytest.mark.needs_api
 def test_complete(sync_client: Client, model_name: str):
     request = CompletionRequest(
         prompt=Prompt.from_text(""),
@@ -44,9 +60,7 @@ def test_complete_with_token_ids(sync_client: Client, model_name: str):
 
 
 @pytest.mark.needs_api
-def test_complete_against_checkpoint(client: AlephAlphaClient, checkpoint_name: str):
-
-    model = AlephAlphaModel(client, checkpoint_name=checkpoint_name)
+def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
 
     request = CompletionRequest(
         prompt=Prompt.from_text(""),
@@ -56,20 +70,10 @@ def test_complete_against_checkpoint(client: AlephAlphaClient, checkpoint_name: 
         logit_bias={1: 2.0},
     )
 
-    response = model.complete(request)
+    response = sync_client.complete(request, checkpoint=checkpoint_name)
 
     assert len(response.completions) == 1
     assert response.model_version is not None
-
-
-@pytest.mark.needs_api
-def test_complete_with_client(client: AlephAlphaClient, model_name: str):
-    response = client.complete(
-        model_name, prompt=[""], maximum_tokens=7, tokens=False, log_probs=0
-    )
-
-    assert len(response["completions"]) == 1
-    assert response["model_version"] is not None
 
 
 @pytest.mark.needs_api

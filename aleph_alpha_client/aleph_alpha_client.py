@@ -1,5 +1,6 @@
 from types import TracebackType
 from typing import Any, List, Mapping, Optional, Dict, Sequence, Tuple, Type, Union
+import warnings
 import requests
 import logging
 
@@ -89,6 +90,13 @@ class AlephAlphaClient:
             request_timeout_seconds (int, optional, default 180):
                 Client timeout that will be set for HTTP requests in the `requests` library's API calls.
         """
+
+        warnings.warn(
+            "AlephAlphaClient is deprecated and will be removed in the next major release. Use Client or AsyncClient instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+
         if host[-1] != "/":
             host += "/"
         self.host = host
@@ -893,7 +901,7 @@ class Client:
         """Gets version of the AlephAlpha HTTP API."""
         response = self.session.get(self.host + "version")
         if not response.ok:
-            _raise_for_status(response.status, response.text)
+            _raise_for_status(response.status_code, response.text)
         return response.text
 
     def _post_request(
@@ -919,7 +927,7 @@ class Client:
             timeout=self.request_timeout_seconds,
         )
         if not response.ok:
-            _raise_for_status(response.status, response.text)
+            _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def _build_json_body(
