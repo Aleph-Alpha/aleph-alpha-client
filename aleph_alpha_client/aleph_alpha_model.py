@@ -1,5 +1,6 @@
 from collections import ChainMap
 from typing import Any, Mapping, Optional, Union
+import warnings
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
 from aleph_alpha_client.detokenization import (
@@ -54,7 +55,11 @@ class AlephAlphaModel:
 
                 Need to set exactly one of model_name and checkpoint_name.
         """
-
+        warnings.warn(
+            "AlephAlphaModel is deprecated and will be removed in the next major release. Use Client or AsyncClient instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         if (model_name is None and checkpoint_name is None) or (
             model_name is not None and checkpoint_name is not None
         ):
@@ -68,7 +73,9 @@ class AlephAlphaModel:
         self.checkpoint_name = checkpoint_name
 
     @classmethod
-    def from_model_name(cls, model_name: str, token: str, hosting: Optional[str] = None):
+    def from_model_name(
+        cls, model_name: str, token: str, hosting: Optional[str] = None
+    ):
         """
         Construct a context object for a specific model.
 
@@ -109,7 +116,9 @@ class AlephAlphaModel:
         return CompletionResponse.from_json(response_json)
 
     def tokenize(self, request: TokenizationRequest) -> TokenizationResponse:
-        response_json = self.client.tokenize(model=self.model_name, **request._asdict(), checkpoint=self.checkpoint_name)
+        response_json = self.client.tokenize(
+            model=self.model_name, **request._asdict(), checkpoint=self.checkpoint_name
+        )
         return TokenizationResponse.from_json(response_json)
 
     def detokenize(self, request: DetokenizationRequest) -> DetokenizationResponse:

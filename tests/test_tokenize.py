@@ -1,15 +1,16 @@
 import pytest
-from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient
+from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, Client
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.tokenization import TokenizationRequest
 
-from tests.common import client, model_name, model, checkpoint_name
+from tests.common import sync_client, client, model_name, model, checkpoint_name
 
 
 @pytest.mark.needs_api
-def test_tokenize(model: AlephAlphaModel):
-    response = model.tokenize(
-        request=TokenizationRequest("Hello", tokens=True, token_ids=True)
+def test_tokenize(sync_client: Client, model_name: str):
+    response = sync_client.tokenize(
+        request=TokenizationRequest("Hello", tokens=True, token_ids=True),
+        model=model_name,
     )
 
     assert response.tokens and len(response.tokens) == 1
@@ -17,11 +18,10 @@ def test_tokenize(model: AlephAlphaModel):
 
 
 @pytest.mark.needs_api
-def test_tokenize_against_checkpoint(client: AlephAlphaClient, checkpoint_name: str):
-    model = AlephAlphaModel(client, model_name=None, checkpoint_name=checkpoint_name)
-
-    response = model.tokenize(
-        request=TokenizationRequest("Hello", tokens=True, token_ids=True)
+def test_tokenize_against_checkpoint(sync_client: Client, checkpoint_name: str):
+    response = sync_client.tokenize(
+        request=TokenizationRequest("Hello", tokens=True, token_ids=True),
+        checkpoint=checkpoint_name,
     )
 
     assert response.tokens and len(response.tokens) == 1

@@ -1,11 +1,13 @@
+import logging
 from types import TracebackType
 from typing import Any, List, Mapping, Optional, Dict, Sequence, Tuple, Type, Union
-import requests
-import logging
+import warnings
 
 import aiohttp
 from aiohttp_retry import RetryClient, ExponentialRetry
+import requests
 from requests.adapters import HTTPAdapter
+from requests.structures import CaseInsensitiveDict
 from urllib3.util.retry import Retry
 
 import aleph_alpha_client
@@ -89,6 +91,13 @@ class AlephAlphaClient:
             request_timeout_seconds (int, optional, default 180):
                 Client timeout that will be set for HTTP requests in the `requests` library's API calls.
         """
+
+        warnings.warn(
+            "AlephAlphaClient is deprecated and will be removed in the next major release. Use Client or AsyncClient instead.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
+
         if host[-1] != "/":
             host += "/"
         self.host = host
@@ -825,6 +834,467 @@ AnyRequest = Union[
 ]
 
 
+class Client:
+    """
+    Example usage:
+    ```
+    request = CompletionRequest(
+        prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
+    client = Client(token=os.environ["AA_TOKEN"])
+    response: CompletionResponse = client.complete(request, "luminous-base")
+    ```
+    """
+
+    def __init__(
+        self,
+        token: str,
+        host: str = "https://api.aleph-alpha.com",
+        hosting: Optional[str] = None,
+        request_timeout_seconds: int = 180,
+    ) -> None:
+        """
+        Construct a client for synchronous requests given a user token
+
+        Parameters:
+            token (string, required):
+                The API token that will be used for authentication.
+
+            host (string, required, default "https://api.aleph-alpha.com"):
+                The hostname of the API host.
+
+            hosting(string, optional, default None):
+                Determines in which datacenters the request may be processed.
+                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+                Choose this option for maximal data privacy.
+
+            request_timeout_seconds (int, optional, default 180):
+                Client timeout that will be set for HTTP requests in the `requests` library's API calls.
+        """
+        if host[-1] != "/":
+            host += "/"
+        self.host = host
+        self.hosting = hosting
+        self.request_timeout_seconds = request_timeout_seconds
+        self.token = token
+
+        retry_strategy = Retry(
+            total=3,
+            backoff_factor=0.1,
+            status_forcelist=RETRY_STATUS_CODES,
+            allowed_methods=["POST", "GET"],
+            raise_on_status=False,
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.session = requests.Session()
+        self.session.headers = CaseInsensitiveDict(
+            {
+                "Authorization": "Bearer " + self.token,
+                "User-Agent": "Aleph-Alpha-Python-Client-"
+                + aleph_alpha_client.__version__,
+            }
+        )
+        self.session.mount("https://", adapter)
+        self.session.mount("http://", adapter)
+
+    def get_version(self) -> str:
+        """Gets version of the AlephAlpha HTTP API."""
+        response = self.session.get(self.host + "version")
+        if not response.ok:
+            _raise_for_status(response.status_code, response.text)
+        return response.text
+
+    def _post_request(
+        self,
+        endpoint: str,
+        request: AnyRequest,
+        model: Optional[str],
+        checkpoint: Optional[str],
+    ) -> Dict[str, Any]:
+        if (model is None and checkpoint is None) or (
+            model is not None and checkpoint is not None
+        ):
+            raise ValueError("Need to set exactly one of model and checkpoint.")
+
+        json_body = self._build_json_body(request, model)
+
+        query_params = dict(checkpoint=checkpoint) if checkpoint else {}
+
+        response = self.session.post(
+            self.host + endpoint,
+            json=json_body,
+            params=query_params,
+            timeout=self.request_timeout_seconds,
+        )
+        if not response.ok:
+            _raise_for_status(response.status_code, response.text)
+        return response.json()
+
+    def _build_json_body(
+        self, request: AnyRequest, model: Optional[str]
+    ) -> Mapping[str, Any]:
+        json_body = request.to_json()
+
+        if model is not None:
+            json_body["model"] = model
+        if self.hosting is not None:
+            json_body["hosting"] = self.hosting
+        return json_body
+
+    def complete(
+        self,
+        request: CompletionRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> CompletionResponse:
+        """Generates completions given a prompt.
+
+        Parameters:
+            request (CompletionRequest, required):
+                Parameters for the requested completion.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+        ```
+        # create a prompt
+        prompt = Prompt("An apple a day, ")
+
+        # create a completion request
+        request = CompletionRequest(prompt=prompt, maximum_tokens=32, stop_sequences=[
+                                    "###","\n"], temperature=0.12)
+
+        # complete the prompt
+        result = client.complete(request, model=model_name)
+        ```
+        """
+        response = self._post_request(
+            "complete",
+            request,
+            model,
+            checkpoint,
+        )
+        return CompletionResponse.from_json(response)
+
+    def tokenize(
+        self,
+        request: TokenizationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> TokenizationResponse:
+        """Tokenizes the given prompt for the given model.
+
+        Parameters:
+            request (TokenizationRequest, required):
+                Parameters for the requested tokenization.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+        ```
+        request = TokenizationRequest(
+            prompt="hello", token_ids=True, tokens=True)
+
+        response = client.tokenize(request, model=model_name)
+        ```
+        """
+        response = self._post_request(
+            "tokenize",
+            request,
+            model,
+            checkpoint,
+        )
+        return TokenizationResponse.from_json(response)
+
+    def detokenize(
+        self,
+        request: DetokenizationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> DetokenizationResponse:
+        """Detokenizes the given prompt for the given model.
+
+        Parameters:
+            request (DetokenizationRequest, required):
+                Parameters for the requested detokenization.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+        ```
+        request = DetokenizationRequest(token_ids=[2, 3, 4])
+
+        response = client.detokenize(request, checkpoint=checkpoint_name)
+        ```
+        """
+        response = self._post_request(
+            "detokenize",
+            request,
+            model,
+            checkpoint,
+        )
+        return DetokenizationResponse.from_json(response)
+
+    def embed(
+        self,
+        request: EmbeddingRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> EmbeddingResponse:
+        """Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
+
+        Parameters:
+            request (EmbeddingRequest, required):
+                Parameters for the requested embedding.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+        ```
+        request = EmbeddingRequest(prompt=Prompt.from_text(
+            "This is an example."), layers=[-1], pooling=["mean"])
+        result = client.embed(request, model=model_name)
+        ```
+        """
+        response = self._post_request(
+            "embed",
+            request,
+            model,
+            checkpoint,
+        )
+        return EmbeddingResponse.from_json(response)
+
+    def semantic_embed(
+        self,
+        request: SemanticEmbeddingRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> SemanticEmbeddingResponse:
+        """Embeds a text and returns vectors that can be used for downstream tasks
+        (e.g. semantic similarity) and models (e.g. classifiers).
+
+        Parameters:
+            request (SemanticEmbeddingRequest, required):
+                Parameters for the requested semnatic embedding.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+        ```
+        # function for symmetric embedding
+
+        def embed_symmetric(text: str):
+            # Create an embeddingrequest with the type set to symmetric
+            request = SemanticEmbeddingRequest(prompt=Prompt.from_text(
+                text), representation=SemanticRepresentation.Symmetric)
+            # create the embedding
+            result = client.semantic_embed(request, model=model_name)
+            return result.embedding
+
+        # function to calculate similarity
+        def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
+            "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+            sumxx, sumxy, sumyy = 0, 0, 0
+            for i in range(len(v1)):
+                x = v1[i]; y = v2[i]
+                sumxx += x*x
+                sumyy += y*y
+                sumxy += x*y
+            return sumxy/math.sqrt(sumxx*sumyy)
+
+        # define the texts
+        text_a = "The sun is shining"
+        text_b = "Il sole splende"
+
+        # show the similarity
+        print(cosine_similarity(embed_symmetric(text_a), embed_symmetric(text_b)))
+        ```
+        """
+        response = self._post_request(
+            "semantic_embed",
+            request,
+            model,
+            checkpoint,
+        )
+        return SemanticEmbeddingResponse.from_json(response)
+
+    def evaluate(
+        self,
+        request: EvaluationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> EvaluationResponse:
+        """Evaluates the model's likelihood to produce a completion given a prompt.
+
+        Parameters:
+            request (EvaluationRequest, required):
+                Parameters for the requested evaluation.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+        ```
+        request = EvaluationRequest(
+            prompt=Prompt.from_text("hello"), completion_expected="world"
+        )
+
+        response = client.evaluate(request, model=model_name)
+        ```
+        """
+        response = self._post_request(
+            "evaluate",
+            request,
+            model,
+            checkpoint,
+        )
+        return EvaluationResponse.from_json(response)
+
+    def qa(
+        self,
+        request: QaRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> QaResponse:
+        """Answers a question about documents.
+
+        Parameters:
+            request (QaRequest, required):
+                Parameters for the qa request.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+        ```
+        request = QaRequest(
+            query="Who likes pizza?",
+            documents=[Document.from_text("Andreas likes pizza.")],
+        )
+
+        response = client.qa(request, model="luminous-extended")
+        ```
+        """
+        response = self._post_request(
+            "qa",
+            request,
+            model,
+            checkpoint,
+        )
+        return QaResponse.from_json(response)
+
+    def summarize(
+        self,
+        request: SummarizationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> SummarizationResponse:
+        """Summarizes a document.
+
+        Parameters:
+            request (SummarizationRequest, required):
+                Parameters for the requested summarization.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+            checkpoint (string, optional, default None):
+                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+                Need to set exactly one of model_name and checkpoint_name.
+
+        ```
+        request = SummarizationRequest(
+            document=Document.from_text("Andreas likes pizza."),
+        )
+
+        response = client.summarize(request, model="luminous-extended")
+        ```
+        """
+        response = self._post_request(
+            "summarize",
+            request,
+            model,
+            checkpoint,
+        )
+        return SummarizationResponse.from_json(response)
+
+    def _explain(
+        self,
+        request: ExplanationRequest,
+        model: Optional[str] = None,
+        checkpoint: Optional[str] = None,
+    ) -> ExplanationResponse:
+        response = self._post_request(
+            "explain",
+            request,
+            model,
+            checkpoint,
+        )
+        return ExplanationResponse.from_json(response)
+
+
 class AsyncClient:
     """
     Example usage:
@@ -843,13 +1313,11 @@ class AsyncClient:
         request_timeout_seconds: int = 180,
     ) -> None:
         """
-        Construct a context object for aynchronous reqeuests a given user token
+        Construct a context object for asynchronous requests given a user token
 
         Parameters:
-            token (string):
+            token (string, required):
                 The API token that will be used for authentication.
-                This is optional because we also support password authentication.
-                If token is None, email and password must be set.
 
             host (string, required, default "https://api.aleph-alpha.com"):
                 The hostname of the API host.
@@ -865,7 +1333,7 @@ class AsyncClient:
                 Choose this option for maximal data privacy.
 
             request_timeout_seconds (int, optional, default 180):
-                Client timeout that will be set for HTTP requests in the `requests` library's API calls.
+                Client timeout that will be set for HTTP requests in the `aiohttp` library's API calls.
         """
         if host[-1] != "/":
             host += "/"
