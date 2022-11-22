@@ -51,7 +51,7 @@ The latest stable version is deployed to PyPi so you can install this package vi
 pip install aleph-alpha-client
 ```
 
-Get started using the client by first [creating an account](https://app.aleph-alpha.com/signup). Afterwards head over to [your profile](https://app.aleph-alpha.com/profile) to create an API token. Read more about how you can manage your API tokens [here](https://docs.aleph-alpha.com/changelog/2022/10/26/token-management/).
+Get started using the client by first [creating an account](https://app.aleph-alpha.com/signup). Afterwards head over to [your profile](https://app.aleph-alpha.com/profile) to create an API token. Read more about how you can manage your API tokens [here](https://docs.aleph-alpha.com/docs/account).
 
 ## Links
 
