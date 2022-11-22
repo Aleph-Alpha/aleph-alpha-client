@@ -2,6 +2,7 @@ import os
 from typing import AsyncIterable, Iterable
 import pytest
 from aleph_alpha_client import AlephAlphaClient, AsyncClient
+from aleph_alpha_client.aleph_alpha_client import Client
 
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 
@@ -31,6 +32,13 @@ def client() -> Iterable[AlephAlphaClient]:
         host=api_url, token=token, email=username, password=password
     )
 
+    yield client
+
+
+@pytest.fixture(scope="session")
+def sync_client() -> Iterable[Client]:
+    token = os.environ["TEST_TOKEN"]
+    client = Client(token, host=os.environ["TEST_API_URL"])
     yield client
 
 
