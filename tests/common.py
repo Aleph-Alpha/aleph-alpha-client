@@ -85,6 +85,25 @@ def summarization_checkpoint_name() -> str:
 
 
 @pytest.fixture(scope="session")
+def alt_complete_checkpoint_name() -> str:
+    return get_env_var("TEST_CHECKPOINT_ALT_COMPLETE")
+
+
+@pytest.fixture(scope="session")
+def alt_complete_adapter_name() -> str:
+    return get_env_var("TEST_ADAPTER_ALT_COMPLETE")
+
+
+def get_env_var(env_var: str) -> str:
+    value = os.environ.get(env_var)
+    if value is None:
+        raise ValueError(
+            f"Test parameters could not be read from .env. Make sure to create a .env file with the key {env_var}"
+        )
+    return value
+
+
+@pytest.fixture(scope="session")
 def model(client: AlephAlphaClient, model_name: str) -> AlephAlphaModel:
     return AlephAlphaModel(client, model_name)
 

@@ -12,6 +12,8 @@ from tests.common import (
     model_name,
     model,
     checkpoint_name,
+    alt_complete_checkpoint_name,
+    alt_complete_adapter_name,
 )
 
 
@@ -43,6 +45,27 @@ async def test_can_complete_with_async_client_against_checkpoint(
 
     response = await async_client.complete(request, checkpoint=checkpoint_name)
     assert len(response.completions) == 1
+    assert response.model_version is not None
+
+
+@pytest.mark.needs_api
+async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
+    async_client: AsyncClient,
+    alt_complete_checkpoint_name: str,
+    alt_complete_adapter_name: str,
+):
+    request = CompletionRequest(
+        prompt=Prompt.from_text("Hello, World!\n"),
+        maximum_tokens=7,
+    )
+
+    response = await async_client.complete(
+        request,
+        checkpoint=alt_complete_checkpoint_name,
+        adapter=alt_complete_adapter_name,
+    )
+    assert len(response.completions) == 1
+    print(response.completions[0].completion)
     assert response.model_version is not None
 
 

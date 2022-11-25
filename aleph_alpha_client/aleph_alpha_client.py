@@ -1399,11 +1399,12 @@ class AsyncClient:
         request: AnyRequest,
         model: Optional[str],
         checkpoint: Optional[str],
+        adapter: Optional[str] = None,
     ) -> Dict[str, Any]:
 
         json_body = self._build_json_body(request, model)
 
-        query_params = dict(checkpoint=checkpoint) if checkpoint else {}
+        query_params = self._build_query_parameters(checkpoint, adapter)
 
         async with self.session.post(
             self.host + endpoint, json=json_body, params=query_params
@@ -1411,6 +1412,14 @@ class AsyncClient:
             if not response.ok:
                 _raise_for_status(response.status, await response.text())
             return await response.json()
+
+    def _build_query_parameters(
+        self, checkpoint: Optional[str], adapter: Optional[str]
+    ) -> Mapping[str, str]:
+        return {
+            **(dict(checkpoint=checkpoint) if checkpoint else {}),
+            **(dict(adapter=adapter) if adapter else {}),
+        }
 
     def _build_json_body(
         self, request: AnyRequest, model: Optional[str]
@@ -1428,6 +1437,7 @@ class AsyncClient:
         request: CompletionRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
+        adapter: Optional[str] = None,
     ) -> CompletionResponse:
         """Generates completions given a prompt.
 
@@ -1466,6 +1476,7 @@ class AsyncClient:
             request,
             model,
             checkpoint,
+            adapter,
         )
         return CompletionResponse.from_json(response)
 
