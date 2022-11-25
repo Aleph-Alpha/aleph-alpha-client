@@ -39,34 +39,6 @@ async def test_can_use_async_client_without_context_manager(model_name: str):
 
 
 @pytest.mark.needs_api
-async def test_can_complete_with_async_client(
-    async_client: AsyncClient, model_name: str
-):
-    request = CompletionRequest(
-        prompt=Prompt.from_text(""),
-        maximum_tokens=7,
-    )
-
-    response = await async_client.complete(request, model=model_name)
-    assert len(response.completions) == 1
-    assert response.model_version is not None
-
-
-@pytest.mark.needs_api
-async def test_can_complete_with_async_client_against_checkpoint(
-    async_client: AsyncClient, checkpoint_name: str
-):
-    request = CompletionRequest(
-        prompt=Prompt.from_text(""),
-        maximum_tokens=7,
-    )
-
-    response = await async_client.complete(request, checkpoint=checkpoint_name)
-    assert len(response.completions) == 1
-    assert response.model_version is not None
-
-
-@pytest.mark.needs_api
 async def test_can_detokenization_with_async_client(
     async_client: AsyncClient, model_name: str
 ):

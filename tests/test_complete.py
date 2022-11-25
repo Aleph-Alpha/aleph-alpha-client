@@ -1,5 +1,5 @@
 import pytest
-from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, Client
+from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, AsyncClient, Client
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.completion import CompletionRequest
 from aleph_alpha_client.prompt import Prompt
@@ -7,6 +7,7 @@ from aleph_alpha_client.prompt import Prompt
 from tests.common import (
     client,
     sync_client,
+    async_client,
     checkpoint_name,
     model_name,
     model,
@@ -14,20 +15,38 @@ from tests.common import (
 )
 
 
+# AsyncClient
+
+
 @pytest.mark.needs_api
-def test_deprecated_complete(model: AlephAlphaModel):
+async def test_can_complete_with_async_client(
+    async_client: AsyncClient, model_name: str
+):
     request = CompletionRequest(
         prompt=Prompt.from_text(""),
         maximum_tokens=7,
-        tokens=False,
-        log_probs=0,
-        logit_bias={1: 2.0},
     )
 
-    response = model.complete(request)
-
+    response = await async_client.complete(request, model=model_name)
     assert len(response.completions) == 1
     assert response.model_version is not None
+
+
+@pytest.mark.needs_api
+async def test_can_complete_with_async_client_against_checkpoint(
+    async_client: AsyncClient, checkpoint_name: str
+):
+    request = CompletionRequest(
+        prompt=Prompt.from_text(""),
+        maximum_tokens=7,
+    )
+
+    response = await async_client.complete(request, checkpoint=checkpoint_name)
+    assert len(response.completions) == 1
+    assert response.model_version is not None
+
+
+# Client
 
 
 @pytest.mark.needs_api
@@ -76,8 +95,11 @@ def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
     assert response.model_version is not None
 
 
+# AlephAlphaClient
+
+
 @pytest.mark.needs_api
-def test_complete_with_client_against_checkpoint(
+def test_complete_with_deprecated_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
     response = client.complete(
@@ -91,3 +113,22 @@ def test_complete_with_client_against_checkpoint(
 
     assert len(response["completions"]) == 1
     assert response["model_version"] is not None
+
+
+# AlephAlphaModel
+
+
+@pytest.mark.needs_api
+def test_deprecated_complete(model: AlephAlphaModel):
+    request = CompletionRequest(
+        prompt=Prompt.from_text(""),
+        maximum_tokens=7,
+        tokens=False,
+        log_probs=0,
+        logit_bias={1: 2.0},
+    )
+
+    response = model.complete(request)
+
+    assert len(response.completions) == 1
+    assert response.model_version is not None

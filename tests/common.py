@@ -51,12 +51,7 @@ async def async_client() -> AsyncIterable[AsyncClient]:
 
 @pytest.fixture(scope="session")
 def model_name() -> str:
-    model = os.environ.get("TEST_MODEL")
-    if model is None:
-        raise ValueError(
-            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_MODEL."
-        )
-    return model
+    return "luminous-extended"
 
 
 @pytest.fixture(scope="session")
