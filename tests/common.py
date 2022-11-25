@@ -9,11 +9,7 @@ from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 
 @pytest.fixture(scope="session")
 def client() -> Iterable[AlephAlphaClient]:
-    api_url = os.environ.get("TEST_API_URL")
-    if api_url is None:
-        raise ValueError(
-            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_API_URL."
-        )
+    api_url = get_env_var("TEST_API_URL")
 
     username = os.environ.get("TEST_USERNAME")
     password = os.environ.get("TEST_PASSWORD")
@@ -36,57 +32,55 @@ def client() -> Iterable[AlephAlphaClient]:
 
 
 @pytest.fixture(scope="session")
-def sync_client() -> Iterable[Client]:
-    token = os.environ["TEST_TOKEN"]
-    client = Client(token, host=os.environ["TEST_API_URL"])
-    yield client
+def sync_client() -> Client:
+    return Client(token=get_env_var("TEST_TOKEN"), host=get_env_var("TEST_API_URL"))
 
 
 @pytest.fixture()
 async def async_client() -> AsyncIterable[AsyncClient]:
-    token = os.environ["TEST_TOKEN"]
-    async with AsyncClient(token, host=os.environ["TEST_API_URL"]) as client:
+    async with AsyncClient(
+        token=get_env_var("TEST_TOKEN"), host=get_env_var("TEST_API_URL")
+    ) as client:
         yield client
 
 
 @pytest.fixture(scope="session")
 def model_name() -> str:
-    model = os.environ.get("TEST_MODEL")
-    if model is None:
-        raise ValueError(
-            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_MODEL."
-        )
-    return model
+    return "luminous-base"
 
 
 @pytest.fixture(scope="session")
 def checkpoint_name() -> str:
-    checkpoint = os.environ.get("TEST_CHECKPOINT")
-    if checkpoint is None:
-        raise ValueError(
-            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_CHECKPOINT."
-        )
-    return checkpoint
+    return get_env_var("TEST_CHECKPOINT")
 
 
 @pytest.fixture(scope="session")
 def qa_checkpoint_name() -> str:
-    checkpoint = os.environ.get("TEST_CHECKPOINT_QA")
-    if checkpoint is None:
-        raise ValueError(
-            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_CHECKPOINT_QA"
-        )
-    return checkpoint
+    return get_env_var("TEST_CHECKPOINT_QA")
 
 
 @pytest.fixture(scope="session")
 def summarization_checkpoint_name() -> str:
-    checkpoint = os.environ.get("TEST_CHECKPOINT_SUMMARIZATION")
-    if checkpoint is None:
+    return get_env_var("TEST_CHECKPOINT_SUMMARIZATION")
+
+
+@pytest.fixture(scope="session")
+def alt_complete_checkpoint_name() -> str:
+    return get_env_var("TEST_CHECKPOINT_ALT_COMPLETE")
+
+
+@pytest.fixture(scope="session")
+def alt_complete_adapter_name() -> str:
+    return get_env_var("TEST_ADAPTER_ALT_COMPLETE")
+
+
+def get_env_var(env_var: str) -> str:
+    value = os.environ.get(env_var)
+    if value is None:
         raise ValueError(
-            "Test parameters could not be read from .env. Make sure to create a .env file with the key TEST_CHECKPOINT_SUMMARIZATION"
+            f"Test parameters could not be read from .env. Make sure to create a .env file with the key {env_var}"
         )
-    return checkpoint
+    return value
 
 
 @pytest.fixture(scope="session")

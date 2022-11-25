@@ -1,9 +1,42 @@
 import pytest
-from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, Client
+from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, AsyncClient, Client
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.detokenization import DetokenizationRequest
 
-from tests.common import client, model_name, model, checkpoint_name, sync_client
+from tests.common import (
+    client,
+    model_name,
+    model,
+    checkpoint_name,
+    sync_client,
+    async_client,
+)
+
+
+# AsyncClient
+
+
+@pytest.mark.needs_api
+async def test_can_detokenization_with_async_client(
+    async_client: AsyncClient, model_name: str
+):
+    request = DetokenizationRequest(token_ids=[2, 3, 4])
+
+    response = await async_client.detokenize(request, model=model_name)
+    assert len(response.result) > 0
+
+
+@pytest.mark.needs_api
+async def test_can_detokenization_with_async_client_with_checkpoint(
+    async_client: AsyncClient, checkpoint_name: str
+):
+    request = DetokenizationRequest(token_ids=[2, 3, 4])
+
+    response = await async_client.detokenize(request, checkpoint=checkpoint_name)
+    assert len(response.result) > 0
+
+
+# Client
 
 
 @pytest.mark.needs_api
@@ -20,6 +53,9 @@ def test_detokenize_against_checkpoint(sync_client: Client, checkpoint_name: str
     )
 
     assert response.result is not None
+
+
+# AlephAlphaClient
 
 
 @pytest.mark.needs_api
