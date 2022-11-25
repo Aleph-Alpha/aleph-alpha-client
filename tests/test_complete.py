@@ -49,6 +49,9 @@ async def test_can_complete_with_async_client_against_checkpoint(
 
 
 @pytest.mark.needs_api
+@pytest.mark.skip(
+    reason="Waiting for adapter-capable checkpoint to become available in prod"
+)
 async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
     async_client: AsyncClient,
     alt_complete_checkpoint_name: str,
@@ -65,7 +68,6 @@ async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
         adapter=alt_complete_adapter_name,
     )
     assert len(response.completions) == 1
-    print(response.completions[0].completion)
     assert response.model_version is not None
 
 
@@ -114,6 +116,29 @@ def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
 
     response = sync_client.complete(request, checkpoint=checkpoint_name)
 
+    assert len(response.completions) == 1
+    assert response.model_version is not None
+
+
+@pytest.mark.needs_api
+@pytest.mark.skip(
+    reason="Waiting for adapter-capable checkpoint to become available in prod"
+)
+async def test_can_complete_with_sync_client_against_checkpoint_and_adapter(
+    sync_client: Client,
+    alt_complete_checkpoint_name: str,
+    alt_complete_adapter_name: str,
+):
+    request = CompletionRequest(
+        prompt=Prompt.from_text("Hello, World!\n"),
+        maximum_tokens=7,
+    )
+
+    response = sync_client.complete(
+        request,
+        checkpoint=alt_complete_checkpoint_name,
+        adapter=alt_complete_adapter_name,
+    )
     assert len(response.completions) == 1
     assert response.model_version is not None
 

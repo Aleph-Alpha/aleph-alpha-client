@@ -915,11 +915,12 @@ class Client:
         request: AnyRequest,
         model: Optional[str],
         checkpoint: Optional[str],
+        adapter: Optional[str] = None,
     ) -> Dict[str, Any]:
 
         json_body = self._build_json_body(request, model)
 
-        query_params = dict(checkpoint=checkpoint) if checkpoint else {}
+        query_params = self._build_query_parameters(checkpoint, adapter)
 
         response = self.session.post(
             self.host + endpoint,
@@ -930,6 +931,14 @@ class Client:
         if not response.ok:
             _raise_for_status(response.status_code, response.text)
         return response.json()
+
+    def _build_query_parameters(
+        self, checkpoint: Optional[str], adapter: Optional[str]
+    ) -> Mapping[str, str]:
+        return {
+            **(dict(checkpoint=checkpoint) if checkpoint else {}),
+            **(dict(adapter=adapter) if adapter else {}),
+        }
 
     def _build_json_body(
         self, request: AnyRequest, model: Optional[str]
@@ -947,6 +956,7 @@ class Client:
         request: CompletionRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
+        adapter: Optional[str] = None,
     ) -> CompletionResponse:
         """Generates completions given a prompt.
 
@@ -980,12 +990,7 @@ class Client:
         >>> # complete the prompt
             result = client.complete(request, model=model_name)
         """
-        response = self._post_request(
-            "complete",
-            request,
-            model,
-            checkpoint,
-        )
+        response = self._post_request("complete", request, model, checkpoint, adapter)
         return CompletionResponse.from_json(response)
 
     def tokenize(
