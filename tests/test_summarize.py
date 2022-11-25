@@ -4,16 +4,49 @@ from aleph_alpha_client import (
     Document,
     SummarizationRequest,
 )
-from aleph_alpha_client.aleph_alpha_client import Client
+from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 
 from tests.common import (
     sync_client,
+    async_client,
     client,
     model_name,
     luminous_extended,
     summarization_checkpoint_name,
 )
 import pytest
+
+# AsyncClient
+
+
+@pytest.mark.needs_api
+async def test_can_summarize_with_async_client(async_client: AsyncClient):
+    request = SummarizationRequest(
+        document=Document.from_text("Andreas likes pizza."),
+    )
+
+    response = await async_client.summarize(request, model="luminous-extended")
+    assert response.summary is not None
+    assert response.model_version is not None
+
+
+@pytest.mark.needs_api
+async def test_can_summarize_with_async_client_against_checkpoint(
+    async_client: AsyncClient,
+    summarization_checkpoint_name: str,
+):
+    request = SummarizationRequest(
+        document=Document.from_text("Andreas likes pizza."),
+    )
+
+    response = await async_client.summarize(
+        request, checkpoint=summarization_checkpoint_name
+    )
+    assert response.summary is not None
+    assert response.model_version is not None
+
+
+# Client
 
 
 @pytest.mark.needs_api
@@ -41,6 +74,21 @@ def test_summarize_against_checkpoint(
 
     assert response.summary is not None
     assert response.model_version is not None
+
+
+@pytest.mark.needs_api
+def test_text(sync_client: Client):
+    request = SummarizationRequest(
+        document=Document.from_text("Andreas likes pizza."),
+    )
+
+    response = sync_client.summarize(request, model="luminous-extended")
+
+    assert response.summary is not None
+    assert response.model_version is not None
+
+
+# AlephAlphaClient
 
 
 @pytest.mark.needs_api
@@ -78,15 +126,3 @@ def test_summarization_with_client_against_checkpoint(
     # The response should exist in the form of a json dict
     assert response["summary"] is not None
     assert response["model_version"] is not None
-
-
-@pytest.mark.needs_api
-def test_text(sync_client: Client):
-    request = SummarizationRequest(
-        document=Document.from_text("Andreas likes pizza."),
-    )
-
-    response = sync_client.summarize(request, model="luminous-extended")
-
-    assert response.summary is not None
-    assert response.model_version is not None
