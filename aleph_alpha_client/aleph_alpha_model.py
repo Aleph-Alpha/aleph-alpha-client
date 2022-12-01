@@ -21,6 +21,37 @@ from aleph_alpha_client.summarization import SummarizationRequest, Summarization
 
 
 class AlephAlphaModel:
+    """
+    DEPRECATED: :class:`AlephAlphaModel` is deprecated and will be removed in the
+    next major release. Use :class:`Client` or :class:`AsyncClient` instead.
+
+    Construct a context object for a specific model.
+
+    Parameters:
+        client (AlephAlphaClient, required):
+            An AlephAlphaClient object that holds the API host information and user credentials.
+
+        model_name (str, optional, default None):
+            Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
+
+            Need to set exactly one of model_name and checkpoint_name.
+
+        hosting (str, optional, default None):
+            Determines in which datacenters the request may be processed.
+            You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
+
+            Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
+            own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
+
+            Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
+            Choose this option for maximal data privacy.
+
+        checkpoint_name (str, optional, default None):
+            Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
+
+            Need to set exactly one of model_name and checkpoint_name.
+    """
+
     def __init__(
         self,
         client: AlephAlphaClient,
@@ -28,33 +59,6 @@ class AlephAlphaModel:
         hosting: Optional[str] = None,
         checkpoint_name: Optional[str] = None,
     ) -> None:
-        """
-        Construct a context object for a specific model.
-
-        Parameters:
-            client (AlephAlphaClient, required):
-                An AlephAlphaClient object that holds the API host information and user credentials.
-
-            model_name (str, optional, default None):
-                Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            hosting (str, optional, default None):
-                Determines in which datacenters the request may be processed.
-                You can either set the parameter to "aleph-alpha" or omit it (defaulting to None).
-
-                Not setting this value, or setting it to None, gives us maximal flexibility in processing your request in our
-                own datacenters and on servers hosted with other providers. Choose this option for maximal availability.
-
-                Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
-                Choose this option for maximal data privacy.
-
-            checkpoint_name (str, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-        """
         warnings.warn(
             "AlephAlphaModel is deprecated and will be removed in the next major release. Use Client or AsyncClient instead.",
             category=DeprecationWarning,
