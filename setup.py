@@ -31,6 +31,8 @@ dev_require = (
     ]
 )
 
+docs_require = ["sphinx", "sphinx_rtd_theme"]
+
 setup(
     name="aleph-alpha-client",
     url="https://github.com/Aleph-Alpha/aleph-alpha-client",
@@ -46,7 +48,7 @@ setup(
         "aiohttp-retry >= 2.8.3",
     ],
     tests_require=tests_require,
-    extras_require={"test": tests_require, "types": types_require, "dev": dev_require},
+    extras_require={"test": tests_require, "types": types_require, "dev": dev_require, "docs": docs_require},
     license="MIT",
     description="python client to interact with Aleph Alpha api endpoints",
     long_description=readme(),
