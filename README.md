@@ -6,6 +6,7 @@
 
 [![License](https://img.shields.io/crates/l/aleph-alpha-client)](https://github.com/Aleph-Alpha/aleph-alpha-client/blob/main/LICENSE)
 [![PyPI version](https://badge.fury.io/py/aleph-alpha-client.svg)](https://pypi.org/project/aleph-alpha-client/)
+[![Documentation Status](https://readthedocs.org/projects/aleph-alpha-client/badge/?version=latest)](https://aleph-alpha-client.readthedocs.io/en/latest/?badge=latest)
 
 Python client for the [Aleph Alpha](https://aleph-alpha.com) API.
 
