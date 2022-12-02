@@ -63,3 +63,13 @@ To update the readme, do the following:
 3. Tag the commit with v1.2.3 to match the version in version.py
 4. Push the tag
 5. Create a Release in github from the new tag. This will trigger the "Upload Python Package" workflow.
+
+## Working on our documentation
+
+We use [Sphinx](https://www.sphinx-doc.org/en/master/index.html) for our documentation and publish it on [Read the Docs](https://aleph-alpha-client.readthedocs.io/en/latest/).
+To work on the documentation, you need to install the project editable and with the `docs` extra.
+
+```bash
+pip install -e .[docs]
+```
+
