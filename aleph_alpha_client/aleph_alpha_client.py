@@ -63,6 +63,30 @@ def _raise_for_status(status_code: int, text: str):
 
 
 class AlephAlphaClient:
+    """
+    DEPRECATED: :class:`AlephAlphaClient` is deprecated and will be removed in the
+    next major release. Use :class:`Client` or :class:`AsyncClient` instead.
+
+    Construct a context object for a specific API and user.
+
+    Parameters:
+        host (string, required):
+            The hostname of the API host.
+
+        token (string, optional, default None):
+            The API token that will be used for authentication.
+            This is optional because we also support password authentication.
+            If token is None, email and password must be set.
+
+        email (str, optional, default None):
+            Email address for authentication at the API. If token is None then email and password will be used for authentication.
+
+        password (str, optional, default None):
+            Password for authentication with the email address at the API. If token is None then email and password will be used for authentication.
+
+        request_timeout_seconds (int, optional, default 180):
+            Client timeout that will be set for HTTP requests in the `requests` library's API calls.
+    """
     def __init__(
         self,
         host="https://api.aleph-alpha.com",
@@ -71,28 +95,6 @@ class AlephAlphaClient:
         password=None,
         request_timeout_seconds=180,
     ):
-        """
-        Construct a context object for a specific API and user.
-
-        Parameters:
-            host (string, required):
-                The hostname of the API host.
-
-            token (string, optional, default None):
-                The API token that will be used for authentication.
-                This is optional because we also support password authentication.
-                If token is None, email and password must be set.
-
-            email (str, optional, default None):
-                Email address for authentication at the API. If token is None then email and password will be used for authentication.
-
-            password (str, optional, default None):
-                Password for authentication with the email address at the API. If token is None then email and password will be used for authentication.
-
-            request_timeout_seconds (int, optional, default 180):
-                Client timeout that will be set for HTTP requests in the `requests` library's API calls.
-        """
-
         warnings.warn(
             "AlephAlphaClient is deprecated and will be removed in the next major release. Use Client or AsyncClient instead.",
             category=DeprecationWarning,
