@@ -22,7 +22,7 @@ class SearchRequest(NamedTuple):
             Limits the minimal score of returned results if not None.
             If None, all results that match the `max_results` critreion are returned.
 
-    Examples
+    Examples:
         >>> request = SearchRequest(
                 query=Prompt.from_text("banana"),
                 corpus={"id0": Prompt.from_text("apple"), "id1": Prompt.from_text("banana")},

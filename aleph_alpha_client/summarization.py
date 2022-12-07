@@ -24,7 +24,7 @@ class SummarizationRequest(NamedTuple):
             Our goal is to improve your results while using our API.
             But you can always pass `disable_optimizations: true` and we will leave your document and summary untouched.
 
-    Examples
+    Examples:
         >>> docx_file = "./tests/sample.docx"
         >>> document = Document.from_docx_file(docx_file)
         >>> request = SummarizationRequest(document)

@@ -5,7 +5,7 @@ from aleph_alpha_client.image import ImagePrompt
 
 class Prompt(NamedTuple):
     """
-    Examples
+    Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
         >>> prompt = Prompt([
                 ImagePrompt.from_url(url),

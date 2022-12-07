@@ -35,7 +35,7 @@ class Document:
         """
         Load a docx file from disk and prepare it to be used as a document
 
-        Examples
+        Examples:
             >>> docx_file = "./tests/sample.docx"
             >>> document = Document.from_docx_file(docx_file)
         """

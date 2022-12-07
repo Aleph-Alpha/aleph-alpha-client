@@ -8,7 +8,7 @@ class DetokenizationRequest(NamedTuple):
         token_ids (Sequence[int])
             Ids of the tokens for which the text should be returned.
 
-    Examples
+    Examples:
         >>> DetokenizationRequest(token_ids=[1730, 387, 300, 4377, 17])
     """
 

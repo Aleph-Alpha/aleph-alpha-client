@@ -17,7 +17,7 @@ class TokenizationRequest(NamedTuple):
     Returns
         TokenizationResponse
 
-    Examples
+    Examples:
         >>> request = TokenizationRequest(prompt="This is an example.", tokens=True, token_ids=True)
     """
 
