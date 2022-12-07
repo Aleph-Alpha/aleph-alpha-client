@@ -1,10 +1,13 @@
+from http import HTTPStatus
 from random import choice
 import re
 import time
+from typing import Optional
 from aleph_alpha_client.aleph_alpha_client import (
     RETRY_STATUS_CODES,
     AlephAlphaClient,
     AsyncClient,
+    BusyError,
     Client,
     _raise_for_status,
 )
@@ -40,8 +43,11 @@ def test_retry_deprecated_sync_post(httpserver: HTTPServer):
 
 
 def test_retry_sync_post(httpserver: HTTPServer):
-    client = Client(host=httpserver.url_for(""), token="AA_TOKEN")
-    expect_retryable_error(httpserver, num_calls_expected=2)
+    num_retries = 2
+    client = Client(
+        host=httpserver.url_for(""), token="AA_TOKEN", total_retries=num_retries
+    )
+    expect_retryable_error(httpserver, num_calls_expected=num_retries)
     expect_valid_completion(httpserver)
 
     request = CompletionRequest(prompt=Prompt.from_text(""), maximum_tokens=7)
@@ -57,28 +63,65 @@ def test_retry_deprecated_sync(httpserver: HTTPServer):
 
 
 def test_retry_sync(httpserver: HTTPServer):
-    expect_retryable_error(httpserver, num_calls_expected=2)
+    num_retries = 2
+    client = Client(
+        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+    )
+    expect_retryable_error(httpserver, num_calls_expected=num_retries)
     expect_valid_version(httpserver)
 
-    client = Client(token="AA_TOKEN", host=httpserver.url_for(""))
     client.get_version()
 
 
+def test_exhaust_retries_sync(httpserver: HTTPServer):
+    num_retries = 1
+    client = Client(
+        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+    )
+    expect_retryable_error(
+        httpserver,
+        num_calls_expected=num_retries + 1,
+        status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+    )
+    with pytest.raises(BusyError):
+        client.get_version()
+
+
 async def test_retry_async(httpserver: HTTPServer):
-    expect_retryable_error(httpserver, num_calls_expected=2)
+    num_retries = 2
+    expect_retryable_error(httpserver, num_calls_expected=num_retries)
     expect_valid_version(httpserver)
 
-    async with AsyncClient(token="AA_TOKEN", host=httpserver.url_for("")) as client:
+    async with AsyncClient(
+        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+    ) as client:
         await client.get_version()
 
 
 async def test_retry_async_post(httpserver: HTTPServer):
-    expect_retryable_error(httpserver, num_calls_expected=2)
+    num_retries = 2
+    expect_retryable_error(httpserver, num_calls_expected=num_retries)
     expect_valid_completion(httpserver)
 
-    async with AsyncClient(token="AA_TOKEN", host=httpserver.url_for("")) as client:
+    async with AsyncClient(
+        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+    ) as client:
         request = CompletionRequest(prompt=Prompt.from_text(""), maximum_tokens=7)
         await client.complete(request, model="FOO")
+
+
+async def test_exhaust_retries_async(httpserver: HTTPServer):
+    num_retries = 1
+    expect_retryable_error(
+        httpserver,
+        num_calls_expected=num_retries + 1,
+        status_code=HTTPStatus.SERVICE_UNAVAILABLE,
+    )
+    with pytest.raises(BusyError):
+        async with AsyncClient(
+            token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+        ) as client:
+            await client.get_version()
 
 
 # This test should stay last in this file because it usese a sleeping handler.
@@ -97,10 +140,12 @@ def test_timeout(httpserver: HTTPServer):
         )
 
 
-def expect_retryable_error(httpserver: HTTPServer, num_calls_expected: int) -> None:
+def expect_retryable_error(
+    httpserver: HTTPServer, num_calls_expected: int, status_code: Optional[int] = None
+) -> None:
     for i in range(num_calls_expected):
         httpserver.expect_ordered_request(re.compile("^/")).respond_with_data(
-            f"error({i})", status=choice(list(RETRY_STATUS_CODES))
+            f"error({i})", status=status_code or choice(list(RETRY_STATUS_CODES))
         )
 
 
