@@ -1,7 +1,8 @@
-from multiprocessing.sharedctypes import Value
+from random import choice
+import re
 import time
-from http import HTTPStatus
 from aleph_alpha_client.aleph_alpha_client import (
+    RETRY_STATUS_CODES,
     AlephAlphaClient,
     AsyncClient,
     Client,
@@ -26,118 +27,57 @@ def test_translate_errors():
         _raise_for_status(response.status_code, response.text)
 
 
-def expect_call_respond_error(
-    httpserver: HTTPServer, path: str, num_calls_expected: int, error_code: int
-):
-    for i in range(num_calls_expected):
-        httpserver.expect_ordered_request(path).respond_with_data(
-            f"error({i})", status=error_code
-        )
-
-
 def test_retry_deprecated_sync_post(httpserver: HTTPServer):
-    path = "/complete"
-    httpserver.expect_ordered_request("/version").respond_with_data("busy1", status=200)
-    expect_call_respond_error(
-        httpserver,
-        path,
-        num_calls_expected=2,
-        error_code=HTTPStatus.SERVICE_UNAVAILABLE,
-    )
-    httpserver.expect_ordered_request(path).respond_with_json(
-        {"model_version": "1", "completions": []}
-    )
-
-    request = CompletionRequest(
-        prompt=Prompt.from_text(""),
-        maximum_tokens=7,
-    )
-
+    # required for initial GET /version in AlephAlphaClient init
+    expect_valid_version(httpserver)
     client = AlephAlphaClient(host=httpserver.url_for(""), token="AA_TOKEN")
     model = AlephAlphaModel(client, "MODEL")
+    expect_retryable_error(httpserver, num_calls_expected=2)
+    expect_valid_completion(httpserver)
+
+    request = CompletionRequest(prompt=Prompt.from_text(""), maximum_tokens=7)
     model.complete(request=request)
 
 
 def test_retry_sync_post(httpserver: HTTPServer):
-    path = "/complete"
-    expect_call_respond_error(
-        httpserver,
-        path,
-        num_calls_expected=2,
-        error_code=HTTPStatus.SERVICE_UNAVAILABLE,
-    )
-    httpserver.expect_ordered_request(path).respond_with_json(
-        {"model_version": "1", "completions": []}
-    )
-
-    request = CompletionRequest(
-        prompt=Prompt.from_text(""),
-        maximum_tokens=7,
-    )
-
     client = Client(host=httpserver.url_for(""), token="AA_TOKEN")
+    expect_retryable_error(httpserver, num_calls_expected=2)
+    expect_valid_completion(httpserver)
+
+    request = CompletionRequest(prompt=Prompt.from_text(""), maximum_tokens=7)
     client.complete(request=request, model="model")
 
 
 def test_retry_deprecated_sync(httpserver: HTTPServer):
-    path = "/version"
-    expect_call_respond_error(
-        httpserver,
-        path,
-        num_calls_expected=2,
-        error_code=HTTPStatus.SERVICE_UNAVAILABLE,
-    )
-    httpserver.expect_ordered_request(path).respond_with_data("ok", status=200)
+    expect_retryable_error(httpserver, num_calls_expected=2)
+    expect_valid_version(httpserver)
 
+    # GETs /version
     AlephAlphaClient(host=httpserver.url_for(""), token="AA_TOKEN")
 
 
 def test_retry_sync(httpserver: HTTPServer):
-    path = "/version"
-    expect_call_respond_error(
-        httpserver,
-        path,
-        num_calls_expected=2,
-        error_code=HTTPStatus.SERVICE_UNAVAILABLE,
-    )
-    httpserver.expect_ordered_request(path).respond_with_data("ok", status=200)
+    expect_retryable_error(httpserver, num_calls_expected=2)
+    expect_valid_version(httpserver)
 
     client = Client(token="AA_TOKEN", host=httpserver.url_for(""))
     client.get_version()
 
 
 async def test_retry_async(httpserver: HTTPServer):
-    path = "/version"
-    expect_call_respond_error(
-        httpserver,
-        path,
-        num_calls_expected=2,
-        error_code=HTTPStatus.SERVICE_UNAVAILABLE,
-    )
-    httpserver.expect_ordered_request(path).respond_with_data("ok", status=200)
+    expect_retryable_error(httpserver, num_calls_expected=2)
+    expect_valid_version(httpserver)
 
     async with AsyncClient(token="AA_TOKEN", host=httpserver.url_for("")) as client:
         await client.get_version()
 
 
 async def test_retry_async_post(httpserver: HTTPServer):
-    path = "/complete"
-    expect_call_respond_error(
-        httpserver,
-        path,
-        num_calls_expected=2,
-        error_code=HTTPStatus.SERVICE_UNAVAILABLE,
-    )
-    httpserver.expect_ordered_request(path).respond_with_json(
-        {"model_version": "1", "completions": []}
-    )
-
-    request = CompletionRequest(
-        prompt=Prompt.from_text(""),
-        maximum_tokens=7,
-    )
+    expect_retryable_error(httpserver, num_calls_expected=2)
+    expect_valid_completion(httpserver)
 
     async with AsyncClient(token="AA_TOKEN", host=httpserver.url_for("")) as client:
+        request = CompletionRequest(prompt=Prompt.from_text(""), maximum_tokens=7)
         await client.complete(request, model="FOO")
 
 
@@ -148,11 +88,27 @@ def test_timeout(httpserver: HTTPServer):
     def handler(foo):
         time.sleep(1)
 
-    path = "/version"
-    httpserver.expect_request(path).respond_with_handler(handler)
+    httpserver.expect_request("/version").respond_with_handler(handler)
 
     """Ensures Timeouts works. AlephAlphaClient constructor calls version endpoint."""
     with pytest.raises(requests.exceptions.ConnectionError):
         AlephAlphaClient(
             host=httpserver.url_for(""), token="AA_TOKEN", request_timeout_seconds=0.1
         )
+
+
+def expect_retryable_error(httpserver: HTTPServer, num_calls_expected: int) -> None:
+    for i in range(num_calls_expected):
+        httpserver.expect_ordered_request(re.compile("^/")).respond_with_data(
+            f"error({i})", status=choice(list(RETRY_STATUS_CODES))
+        )
+
+
+def expect_valid_completion(httpserver: HTTPServer) -> None:
+    httpserver.expect_ordered_request("/complete").respond_with_json(
+        {"model_version": "1", "completions": []}
+    )
+
+
+def expect_valid_version(httpserver: HTTPServer) -> None:
+    httpserver.expect_ordered_request("/version").respond_with_data("ok", status=200)

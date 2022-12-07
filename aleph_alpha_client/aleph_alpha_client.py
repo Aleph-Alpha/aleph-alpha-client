@@ -87,6 +87,7 @@ class AlephAlphaClient:
         request_timeout_seconds (int, optional, default 180):
             Client timeout that will be set for HTTP requests in the `requests` library's API calls.
     """
+
     def __init__(
         self,
         host="https://api.aleph-alpha.com",
