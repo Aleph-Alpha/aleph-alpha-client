@@ -30,6 +30,14 @@ def test_translate_errors():
         _raise_for_status(response.status_code, response.text)
 
 
+def test_retry_deprecated_sync(httpserver: HTTPServer):
+    expect_retryable_error(httpserver, num_calls_expected=2)
+    expect_valid_version(httpserver)
+
+    # GETs /version
+    AlephAlphaClient(host=httpserver.url_for(""), token="AA_TOKEN")
+
+
 def test_retry_deprecated_sync_post(httpserver: HTTPServer):
     # required for initial GET /version in AlephAlphaClient init
     expect_valid_version(httpserver)
@@ -42,6 +50,17 @@ def test_retry_deprecated_sync_post(httpserver: HTTPServer):
     model.complete(request=request)
 
 
+def test_retry_sync(httpserver: HTTPServer):
+    num_retries = 2
+    client = Client(
+        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+    )
+    expect_retryable_error(httpserver, num_calls_expected=num_retries)
+    expect_valid_version(httpserver)
+
+    client.get_version()
+
+
 def test_retry_sync_post(httpserver: HTTPServer):
     num_retries = 2
     client = Client(
@@ -52,25 +71,6 @@ def test_retry_sync_post(httpserver: HTTPServer):
 
     request = CompletionRequest(prompt=Prompt.from_text(""), maximum_tokens=7)
     client.complete(request=request, model="model")
-
-
-def test_retry_deprecated_sync(httpserver: HTTPServer):
-    expect_retryable_error(httpserver, num_calls_expected=2)
-    expect_valid_version(httpserver)
-
-    # GETs /version
-    AlephAlphaClient(host=httpserver.url_for(""), token="AA_TOKEN")
-
-
-def test_retry_sync(httpserver: HTTPServer):
-    num_retries = 2
-    client = Client(
-        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
-    )
-    expect_retryable_error(httpserver, num_calls_expected=num_retries)
-    expect_valid_version(httpserver)
-
-    client.get_version()
 
 
 def test_exhaust_retries_sync(httpserver: HTTPServer):
