@@ -48,11 +48,11 @@ class CompletionRequest(NamedTuple):
             Flag deciding whether presence penalty is applied multiplicatively (True) or additively (False). This changes the formula stated for presence and frequency penalty.
 
         penalty_bias (string, optional)
-            If set, all tokens in this text will be used in addition to the already penalized tokens for repetition penalties. These consist of the already generated completion tokens and the prompt tokens, if `repetition_penalties_include_prompt` is set to `true`.
+            If set, all tokens in this text will be used in addition to the already penalized tokens for repetition penalties. These consist of the already generated completion tokens and the prompt tokens, if ``repetition_penalties_include_prompt`` is set to ``true``\,
 
             *Potential use case for a chatbot-based completion:*
 
-            Instead of using `repetition_penalties_include_prompt`, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. `\nChatbot:`), and all user messages.
+            Instead of using ``repetition_penalties_include_prompt``\, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. ``\\nChatbot:``\), and all user messages.
 
             With this bias, if you turn up the repetition penalties, you can avoid having your chatbot repeat itself, but not penalize the chatbot from mirroring language provided by the user.
 
@@ -61,25 +61,25 @@ class CompletionRequest(NamedTuple):
 
             This is particularly useful for any completion that uses a structured few-shot prompt. For example, if you have a prompt such as:
 
-            ```
-            I want to travel to a location, where I can enjoy both beaches and mountains.
+            ::
 
-            - Lake Garda, Italy. This large Italian lake in the southern alps features gravel beaches and mountainside hiking trails.
-            - Mallorca, Spain. This island is famous for its sandy beaches, turquoise water and hilly landscape.
-            - Lake Tahoe, California. This famous lake in the Sierra Nevada mountains offers an amazing variety of outdoor activities.
-            -
-            ```
+                I want to travel to a location, where I can enjoy both beaches and mountains.
 
-            You could set `penalty_exceptions` to `["\n-"]` to not penalize the generation of a new list item, but still increase other penalty settings to encourage the generation of new list items without repeating itself.
+                - Lake Garda, Italy. This large Italian lake in the southern alps features gravel beaches and mountainside hiking trails.
+                - Mallorca, Spain. This island is famous for its sandy beaches, turquoise water and hilly landscape.
+                - Lake Tahoe, California. This famous lake in the Sierra Nevada mountains offers an amazing variety of outdoor activities.
+                -
 
-            By default, we will also include any `stop_sequences` you have set, since completion performance can be degraded if expected stop sequences are penalized. You can disable this behavior by settings `penalty_exceptions_include_stop_sequences` to `false`.
+            You could set ``penalty_exceptions`` to ``["\\n-"]`` to not penalize the generation of a new list item, but still increase other penalty settings to encourage the generation of new list items without repeating itself.
+
+            By default, we will also include any ``stop_sequences`` you have set, since completion performance can be degraded if expected stop sequences are penalized. You can disable this behavior by settings ``penalty_exceptions_include_stop_sequences`` to ``false``\.
 
         penalty_exceptions_include_stop_sequences (bool, optional, default true)
-            By default, we include any `stop_sequences` in `penalty_exceptions`, to not penalize the presence of stop sequences that are present in few-shot prompts to provide structure to your completions.
+            By default, we include any ``stop_sequences`` in ``penalty_exceptions``\, to not penalize the presence of stop sequences that are present in few-shot prompts to provide structure to your completions.
 
-            You can set this to `false` if you do not want this behavior.
+            You can set this to ``false`` if you do not want this behavior.
 
-            See the description of `penalty_exceptions` above for more information on what `penalty_exceptions` are used for.
+            See the description of ``penalty_exceptions`` above for more information on what ``penalty_exceptions`` are used for.
 
         best_of (int, optional, default None)
             Generates best_of completions server-side and returns the "best" (the one with the highest log probability per token). Results cannot be streamed.
@@ -107,7 +107,7 @@ class CompletionRequest(NamedTuple):
 
             Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
 
-    Examples
+    Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
         >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
     """

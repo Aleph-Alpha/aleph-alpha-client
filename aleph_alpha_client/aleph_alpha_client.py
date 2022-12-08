@@ -64,8 +64,8 @@ def _raise_for_status(status_code: int, text: str):
 
 class AlephAlphaClient:
     """
-    DEPRECATED: :class:`AlephAlphaClient` is deprecated and will be removed in the
-    next major release. Use :class:`Client` or :class:`AsyncClient` instead.
+    DEPRECATED: :class:`~aleph_alpha_client.AlephAlphaClient` is deprecated and will be removed in the
+    next major release. Use :class:`~aleph_alpha_client.Client` or :class:`~aleph_alpha_client.AsyncClient` instead.
 
     Construct a context object for a specific API and user.
 
@@ -270,8 +270,7 @@ class AlephAlphaClient:
         disable_optimizations: Optional[bool] = False,
         checkpoint: Optional[str] = None,
     ):
-        """
-        Generates samples from a prompt.
+        """Generates samples from a prompt.
 
         Parameters:
             model (str, required):
@@ -323,7 +322,7 @@ class AlephAlphaClient:
 
                 *Potential use case for a chatbot-based completion:*
 
-                Instead of using `repetition_penalties_include_prompt`, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. `\\nChatbot:`), and all user messages.
+                Instead of using ``repetition_penalties_include_prompt``\, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. ``\\nChatbot:``\), and all user messages.
 
                 With this bias, if you turn up the repetition penalties, you can avoid having your chatbot repeat itself, but not penalize the chatbot from mirroring language provided by the user.
 
@@ -332,25 +331,25 @@ class AlephAlphaClient:
 
                 This is particularly useful for any completion that uses a structured few-shot prompt. For example, if you have a prompt such as:
 
-                ```
-                I want to travel to a location, where I can enjoy both beaches and mountains.
+                ::
 
-                - Lake Garda, Italy. This large Italian lake in the southern alps features gravel beaches and mountainside hiking trails.
-                - Mallorca, Spain. This island is famous for its sandy beaches, turquoise water and hilly landscape.
-                - Lake Tahoe, California. This famous lake in the Sierra Nevada mountains offers an amazing variety of outdoor activities.
-                -
-                ```
+                    I want to travel to a location, where I can enjoy both beaches and mountains.
 
-                You could set `penalty_exceptions` to `["\\n-"]` to not penalize the generation of a new list item, but still increase other penalty settings to encourage the generation of new list items without repeating itself.
+                    - Lake Garda, Italy. This large Italian lake in the southern alps features gravel beaches and mountainside hiking trails.
+                    - Mallorca, Spain. This island is famous for its sandy beaches, turquoise water and hilly landscape.
+                    - Lake Tahoe, California. This famous lake in the Sierra Nevada mountains offers an amazing variety of outdoor activities.
+                    -
 
-                By default, we will also include any `stop_sequences` you have set, since completion performance can be degraded if expected stop sequences are penalized. You can disable this behavior by settings `penalty_exceptions_include_stop_sequences` to `false`.
+                You could set ``penalty_exceptions`` to ``["\\n-"]`` to not penalize the generation of a new list item, but still increase other penalty settings to encourage the generation of new list items without repeating itself.
+
+                By default, we will also include any ``stop_sequences`` you have set, since completion performance can be degraded if expected stop sequences are penalized. You can disable this behavior by settings ``penalty_exceptions_include_stop_sequences`` to ``false``\.
 
             penalty_exceptions_include_stop_sequences (bool, optional, default true)
-                By default, we include any `stop_sequences` in `penalty_exceptions`, to not penalize the presence of stop sequences that are present in few-shot prompts to provide structure to your completions.
+                By default, we include any ``stop_sequences`` in ``penalty_exceptions``\, to not penalize the presence of stop sequences that are present in few-shot prompts to provide structure to your completions.
 
-                You can set this to `false` if you do not want this behavior.
+                You can set this to ``false`` if you do not want this behavior.
 
-                See the description of `penalty_exceptions` above for more information on what `penalty_exceptions` are used for.
+                See the description of ``penalty_exceptions`` above for more information on what ``penalty_exceptions`` are used for.
 
             best_of (int, optional, default None)
                 Generates best_of completions server-side and returns the "best" (the one with the highest log probability per token). Results cannot be streamed.
@@ -453,17 +452,19 @@ class AlephAlphaClient:
 
             layers (List[int], required):
                A list of layer indices from which to return embeddings.
-                    * Index 0 corresponds to the word embeddings used as input to the first transformer layer
-                    * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
-                    * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
+
+               * Index 0 corresponds to the word embeddings used as input to the first transformer layer
+               * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
+               * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
 
             pooling (List[str])
                 Pooling operation to use.
                 Pooling operations include:
-                    * mean: aggregate token embeddings across the sequence dimension using an average
-                    * max: aggregate token embeddings across the sequence dimension using a maximum
-                    * last_token: just use the last token
-                    * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
+
+                * mean: aggregate token embeddings across the sequence dimension using an average
+                * max: aggregate token embeddings across the sequence dimension using a maximum
+                * last_token: just use the last token
+                * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
 
             hosting (str, optional, default None):
                 Determines in which datacenters the request may be processed.
@@ -842,11 +843,11 @@ AnyRequest = Union[
 class Client:
     """
     Example usage:
-    >>> request = CompletionRequest(
-            prompt=Prompt.from_text(f"Request"), maximum_tokens=64
-        )
-    >>> client = Client(token=os.environ["AA_TOKEN"])
-    >>> response: CompletionResponse = client.complete(request, "luminous-base")
+        >>> request = CompletionRequest(
+                prompt=Prompt.from_text(f"Request"), maximum_tokens=64
+            )
+        >>> client = Client(token=os.environ["AA_TOKEN"])
+        >>> response: CompletionResponse = client.complete(request, "luminous-base")
     """
 
     def __init__(
@@ -986,19 +987,19 @@ class Client:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> # create a prompt
-            prompt = Prompt("An apple a day, ")
-
-        >>> # create a completion request
-            request = CompletionRequest(
-                prompt=prompt,
-                maximum_tokens=32,
-                stop_sequences=["###","\\n"],
-                temperature=0.12
-            )
-
-        >>> # complete the prompt
-            result = client.complete(request, model=model_name)
+            >>> # create a prompt
+            >>> prompt = Prompt("An apple a day, ")
+            >>>
+            >>> # create a completion request
+            >>> request = CompletionRequest(
+                    prompt=prompt,
+                    maximum_tokens=32,
+                    stop_sequences=["###","\\n"],
+                    temperature=0.12
+                )
+            >>>
+            >>> # complete the prompt
+            >>> result = client.complete(request, model=model_name)
         """
         response = self._post_request("complete", request, model, checkpoint, adapter)
         return CompletionResponse.from_json(response)
@@ -1027,11 +1028,10 @@ class Client:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = TokenizationRequest(
-                prompt="hello", token_ids=True, tokens=True
-            )
-
-        >>> response = client.tokenize(request, model=model_name)
+            >>> request = TokenizationRequest(
+                    prompt="hello", token_ids=True, tokens=True
+                )
+            >>> response = client.tokenize(request, model=model_name)
         """
         response = self._post_request(
             "tokenize",
@@ -1065,8 +1065,8 @@ class Client:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = DetokenizationRequest(token_ids=[2, 3, 4])
-        >>> response = client.detokenize(request, checkpoint=checkpoint_name)
+            >>> request = DetokenizationRequest(token_ids=[2, 3, 4])
+            >>> response = client.detokenize(request, checkpoint=checkpoint_name)
         """
         response = self._post_request(
             "detokenize",
@@ -1100,10 +1100,10 @@ class Client:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = EmbeddingRequest(prompt=Prompt.from_text(
-                "This is an example."), layers=[-1], pooling=["mean"]
-            )
-        >>> result = client.embed(request, model=model_name)
+            >>> request = EmbeddingRequest(prompt=Prompt.from_text(
+                    "This is an example."), layers=[-1], pooling=["mean"]
+                )
+            >>> result = client.embed(request, model=model_name)
         """
         response = self._post_request(
             "embed",
@@ -1138,32 +1138,32 @@ class Client:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> # function for symmetric embedding
-            def embed_symmetric(text: str):
-                # Create an embeddingrequest with the type set to symmetric
-                request = SemanticEmbeddingRequest(prompt=Prompt.from_text(
-                    text), representation=SemanticRepresentation.Symmetric)
-                # create the embedding
-                result = client.semantic_embed(request, model=model_name)
-                return result.embedding
-
-        >>> # function to calculate similarity
-            def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
-                "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
-                sumxx, sumxy, sumyy = 0, 0, 0
-                for i in range(len(v1)):
-                    x = v1[i]; y = v2[i]
-                    sumxx += x*x
-                    sumyy += y*y
-                    sumxy += x*y
-                return sumxy/math.sqrt(sumxx*sumyy)
-
-        >>> # define the texts
-            text_a = "The sun is shining"
-            text_b = "Il sole splende"
-
-        >>> # show the similarity
-            print(cosine_similarity(embed_symmetric(text_a), embed_symmetric(text_b)))
+            >>> # function for symmetric embedding
+            >>> def embed_symmetric(text: str):
+                    # Create an embeddingrequest with the type set to symmetric
+                    request = SemanticEmbeddingRequest(prompt=Prompt.from_text(
+                        text), representation=SemanticRepresentation.Symmetric)
+                    # create the embedding
+                    result = client.semantic_embed(request, model=model_name)
+                    return result.embedding
+            >>>
+            >>> # function to calculate similarity
+            >>> def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
+                    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+                    sumxx, sumxy, sumyy = 0, 0, 0
+                    for i in range(len(v1)):
+                        x = v1[i]; y = v2[i]
+                        sumxx += x*x
+                        sumyy += y*y
+                        sumxy += x*y
+                    return sumxy/math.sqrt(sumxx*sumyy)
+            >>>
+            >>> # define the texts
+            >>> text_a = "The sun is shining"
+            >>> text_b = "Il sole splende"
+            >>>
+            >>> # show the similarity
+            >>> print(cosine_similarity(embed_symmetric(text_a), embed_symmetric(text_b)))
         """
         response = self._post_request(
             "semantic_embed",
@@ -1197,11 +1197,10 @@ class Client:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = EvaluationRequest(
-                prompt=Prompt.from_text("hello"), completion_expected="world"
-            )
-
-        >>> response = client.evaluate(request, model=model_name)
+            >>> request = EvaluationRequest(
+                    prompt=Prompt.from_text("hello"), completion_expected="world"
+                )
+            >>> response = client.evaluate(request, model=model_name)
         """
         response = self._post_request(
             "evaluate",
@@ -1235,12 +1234,11 @@ class Client:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = QaRequest(
-                query="Who likes pizza?",
-                documents=[Document.from_text("Andreas likes pizza.")],
-            )
-
-        >>> response = client.qa(request, model="luminous-extended")
+            >>> request = QaRequest(
+                    query="Who likes pizza?",
+                    documents=[Document.from_text("Andreas likes pizza.")],
+                )
+            >>> response = client.qa(request, model="luminous-extended")
         """
         response = self._post_request(
             "qa",
@@ -1274,11 +1272,10 @@ class Client:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = SummarizationRequest(
-                document=Document.from_text("Andreas likes pizza."),
-            )
-
-        >>> response = client.summarize(request, model="luminous-extended")
+            >>> request = SummarizationRequest(
+                    document=Document.from_text("Andreas likes pizza."),
+                )
+            >>> response = client.summarize(request, model="luminous-extended")
         """
         response = self._post_request(
             "summarize",
@@ -1316,9 +1313,9 @@ class Client:
 class AsyncClient:
     """
     Example usage:
-    >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
-        async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
-            response: CompletionResponse = await client.complete(request, "luminous-base")
+        >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
+        >>> async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
+                response: CompletionResponse = await client.complete(request, "luminous-base")
     """
 
     def __init__(
@@ -1483,19 +1480,19 @@ class AsyncClient:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> # create a prompt
-            prompt = Prompt("An apple a day, ")
-
-        >>> # create a completion request
-            request = CompletionRequest(
-                prompt=prompt,
-                maximum_tokens=32,
-                stop_sequences=["###","\\n"],
-                temperature=0.12
-            )
-
-        >>> # complete the prompt
-            result = await client.complete(request, model=model_name)
+            >>> # create a prompt
+            >>> prompt = Prompt("An apple a day, ")
+            >>>
+            >>> # create a completion request
+            >>> request = CompletionRequest(
+                    prompt=prompt,
+                    maximum_tokens=32,
+                    stop_sequences=["###","\\n"],
+                    temperature=0.12
+                )
+            >>>
+            >>> # complete the prompt
+            >>> result = await client.complete(request, model=model_name)
         """
         response = await self._post_request(
             "complete",
@@ -1530,8 +1527,8 @@ class AsyncClient:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = TokenizationRequest(prompt="hello", token_ids=True, tokens=True)
-        >>> response = await client.tokenize(request, model=model_name)
+            >>> request = TokenizationRequest(prompt="hello", token_ids=True, tokens=True)
+            >>> response = await client.tokenize(request, model=model_name)
         """
         response = await self._post_request(
             "tokenize",
@@ -1565,8 +1562,8 @@ class AsyncClient:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = DetokenizationRequest(token_ids=[2, 3, 4])
-        >>> response = await client.detokenize(request, checkpoint=checkpoint_name)
+            >>> request = DetokenizationRequest(token_ids=[2, 3, 4])
+            >>> response = await client.detokenize(request, checkpoint=checkpoint_name)
         """
         response = await self._post_request(
             "detokenize",
@@ -1600,8 +1597,8 @@ class AsyncClient:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = EmbeddingRequest(prompt=Prompt.from_text("This is an example."), layers=[-1], pooling=["mean"])
-        >>> result = await client.embed(request, model=model_name)
+            >>> request = EmbeddingRequest(prompt=Prompt.from_text("This is an example."), layers=[-1], pooling=["mean"])
+            >>> result = await client.embed(request, model=model_name)
         """
         response = await self._post_request(
             "embed",
@@ -1636,31 +1633,31 @@ class AsyncClient:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> # function for symmetric embedding
-            async def embed_symmetric(text: str):
-                # Create an embeddingrequest with the type set to symmetric
-                request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric)
-                # create the embedding
-                result = await client.semantic_embed(request, model=model_name)
-                return result.embedding
-
-        >>> # function to calculate similarity
-            def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
-                "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
-                sumxx, sumxy, sumyy = 0, 0, 0
-                for i in range(len(v1)):
-                    x = v1[i]; y = v2[i]
-                    sumxx += x*x
-                    sumyy += y*y
-                    sumxy += x*y
-                return sumxy/math.sqrt(sumxx*sumyy)
-
-        >>> # define the texts
-            text_a = "The sun is shining"
-            text_b = "Il sole splende"
-
-        >>> # show the similarity
-            print(cosine_similarity(await embed_symmetric(text_a), await embed_symmetric(text_b)))
+            >>> # function for symmetric embedding
+            >>> async def embed_symmetric(text: str):
+                    # Create an embeddingrequest with the type set to symmetric
+                    request = SemanticEmbeddingRequest(prompt=Prompt.from_text(text), representation=SemanticRepresentation.Symmetric)
+                    # create the embedding
+                    result = await client.semantic_embed(request, model=model_name)
+                    return result.embedding
+            >>>
+            >>> # function to calculate similarity
+            >>> def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
+                    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+                    sumxx, sumxy, sumyy = 0, 0, 0
+                    for i in range(len(v1)):
+                        x = v1[i]; y = v2[i]
+                        sumxx += x*x
+                        sumyy += y*y
+                        sumxy += x*y
+                    return sumxy/math.sqrt(sumxx*sumyy)
+            >>>
+            >>> # define the texts
+            >>> text_a = "The sun is shining"
+            >>> text_b = "Il sole splende"
+            >>>
+            >>> # show the similarity
+            >>> print(cosine_similarity(await embed_symmetric(text_a), await embed_symmetric(text_b)))
         """
         response = await self._post_request(
             "semantic_embed",
@@ -1694,11 +1691,10 @@ class AsyncClient:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = EvaluationRequest(
-                prompt=Prompt.from_text("hello"), completion_expected="world"
-            )
-
-        >>> response = await client.evaluate(request, model=model_name)
+            >>> request = EvaluationRequest(
+                    prompt=Prompt.from_text("hello"), completion_expected="world"
+                )
+            >>> response = await client.evaluate(request, model=model_name)
         """
         response = await self._post_request(
             "evaluate",
@@ -1732,12 +1728,11 @@ class AsyncClient:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = QaRequest(
-                query="Who likes pizza?",
-                documents=[Document.from_text("Andreas likes pizza.")],
-            )
-
-        >>> response = await client.qa(request, model="luminous-extended")
+            >>> request = QaRequest(
+                    query="Who likes pizza?",
+                    documents=[Document.from_text("Andreas likes pizza.")],
+                )
+            >>> response = await client.qa(request, model="luminous-extended")
         """
         response = await self._post_request(
             "qa",
@@ -1771,11 +1766,10 @@ class AsyncClient:
                 Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
-        >>> request = SummarizationRequest(
-                document=Document.from_text("Andreas likes pizza."),
-            )
-
-        >>> response = await client.summarize(request, model="luminous-extended")
+            >>> request = SummarizationRequest(
+                    document=Document.from_text("Andreas likes pizza."),
+                )
+            >>> response = await client.summarize(request, model="luminous-extended")
         """
         response = await self._post_request(
             "summarize",

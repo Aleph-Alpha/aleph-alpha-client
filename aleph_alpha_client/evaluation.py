@@ -22,7 +22,7 @@ class EvaluationRequest(NamedTuple):
         completion_expected (str, required):
             The ground truth completion expected to be produced given the prompt.
 
-    Examples
+    Examples:
         >>> request = EvaluationRequest(prompt=Prompt.from_text("The api works"), completion_expected=" well")
     """
 

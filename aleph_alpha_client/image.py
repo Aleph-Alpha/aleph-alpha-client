@@ -19,8 +19,8 @@ class ImagePrompt:
     An image send as part of a prompt to a model. The image is represented as
     base64.
 
-    Examples
-        # You need to choose a model with multimodal capabilities for this example.
+    Examples:
+        >>> # You need to choose a model with multimodal capabilities for this example.
         >>> url = "https://cdn-images-1.medium.com/max/1200/1*HunNdlTmoPj8EKpl-jqvBA.png"
         >>> image = ImagePrompt.from_url(url)
     """
