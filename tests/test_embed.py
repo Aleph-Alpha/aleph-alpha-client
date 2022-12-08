@@ -21,7 +21,7 @@ from tests.common import (
 # AsyncClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_embed_with_async_client(async_client: AsyncClient, model_name: str):
     request = request = EmbeddingRequest(
         prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
@@ -35,7 +35,7 @@ async def test_can_embed_with_async_client(async_client: AsyncClient, model_name
     assert response.tokens is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_embed_with_async_client_against_checkpoint(
     async_client: AsyncClient, checkpoint_name: str
 ):
@@ -51,7 +51,7 @@ async def test_can_embed_with_async_client_against_checkpoint(
     assert response.tokens is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_semantic_embed_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -67,7 +67,7 @@ async def test_can_semantic_embed_with_async_client(
     assert len(response.embedding) == 128
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_semantic_embed_with_async_client_against_checkpoint(
     async_client: AsyncClient, checkpoint_name: str
 ):
@@ -86,7 +86,7 @@ async def test_can_semantic_embed_with_async_client_against_checkpoint(
 # Client
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embed(sync_client: Client, model_name: str):
 
     request = EmbeddingRequest(
@@ -102,7 +102,7 @@ def test_embed(sync_client: Client, model_name: str):
     assert result.tokens is None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embed_against_checkpoint(sync_client: Client, checkpoint_name: str):
 
     request = EmbeddingRequest(
@@ -118,7 +118,7 @@ def test_embed_against_checkpoint(sync_client: Client, checkpoint_name: str):
     assert result.tokens is None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embedding_of_one_token_aggregates_identically(
     sync_client: Client, model_name: str
 ):
@@ -139,7 +139,7 @@ def test_embedding_of_one_token_aggregates_identically(
     )
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embed_with_tokens(sync_client: Client, model_name: str):
     request = EmbeddingRequest(
         prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
@@ -154,7 +154,7 @@ def test_embed_with_tokens(sync_client: Client, model_name: str):
     assert result.tokens is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embed_semantic(sync_client: Client):
 
     request = SemanticEmbeddingRequest(
@@ -170,7 +170,7 @@ def test_embed_semantic(sync_client: Client):
     assert len(result.embedding) == 128
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embed_semantic_against_checkpoint(sync_client: Client, checkpoint_name: str):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
@@ -188,7 +188,7 @@ def test_embed_semantic_against_checkpoint(sync_client: Client, checkpoint_name:
 # AlephAlphaClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embed_with_client(client: AlephAlphaClient, model_name: str):
     layers = [0, -1]
     pooling = ["mean", "max"]
@@ -202,7 +202,7 @@ def test_embed_with_client(client: AlephAlphaClient, model_name: str):
     assert result["tokens"] is None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embed_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
@@ -224,7 +224,7 @@ def test_embed_with_client_against_checkpoint(
     assert result["tokens"] is None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_embed_semantic_with_client(client: AlephAlphaClient):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
@@ -242,7 +242,7 @@ def test_embed_semantic_with_client(client: AlephAlphaClient):
     assert len(result["embedding"]) == 128
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_semantic_embed_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):

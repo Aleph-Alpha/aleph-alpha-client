@@ -20,7 +20,7 @@ from tests.common import (
 # AsyncClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_complete_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -34,7 +34,7 @@ async def test_can_complete_with_async_client(
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_complete_with_async_client_against_checkpoint(
     async_client: AsyncClient, checkpoint_name: str
 ):
@@ -48,8 +48,6 @@ async def test_can_complete_with_async_client_against_checkpoint(
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
-@pytest.mark.skip(reason="Not available in test")
 async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
     async_client: AsyncClient,
     alt_complete_checkpoint_name: str,
@@ -72,7 +70,7 @@ async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
 # Client
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_complete(sync_client: Client, model_name: str):
     request = CompletionRequest(
         prompt=Prompt.from_text(""),
@@ -88,7 +86,7 @@ def test_complete(sync_client: Client, model_name: str):
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_complete_with_token_ids(sync_client: Client, model_name: str):
     request = CompletionRequest(
         prompt=Prompt.from_tokens([49222, 2998]),  # Hello world
@@ -101,7 +99,7 @@ def test_complete_with_token_ids(sync_client: Client, model_name: str):
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
 
     request = CompletionRequest(
@@ -118,8 +116,6 @@ def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
-@pytest.mark.skip(reason="Not available in test")
 async def test_can_complete_with_sync_client_against_checkpoint_and_adapter(
     sync_client: Client,
     alt_complete_checkpoint_name: str,
@@ -142,7 +138,7 @@ async def test_can_complete_with_sync_client_against_checkpoint_and_adapter(
 # AlephAlphaClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_complete_with_deprecated_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
@@ -162,7 +158,7 @@ def test_complete_with_deprecated_client_against_checkpoint(
 # AlephAlphaModel
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_deprecated_complete(model: AlephAlphaModel):
     request = CompletionRequest(
         prompt=Prompt.from_text(""),

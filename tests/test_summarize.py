@@ -19,7 +19,7 @@ import pytest
 # AsyncClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_summarize_with_async_client(async_client: AsyncClient):
     request = SummarizationRequest(
         document=Document.from_text("Andreas likes pizza."),
@@ -30,7 +30,7 @@ async def test_can_summarize_with_async_client(async_client: AsyncClient):
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_summarize_with_async_client_against_checkpoint(
     async_client: AsyncClient,
     summarization_checkpoint_name: str,
@@ -49,7 +49,7 @@ async def test_can_summarize_with_async_client_against_checkpoint(
 # Client
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_summarize(sync_client: Client):
     # when posting a Summarization request
     request = SummarizationRequest(
@@ -63,7 +63,7 @@ def test_summarize(sync_client: Client):
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_summarize_against_checkpoint(
     sync_client: Client, summarization_checkpoint_name: str
 ):
@@ -76,7 +76,7 @@ def test_summarize_against_checkpoint(
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_text(sync_client: Client):
     request = SummarizationRequest(
         document=Document.from_text("Andreas likes pizza."),
@@ -91,7 +91,7 @@ def test_text(sync_client: Client):
 # AlephAlphaClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_summarization_with_client(client: AlephAlphaClient):
     model_name = "luminous-extended"
     # given a client
@@ -110,7 +110,7 @@ def test_summarization_with_client(client: AlephAlphaClient):
     assert response["model_version"] is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_summarization_with_client_against_checkpoint(
     client: AlephAlphaClient, summarization_checkpoint_name
 ):

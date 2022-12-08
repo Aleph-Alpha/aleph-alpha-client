@@ -17,7 +17,7 @@ from tests.common import (
 # AsynClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_explain_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -31,7 +31,7 @@ async def test_can_explain_with_async_client(
     assert response.result
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_explain_with_async_client_against_checkpoint(
     async_client: AsyncClient,
     checkpoint_name: str,
@@ -49,7 +49,7 @@ async def test_can_explain_with_async_client_against_checkpoint(
 # Client
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_explanation(sync_client: Client, model_name: str):
     request = ExplanationRequest(
         prompt=Prompt.from_text("An apple a day"),
@@ -62,7 +62,7 @@ def test_explanation(sync_client: Client, model_name: str):
     assert len(explanation.result) > 0
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_explanation_against_checkpoint(sync_client: Client, checkpoint_name: str):
     request = ExplanationRequest(
         prompt=Prompt.from_text("An apple a day"),
@@ -77,7 +77,7 @@ def test_explanation_against_checkpoint(sync_client: Client, checkpoint_name: st
 # AlephAlphaClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_explanation_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):

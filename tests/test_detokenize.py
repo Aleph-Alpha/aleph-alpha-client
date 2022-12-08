@@ -16,7 +16,7 @@ from tests.common import (
 # AsyncClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_detokenization_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -26,7 +26,7 @@ async def test_can_detokenization_with_async_client(
     assert len(response.result) > 0
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_detokenization_with_async_client_with_checkpoint(
     async_client: AsyncClient, checkpoint_name: str
 ):
@@ -39,14 +39,14 @@ async def test_can_detokenization_with_async_client_with_checkpoint(
 # Client
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_detokenize(sync_client: Client, model_name: str):
     response = sync_client.detokenize(DetokenizationRequest([4711]), model=model_name)
 
     assert response.result is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_detokenize_against_checkpoint(sync_client: Client, checkpoint_name: str):
     response = sync_client.detokenize(
         DetokenizationRequest([4711]), checkpoint=checkpoint_name
@@ -58,14 +58,14 @@ def test_detokenize_against_checkpoint(sync_client: Client, checkpoint_name: str
 # AlephAlphaClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_detokenize_with_client(client: AlephAlphaClient, model_name: str):
     response = client.detokenize(model_name, token_ids=[4711, 42])
 
     assert response["result"] is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_detokenize_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):

@@ -19,7 +19,7 @@ from tests.common import (
 # AsyncClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_evaluate_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -32,7 +32,7 @@ async def test_can_evaluate_with_async_client(
     assert response.result is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_evaluate_with_async_client_against_checkpoint(
     async_client: AsyncClient, checkpoint_name: str
 ):
@@ -48,7 +48,7 @@ async def test_can_evaluate_with_async_client_against_checkpoint(
 # Client
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_evaluate(sync_client: Client, model_name: str):
 
     request = EvaluationRequest(
@@ -61,7 +61,7 @@ def test_evaluate(sync_client: Client, model_name: str):
     assert result.result is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_evaluate_against_checkpoint(sync_client: Client, checkpoint_name: str):
     request = EvaluationRequest(
         prompt=Prompt.from_text("hello"), completion_expected="world"
@@ -76,7 +76,7 @@ def test_evaluate_against_checkpoint(sync_client: Client, checkpoint_name: str):
 # AlephAlphaClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_evaluate_with_client(client: AlephAlphaClient, model_name: str):
     result = client.evaluate(model_name, prompt="hello", completion_expected="world")
 
@@ -84,7 +84,7 @@ def test_evaluate_with_client(client: AlephAlphaClient, model_name: str):
     assert result["result"] is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_evaluate_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):

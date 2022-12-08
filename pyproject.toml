@@ -7,6 +7,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 markers = [
-    "needs_api: Marks a test that needs the actual AlephAlpha API endpoint"
+    "system_test: Marks a test that runs as a system test of AlephAlpha API"
 ]
 asyncio_mode = "auto"

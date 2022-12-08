@@ -4,7 +4,7 @@ from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt, Documen
 from tests.common import client, model_name
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def validate_completion_task_output(task, output):
 
     assert isinstance(output, dict), "completion result is a dict"
@@ -70,7 +70,7 @@ def validate_completion_task_output(task, output):
                 ), "log_prob in log prob is not a float; got " + str(type(log_prob))
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def validate_evaluation_task_output(task, output):
     assert isinstance(output, dict), "result is a dict, got " + str(type(output))
 
@@ -115,7 +115,7 @@ def validate_evaluation_task_output(task, output):
         )
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def validate_embedding_task_output(task, output):
     if not "pooling" in task:
         task["pooling"] = None
@@ -164,7 +164,7 @@ def validate_embedding_task_output(task, output):
                     ), "pooling, a value of a pooled embedding is a float"
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def validate_qa_task_output(task, output):
 
     assert isinstance(output, dict), "qa result is a dict"
@@ -243,7 +243,7 @@ def validate_qa_task_output(task, output):
         ),
     ],
 )
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_task(client, model_name, endpoint, task_definition):
     if "model" in task_definition:
         if task_definition["model"] == "test_model":
@@ -269,7 +269,7 @@ def test_task(client, model_name, endpoint, task_definition):
         validate_qa_task_output(task_definition, result)
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_should_answer_question_about_image(client, model_name):
 
     # Only execute this test if the model has multimodal support
@@ -291,7 +291,7 @@ def test_should_answer_question_about_image(client, model_name):
     assert "Blockbuster" in result["completions"][0]["completion"]
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_should_entertain_image_cropping_params(client, model_name):
     # Only execute this test if the model has multimodal support
     models = client.available_models()
@@ -311,7 +311,7 @@ def test_should_entertain_image_cropping_params(client, model_name):
     assert "dog" in result["completions"][0]["completion"].lower()
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_should_answer_query_about_docx_document(client, model_name):
 
     # Only execute this test if the model has qa support
@@ -334,7 +334,7 @@ def test_should_answer_query_about_docx_document(client, model_name):
     assert "Markus" in result["answers"][0]["answer"]
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_should_answer_query_about_docx_bytes_document(client, model_name):
 
     # Only execute this test if the model has qa & multimodal support
@@ -362,7 +362,7 @@ def test_should_answer_query_about_docx_bytes_document(client, model_name):
         assert "Markus" in result["answers"][0]["answer"]
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_should_answer_query_about_prompt_document(client, model_name):
 
     # Only execute this test if the model has qa support

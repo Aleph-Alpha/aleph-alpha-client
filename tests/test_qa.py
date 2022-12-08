@@ -15,7 +15,7 @@ from tests.common import (
 # AsyncClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_qa_with_async_client(async_client: AsyncClient):
     request = QaRequest(
         query="Who likes pizza?",
@@ -28,7 +28,7 @@ async def test_can_qa_with_async_client(async_client: AsyncClient):
     assert response.answers[0].score > 0.0
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_qa_with_async_client_against_checkpoint(
     async_client: AsyncClient, qa_checkpoint_name: str
 ):
@@ -46,7 +46,7 @@ async def test_can_qa_with_async_client_against_checkpoint(
 # Client
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_qa(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -61,7 +61,7 @@ def test_qa(sync_client: Client):
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_qa_against_checkpoint(sync_client: Client, qa_checkpoint_name: str):
     request = QaRequest(
         query="Who likes pizza?",
@@ -75,7 +75,7 @@ def test_qa_against_checkpoint(sync_client: Client, qa_checkpoint_name: str):
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_qa_no_answer_found(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -90,7 +90,7 @@ def test_qa_no_answer_found(sync_client: Client):
     assert response.model_version is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_text(sync_client: Client):
     # when posting an illegal request
     request = QaRequest(
@@ -110,7 +110,7 @@ def test_text(sync_client: Client):
 # AlephAlphaClient
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_qa_with_client(client: AlephAlphaClient):
     model_name = "luminous-extended"
     # given a client
@@ -128,7 +128,7 @@ def test_qa_with_client(client: AlephAlphaClient):
     assert response["model_version"] is not None
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 def test_qa_with_client_against_checkpoint(
     client: AlephAlphaClient, qa_checkpoint_name: str
 ):

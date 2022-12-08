@@ -24,7 +24,7 @@ from .common import (
 )
 
 
-@pytest.mark.needs_api
+@pytest.mark.system_test
 async def test_can_use_async_client_without_context_manager(model_name: str):
     request = CompletionRequest(
         prompt=Prompt.from_text(""),
