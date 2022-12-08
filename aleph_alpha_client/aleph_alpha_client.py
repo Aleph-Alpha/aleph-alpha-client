@@ -109,8 +109,8 @@ class AlephAlphaClient:
         self.request_timeout_seconds = request_timeout_seconds
 
         retry_strategy = Retry(
-            total=3,
-            backoff_factor=0.1,
+            total=8,
+            backoff_factor=0.25,
             status_forcelist=RETRY_STATUS_CODES,
             allowed_methods=["POST", "GET"],
             raise_on_status=False,
