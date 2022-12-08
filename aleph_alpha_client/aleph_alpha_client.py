@@ -87,6 +87,7 @@ class AlephAlphaClient:
         request_timeout_seconds (int, optional, default 180):
             Client timeout that will be set for HTTP requests in the `requests` library's API calls.
     """
+
     def __init__(
         self,
         host="https://api.aleph-alpha.com",
@@ -108,8 +109,8 @@ class AlephAlphaClient:
         self.request_timeout_seconds = request_timeout_seconds
 
         retry_strategy = Retry(
-            total=3,
-            backoff_factor=0.1,
+            total=8,
+            backoff_factor=0.25,
             status_forcelist=RETRY_STATUS_CODES,
             allowed_methods=["POST", "GET"],
             raise_on_status=False,
@@ -854,6 +855,7 @@ class Client:
         host: str = "https://api.aleph-alpha.com",
         hosting: Optional[str] = None,
         request_timeout_seconds: int = 180,
+        total_retries: int = 8,
     ) -> None:
         """
         Construct a client for synchronous requests given a user token
@@ -877,6 +879,12 @@ class Client:
 
             request_timeout_seconds (int, optional, default 180):
                 Client timeout that will be set for HTTP requests in the `requests` library's API calls.
+
+            total_retries(int, optional, default 8)
+                The number of retries made in case requests fail with certain retryable status codes. If the last
+                retry fails a corresponding exception is raised. Note, that between retries an exponential backoff
+                is applied, starting with 0.5 s after the first retry and doubling for each retry made. So with the
+                default setting of 8 retries a total wait time of 63.5 s is added between the retries.
         """
         if host[-1] != "/":
             host += "/"
@@ -886,8 +894,8 @@ class Client:
         self.token = token
 
         retry_strategy = Retry(
-            total=3,
-            backoff_factor=0.1,
+            total=total_retries,
+            backoff_factor=0.25,
             status_forcelist=RETRY_STATUS_CODES,
             allowed_methods=["POST", "GET"],
             raise_on_status=False,
@@ -1319,6 +1327,7 @@ class AsyncClient:
         host: str = "https://api.aleph-alpha.com",
         hosting: Optional[str] = None,
         request_timeout_seconds: int = 180,
+        total_retries: int = 8,
     ) -> None:
         """
         Construct a context object for asynchronous requests given a user token
@@ -1342,6 +1351,12 @@ class AsyncClient:
 
             request_timeout_seconds (int, optional, default 180):
                 Client timeout that will be set for HTTP requests in the `aiohttp` library's API calls.
+
+            total_retries(int, optional, default 8)
+                The number of retries made in case requests fail with certain retryable status codes. If the last
+                retry fails a corresponding exception is raised. Note, that between retries an exponential backoff
+                is applied, starting with 0.25 s after the first request and doubling for each retry made. So with the
+                default setting of 8 retries a total wait time of 63.75 s is added between the retries.
         """
         if host[-1] != "/":
             host += "/"
@@ -1351,7 +1366,11 @@ class AsyncClient:
 
         self.token = token
 
-        retry_options = ExponentialRetry(attempts=3, statuses=set(RETRY_STATUS_CODES))
+        retry_options = ExponentialRetry(
+            attempts=total_retries + 1,
+            start_timeout=0.25,
+            statuses=set(RETRY_STATUS_CODES),
+        )
         self.session = RetryClient(
             raise_for_status=False,
             retry_options=retry_options,
