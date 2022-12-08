@@ -49,6 +49,7 @@ async def test_can_complete_with_async_client_against_checkpoint(
 
 
 @pytest.mark.needs_api
+@pytest.mark.skip(reason="Not available in test")
 async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
     async_client: AsyncClient,
     alt_complete_checkpoint_name: str,
@@ -118,6 +119,7 @@ def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
 
 
 @pytest.mark.needs_api
+@pytest.mark.skip(reason="Not available in test")
 async def test_can_complete_with_sync_client_against_checkpoint_and_adapter(
     sync_client: Client,
     alt_complete_checkpoint_name: str,
