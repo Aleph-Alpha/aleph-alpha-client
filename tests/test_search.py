@@ -3,7 +3,6 @@ from aleph_alpha_client import AsyncClient, Prompt, SearchRequest, Client
 from .common import async_client, sync_client
 
 
-@pytest.mark.system_test
 async def test_async_basic_functionality(
     async_client: AsyncClient,
 ):
@@ -17,7 +16,6 @@ async def test_async_basic_functionality(
     assert dict(response.results)["banana"] > dict(response.results)["jump"]
 
 
-@pytest.mark.system_test
 async def test_max_results(
     async_client: AsyncClient,
 ):
@@ -32,7 +30,6 @@ async def test_max_results(
     assert "banana" in dict(response.results)
 
 
-@pytest.mark.system_test
 async def test_min_score(
     async_client: AsyncClient,
 ):
@@ -47,7 +44,6 @@ async def test_min_score(
     assert "banana" in dict(response.results)
 
 
-@pytest.mark.system_test
 def test_sync_basic_functionality(
     sync_client: Client,
 ):
