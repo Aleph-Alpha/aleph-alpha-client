@@ -34,7 +34,6 @@ async def test_can_complete_with_async_client(
     assert response.model_version is not None
 
 
-@pytest.mark.system_test
 async def test_can_complete_with_async_client_against_checkpoint(
     async_client: AsyncClient, checkpoint_name: str
 ):
@@ -99,7 +98,6 @@ def test_complete_with_token_ids(sync_client: Client, model_name: str):
     assert response.model_version is not None
 
 
-@pytest.mark.system_test
 def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
 
     request = CompletionRequest(
@@ -138,7 +136,6 @@ async def test_can_complete_with_sync_client_against_checkpoint_and_adapter(
 # AlephAlphaClient
 
 
-@pytest.mark.system_test
 def test_complete_with_deprecated_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):

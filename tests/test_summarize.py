@@ -30,7 +30,6 @@ async def test_can_summarize_with_async_client(async_client: AsyncClient):
     assert response.model_version is not None
 
 
-@pytest.mark.system_test
 async def test_can_summarize_with_async_client_against_checkpoint(
     async_client: AsyncClient,
     summarization_checkpoint_name: str,
@@ -63,7 +62,6 @@ def test_summarize(sync_client: Client):
     assert response.model_version is not None
 
 
-@pytest.mark.system_test
 def test_summarize_against_checkpoint(
     sync_client: Client, summarization_checkpoint_name: str
 ):
@@ -110,9 +108,8 @@ def test_summarization_with_client(client: AlephAlphaClient):
     assert response["model_version"] is not None
 
 
-@pytest.mark.system_test
 def test_summarization_with_client_against_checkpoint(
-    client: AlephAlphaClient, summarization_checkpoint_name
+    client: AlephAlphaClient, summarization_checkpoint_name: str
 ):
     # when posting a Summarization request
     response = client.summarize(

@@ -35,7 +35,6 @@ async def test_can_embed_with_async_client(async_client: AsyncClient, model_name
     assert response.tokens is not None
 
 
-@pytest.mark.system_test
 async def test_can_embed_with_async_client_against_checkpoint(
     async_client: AsyncClient, checkpoint_name: str
 ):
@@ -67,7 +66,6 @@ async def test_can_semantic_embed_with_async_client(
     assert len(response.embedding) == 128
 
 
-@pytest.mark.system_test
 async def test_can_semantic_embed_with_async_client_against_checkpoint(
     async_client: AsyncClient, checkpoint_name: str
 ):
@@ -102,7 +100,6 @@ def test_embed(sync_client: Client, model_name: str):
     assert result.tokens is None
 
 
-@pytest.mark.system_test
 def test_embed_against_checkpoint(sync_client: Client, checkpoint_name: str):
 
     request = EmbeddingRequest(
@@ -170,7 +167,6 @@ def test_embed_semantic(sync_client: Client):
     assert len(result.embedding) == 128
 
 
-@pytest.mark.system_test
 def test_embed_semantic_against_checkpoint(sync_client: Client, checkpoint_name: str):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
@@ -202,7 +198,6 @@ def test_embed_with_client(client: AlephAlphaClient, model_name: str):
     assert result["tokens"] is None
 
 
-@pytest.mark.system_test
 def test_embed_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
@@ -242,7 +237,6 @@ def test_embed_semantic_with_client(client: AlephAlphaClient):
     assert len(result["embedding"]) == 128
 
 
-@pytest.mark.system_test
 def test_semantic_embed_with_client_against_checkpoint(
     client: AlephAlphaClient, checkpoint_name: str
 ):
