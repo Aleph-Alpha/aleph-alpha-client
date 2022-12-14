@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.7.0
+
+- Add manual on readthedocs
+- Increase number of retries and expose parameters
+
 ## 2.6.1
 
 - Introduce search endpoint for internal users
