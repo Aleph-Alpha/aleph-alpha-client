@@ -46,16 +46,6 @@ If an html coverage report has been created a simple http server can be run to s
 python -m http.server --directory htmlcov 8000
 ```
 
-## Update README
-
-To update the readme, do the following:
-
-1. `pip install -e .[dev]`
-
-2. Edit the notebook in your favorite jupyter editor and run all python cells to verify that the code examples still work.
-
-3. To generate a new README.md first remove all output cells from the Jupyter notebook and then execute the command: `jupyter nbconvert --to markdown readme.ipynb --output README.md`
-
 ## Releasing a new version
 
 1. Update version.py to the to-be-released version, say 1.2.3
@@ -73,3 +63,11 @@ To work on the documentation, you need to install the project editable and with 
 pip install -e .[docs]
 ```
 
+The documentation can be generated with:
+
+```bash
+cd docs
+make html
+```
+
+Make sure that the documentation can be generated without Sphinx warnings or errors.
