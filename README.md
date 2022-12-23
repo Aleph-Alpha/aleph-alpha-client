@@ -12,18 +12,36 @@ Python client for the [Aleph Alpha](https://aleph-alpha.com) API.
 
 ## Usage
 
-### Text Completion
+### Synchronous Client
 
 ```python
-from aleph_alpha_client import Client, CompletionRequest, Prompt
 import os
+from aleph_alpha_client import Client, CompletionRequest, Prompt
 
 client = Client(token=os.getenv("AA_TOKEN"))
-prompt = Prompt.from_text("Provide a short description of AI:")
-request = CompletionRequest(prompt=prompt, maximum_tokens=20)
-result = client.complete(request, model="luminous-extended")
+request = CompletionRequest(
+    prompt=Prompt.from_text("Provide a short description of AI:"),
+    maximum_tokens=64,
+)
+response = client.complete(request, model="luminous-extended")
 
-print(result.completions[0].completion)
+print(response.completions[0].completion)
+```
+
+### Asynchronous Client
+
+```python
+import os
+from aleph_alpha_client import AsyncClient, CompletionRequest, Prompt
+
+# Can enter context manager within an async function
+async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
+    request = CompletionRequest(
+        prompt=Prompt.from_text("Provide a short description of AI:"),
+        maximum_tokens=64,
+    )
+    response = await client.complete(request, model="luminous-base") 
+    print(response.completions[0].completion)
 ```
 
 ### Interactive Examples
