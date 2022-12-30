@@ -1215,6 +1215,7 @@ class Client:
         request: QaRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
+        beta: bool = False,
     ) -> QaResponse:
         """Answers a question about documents.
 
@@ -1233,6 +1234,13 @@ class Client:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
+            beta (bool, optional, default False):
+                Opt-in use of new beta implementations of the QA endpoint, if available. Setting this to true will only change the
+                behavior if there is a currently running beta available.
+
+                Disclaimer: Pricing, performance, and behavior are subject to change at any time for beta implementations. Please be
+                aware of this before using. You can always reach out to support@alepha-alpha.com if you have questions.
+
         Examples:
             >>> request = QaRequest(
                     query="Who likes pizza?",
@@ -1241,7 +1249,7 @@ class Client:
             >>> response = client.qa(request, model="luminous-extended")
         """
         response = self._post_request(
-            "qa",
+            "qa/beta" if beta else "qa",
             request,
             model,
             checkpoint,
@@ -1709,6 +1717,7 @@ class AsyncClient:
         request: QaRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
+        beta: bool = True,
     ) -> QaResponse:
         """Answers a question about documents.
 
@@ -1727,6 +1736,13 @@ class AsyncClient:
 
                 Need to set exactly one of model_name and checkpoint_name.
 
+            beta (bool, optional, default False):
+                Opt-in use of new beta implementations of the QA endpoint, if available. Setting this to true will only change the
+                behavior if there is a currently running beta available.
+
+                Disclaimer: Pricing, performance, and behavior are subject to change at any time for beta implementations. Please be
+                aware of this before using. You can always reach out to support@alepha-alpha.com if you have questions.
+
         Examples:
             >>> request = QaRequest(
                     query="Who likes pizza?",
@@ -1735,7 +1751,7 @@ class AsyncClient:
             >>> response = await client.qa(request, model="luminous-extended")
         """
         response = await self._post_request(
-            "qa",
+            "qa/beta" if beta else "qa",
             request,
             model,
             checkpoint,

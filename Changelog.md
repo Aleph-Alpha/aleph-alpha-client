@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.7.1
+
+- Add beta flag for QA requests
+
 ## 2.7.0
 
 - Add manual on readthedocs

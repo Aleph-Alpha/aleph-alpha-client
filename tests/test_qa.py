@@ -145,3 +145,29 @@ def test_qa_with_client_against_checkpoint(
     # The response should exist in the form of a json dict
     assert len(response["answers"]) == 1
     assert response["model_version"] is not None
+
+
+def test_can_send_beta_request_and_no_model(sync_client: Client):
+    # when posting a QA request with a QaRequest object
+    request = QaRequest(
+        query="Who likes pizza?",
+        documents=[Document.from_prompt(["Andreas likes pizza."])],
+    )
+
+    response = sync_client.qa(request, beta=True)
+
+    # the response should exist and be in the form of a named tuple class
+    assert len(response.answers) == 1
+    assert response.model_version is not None
+
+
+async def test_can_send_async_beta_request_and_no_model(async_client: AsyncClient):
+    request = QaRequest(
+        query="Who likes pizza?",
+        documents=[Document.from_text("Andreas likes pizza.")],
+    )
+
+    response = await async_client.qa(request, beta=True)
+    assert len(response.answers) == 1
+    assert response.model_version is not None
+    assert response.answers[0].score > 0.0
