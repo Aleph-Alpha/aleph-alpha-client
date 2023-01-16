@@ -889,7 +889,8 @@ class Client:
                 default setting of 8 retries a total wait time of 63.5 s is added between the retries.
 
             nice(bool, required, default False):
-                Setting this to True, the API will reject your requests more likely if there is significant load on the API.
+                Setting this to True, will signal to the API that you intend to be nice to other users
+                by de-prioritizing your request below concurrent ones.
         """
         if host[-1] != "/":
             host += "/"
@@ -1373,7 +1374,8 @@ class AsyncClient:
                 default setting of 8 retries a total wait time of 63.75 s is added between the retries.
 
             nice(bool, required, default False):
-                Setting this to True, the API will reject your requests more likely if there is significant load on the API.
+                Setting this to True, will signal to the API that you intend to be nice to other users
+                by de-prioritizing your request below concurrent ones.
         """
         if host[-1] != "/":
             host += "/"
