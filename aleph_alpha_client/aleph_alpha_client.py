@@ -857,6 +857,7 @@ class Client:
         hosting: Optional[str] = None,
         request_timeout_seconds: int = 180,
         total_retries: int = 8,
+        nice: bool = False,
     ) -> None:
         """
         Construct a client for synchronous requests given a user token
@@ -886,6 +887,9 @@ class Client:
                 retry fails a corresponding exception is raised. Note, that between retries an exponential backoff
                 is applied, starting with 0.5 s after the first retry and doubling for each retry made. So with the
                 default setting of 8 retries a total wait time of 63.5 s is added between the retries.
+
+            nice(bool, required, default False):
+                Setting this to True, the API will reject your requests more likely if there is significant load on the API.
         """
         if host[-1] != "/":
             host += "/"
@@ -893,6 +897,7 @@ class Client:
         self.hosting = hosting
         self.request_timeout_seconds = request_timeout_seconds
         self.token = token
+        self.nice = nice
 
         retry_strategy = Retry(
             total=total_retries,
@@ -949,6 +954,9 @@ class Client:
         return {
             **(dict(checkpoint=checkpoint) if checkpoint else {}),
             **(dict(adapter=adapter) if adapter else {}),
+            # Cannot use str() here because we want lowercase true/false in query string.
+            # Also do not want to send the nice flag with every request if it is false
+            **({"nice": "true"} if self.nice else {}),
         }
 
     def _build_json_body(
@@ -1333,6 +1341,7 @@ class AsyncClient:
         hosting: Optional[str] = None,
         request_timeout_seconds: int = 180,
         total_retries: int = 8,
+        nice: bool = False,
     ) -> None:
         """
         Construct a context object for asynchronous requests given a user token
@@ -1362,14 +1371,17 @@ class AsyncClient:
                 retry fails a corresponding exception is raised. Note, that between retries an exponential backoff
                 is applied, starting with 0.25 s after the first request and doubling for each retry made. So with the
                 default setting of 8 retries a total wait time of 63.75 s is added between the retries.
+
+            nice(bool, required, default False):
+                Setting this to True, the API will reject your requests more likely if there is significant load on the API.
         """
         if host[-1] != "/":
             host += "/"
         self.host = host
         self.hosting = hosting
         self.request_timeout_seconds = request_timeout_seconds
-
         self.token = token
+        self.nice = nice
 
         retry_options = ExponentialRetry(
             attempts=total_retries + 1,
@@ -1450,6 +1462,9 @@ class AsyncClient:
         return {
             **(dict(checkpoint=checkpoint) if checkpoint else {}),
             **(dict(adapter=adapter) if adapter else {}),
+            # cannot use str() here because we want lowercase true/false in query string
+            # Also do not want to send the nice flag with every request if it is false
+            **({"nice": "true"} if self.nice else {}),
         }
 
     def _build_json_body(
