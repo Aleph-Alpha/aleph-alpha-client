@@ -157,3 +157,9 @@ class CompletionResponse(NamedTuple):
             completions=[CompletionResult(**item) for item in json["completions"]],
             optimized_prompt=json.get("optimized_prompt"),
         )
+
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            **self._asdict(),
+            "completions": [completion._asdict() for completion in self.completions],
+        }
