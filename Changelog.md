@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.8.1
+
+- Fix documentation for Client and AsyncClient for readthedocs.io
+
 ## 2.8.0
 
 - Add nice flag to clients to indicate lower priority
