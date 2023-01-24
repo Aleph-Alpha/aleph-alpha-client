@@ -34,6 +34,7 @@ from aleph_alpha_client.search import SearchRequest, SearchResponse
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
+DEFAULT_REQUEST_TIMEOUT = 305
 
 
 class QuotaError(Exception):
@@ -84,8 +85,9 @@ class AlephAlphaClient:
         password (str, optional, default None):
             Password for authentication with the email address at the API. If token is None then email and password will be used for authentication.
 
-        request_timeout_seconds (int, optional, default 180):
+        request_timeout_seconds (int, optional, default 305):
             Client timeout that will be set for HTTP requests in the `requests` library's API calls.
+            Server will close all requests after 300 seconds with an internal server error.
     """
 
     def __init__(
@@ -94,7 +96,7 @@ class AlephAlphaClient:
         token=None,
         email=None,
         password=None,
-        request_timeout_seconds=180,
+        request_timeout_seconds=DEFAULT_REQUEST_TIMEOUT,
     ):
         warnings.warn(
             "AlephAlphaClient is deprecated and will be removed in the next major release. Use Client or AsyncClient instead.",
@@ -861,8 +863,9 @@ class Client:
             Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
             Choose this option for maximal data privacy.
 
-        request_timeout_seconds (int, optional, default 180):
+        request_timeout_seconds (int, optional, default 305):
             Client timeout that will be set for HTTP requests in the `requests` library's API calls.
+            Server will close all requests after 300 seconds with an internal server error.
 
         total_retries(int, optional, default 8)
             The number of retries made in case requests fail with certain retryable status codes. If the last
@@ -887,7 +890,7 @@ class Client:
         token: str,
         host: str = "https://api.aleph-alpha.com",
         hosting: Optional[str] = None,
-        request_timeout_seconds: int = 180,
+        request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT,
         total_retries: int = 8,
         nice: bool = False,
     ) -> None:
@@ -1348,8 +1351,9 @@ class AsyncClient:
             Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
             Choose this option for maximal data privacy.
 
-        request_timeout_seconds (int, optional, default 180):
+        request_timeout_seconds (int, optional, default 305):
             Client timeout that will be set for HTTP requests in the `aiohttp` library's API calls.
+            Server will close all requests after 300 seconds with an internal server error.
 
         total_retries(int, optional, default 8)
             The number of retries made in case requests fail with certain retryable status codes. If the last
@@ -1372,7 +1376,7 @@ class AsyncClient:
         token: str,
         host: str = "https://api.aleph-alpha.com",
         hosting: Optional[str] = None,
-        request_timeout_seconds: int = 180,
+        request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT,
         total_retries: int = 8,
         nice: bool = False,
     ) -> None:
