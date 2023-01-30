@@ -1737,7 +1737,7 @@ class AsyncClient:
         request: QaRequest,
         model: Optional[str] = None,
         checkpoint: Optional[str] = None,
-        beta: bool = True,
+        beta: bool = False,
     ) -> QaResponse:
         """Answers a question about documents.
 
