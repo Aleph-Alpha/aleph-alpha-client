@@ -65,13 +65,13 @@ def summarization_checkpoint_name() -> str:
 
 
 @pytest.fixture(scope="session")
-def alt_complete_checkpoint_name() -> str:
-    return get_env_var("TEST_CHECKPOINT_ALT_COMPLETE")
+def checkpoint_with_adapter_name() -> str:
+    return get_env_var("TEST_CHECKPOINT_WITH_ADAPTER")
 
 
 @pytest.fixture(scope="session")
-def alt_complete_adapter_name() -> str:
-    return get_env_var("TEST_ADAPTER_ALT_COMPLETE")
+def adapter_name() -> str:
+    return get_env_var("TEST_ADAPTER_OF_TEST_CHECKPOINT")
 
 
 def get_env_var(env_var: str) -> str:
