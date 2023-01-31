@@ -17,7 +17,6 @@ Tests can be run using pytest. Make sure to create a `.env` file with the follow
 ```env
 # test settings
 TEST_API_URL=https://test.api.aleph-alpha.com
-TEST_MODEL=luminous-base
 TEST_TOKEN=your_token
 ```
 
@@ -26,10 +25,11 @@ Instead of a token username and password can be used.
 ```env
 # test settings
 TEST_API_URL=https://api.aleph-alpha.com
-TEST_MODEL=luminous-base
 TEST_USERNAME=your_username
 TEST_PASSWORD=your_password
 ```
+
+Some of the tests require direct access to a checkpoint and fail when permissions are lacking.
 
 - A coverage report can be created using the optional arguments --cov-report and --cov (see pytest documentation)
 - A subset of tests can be selected by pointing to the module within tests

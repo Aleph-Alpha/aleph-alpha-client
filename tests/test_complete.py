@@ -12,8 +12,8 @@ from tests.common import (
     model_name,
     model,
     checkpoint_name,
-    alt_complete_checkpoint_name,
-    alt_complete_adapter_name,
+    checkpoint_with_adapter_name,
+    adapter_name,
 )
 
 
@@ -49,8 +49,8 @@ async def test_can_complete_with_async_client_against_checkpoint(
 
 async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
     async_client: AsyncClient,
-    alt_complete_checkpoint_name: str,
-    alt_complete_adapter_name: str,
+    checkpoint_with_adapter_name: str,
+    adapter_name: str,
 ):
     request = CompletionRequest(
         prompt=Prompt.from_text("Hello, World!\n"),
@@ -59,8 +59,8 @@ async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
 
     response = await async_client.complete(
         request,
-        checkpoint=alt_complete_checkpoint_name,
-        adapter=alt_complete_adapter_name,
+        checkpoint=checkpoint_with_adapter_name,
+        adapter=adapter_name,
     )
     assert len(response.completions) == 1
     assert response.model_version is not None
@@ -116,8 +116,8 @@ def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
 
 async def test_can_complete_with_sync_client_against_checkpoint_and_adapter(
     sync_client: Client,
-    alt_complete_checkpoint_name: str,
-    alt_complete_adapter_name: str,
+    checkpoint_with_adapter_name: str,
+    adapter_name: str,
 ):
     request = CompletionRequest(
         prompt=Prompt.from_text("Hello, World!\n"),
@@ -126,8 +126,8 @@ async def test_can_complete_with_sync_client_against_checkpoint_and_adapter(
 
     response = sync_client.complete(
         request,
-        checkpoint=alt_complete_checkpoint_name,
-        adapter=alt_complete_adapter_name,
+        checkpoint=checkpoint_with_adapter_name,
+        adapter=adapter_name,
     )
     assert len(response.completions) == 1
     assert response.model_version is not None
