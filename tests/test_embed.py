@@ -12,7 +12,6 @@ from tests.common import (
     sync_client,
     async_client,
     client,
-    checkpoint_name,
     model_name,
     luminous_base,
     model,
@@ -28,21 +27,6 @@ async def test_can_embed_with_async_client(async_client: AsyncClient, model_name
     )
 
     response = await async_client.embed(request, model=model_name)
-    assert response.model_version is not None
-    assert response.embeddings and len(response.embeddings) == len(
-        request.pooling
-    ) * len(request.layers)
-    assert response.tokens is not None
-
-
-async def test_can_embed_with_async_client_against_checkpoint(
-    async_client: AsyncClient, checkpoint_name: str
-):
-    request = request = EmbeddingRequest(
-        prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
-    )
-
-    response = await async_client.embed(request, checkpoint=checkpoint_name)
     assert response.model_version is not None
     assert response.embeddings and len(response.embeddings) == len(
         request.pooling
@@ -66,21 +50,6 @@ async def test_can_semantic_embed_with_async_client(
     assert len(response.embedding) == 128
 
 
-async def test_can_semantic_embed_with_async_client_against_checkpoint(
-    async_client: AsyncClient, checkpoint_name: str
-):
-    request = SemanticEmbeddingRequest(
-        prompt=Prompt.from_text("hello"),
-        representation=SemanticRepresentation.Symmetric,
-        compress_to_size=128,
-    )
-
-    response = await async_client.semantic_embed(request, checkpoint=checkpoint_name)
-    assert response.model_version is not None
-    assert response.embedding
-    assert len(response.embedding) == 128
-
-
 # Client
 
 
@@ -92,21 +61,6 @@ def test_embed(sync_client: Client, model_name: str):
     )
 
     result = sync_client.embed(request=request, model=model_name)
-
-    assert result.model_version is not None
-    assert result.embeddings and len(result.embeddings) == len(request.pooling) * len(
-        request.layers
-    )
-    assert result.tokens is None
-
-
-def test_embed_against_checkpoint(sync_client: Client, checkpoint_name: str):
-
-    request = EmbeddingRequest(
-        prompt=Prompt.from_text("hello"), layers=[0, -1], pooling=["mean", "max"]
-    )
-
-    result = sync_client.embed(request=request, checkpoint=checkpoint_name)
 
     assert result.model_version is not None
     assert result.embeddings and len(result.embeddings) == len(request.pooling) * len(
@@ -167,20 +121,6 @@ def test_embed_semantic(sync_client: Client):
     assert len(result.embedding) == 128
 
 
-def test_embed_semantic_against_checkpoint(sync_client: Client, checkpoint_name: str):
-    request = SemanticEmbeddingRequest(
-        prompt=Prompt.from_text("hello"),
-        representation=SemanticRepresentation.Symmetric,
-        compress_to_size=128,
-    )
-
-    result = sync_client.semantic_embed(request=request, checkpoint=checkpoint_name)
-
-    assert result.model_version is not None
-    assert result.embedding
-    assert len(result.embedding) == 128
-
-
 # AlephAlphaClient
 
 
@@ -191,27 +131,6 @@ def test_embed_with_client(client: AlephAlphaClient, model_name: str):
     prompt = ["hello"]
 
     result = client.embed(model_name, prompt, pooling, layers)
-
-    assert result["model_version"] is not None
-    assert len(result["embeddings"]) == len(layers)
-    assert len(result["embeddings"]["layer_0"]) == len(pooling)
-    assert result["tokens"] is None
-
-
-def test_embed_with_client_against_checkpoint(
-    client: AlephAlphaClient, checkpoint_name: str
-):
-    layers = [0, -1]
-    pooling = ["mean", "max"]
-    prompt = ["hello"]
-
-    result = client.embed(
-        model=None,
-        prompt=prompt,
-        pooling=pooling,
-        layers=layers,
-        checkpoint=checkpoint_name,
-    )
 
     assert result["model_version"] is not None
     assert len(result["embeddings"]) == len(layers)
@@ -231,26 +150,6 @@ def test_embed_semantic_with_client(client: AlephAlphaClient):
         request=request,
     )
     # result = luminous_base.semantic_embed(request=request)
-
-    assert result["model_version"] is not None
-    assert result["embedding"]
-    assert len(result["embedding"]) == 128
-
-
-def test_semantic_embed_with_client_against_checkpoint(
-    client: AlephAlphaClient, checkpoint_name: str
-):
-    request = SemanticEmbeddingRequest(
-        prompt=Prompt.from_text("hello"),
-        representation=SemanticRepresentation.Symmetric,
-        compress_to_size=128,
-    )
-
-    result = client.semantic_embed(
-        model=None,
-        request=request,
-        checkpoint=checkpoint_name,
-    )
 
     assert result["model_version"] is not None
     assert result["embedding"]

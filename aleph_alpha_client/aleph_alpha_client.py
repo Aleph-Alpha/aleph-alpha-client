@@ -179,77 +179,52 @@ class AlephAlphaClient:
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
-    def available_checkpoints(self):
-        """
-        Queries all checkpoints which are currently available.
-        """
-        response = self.get_request(
-            self.host + "checkpoints_available", headers=self.request_headers
-        )
-        _raise_for_status(response.status_code, response.text)
-        return response.json()
-
     def tokenize(
         self,
-        model: Optional[str],
+        model: str,
         prompt: str,
         tokens: bool = True,
         token_ids: bool = True,
-        checkpoint: Optional[str] = None,
     ):
         """
         Tokenizes the given prompt for the given model.
         """
         payload = {
+            "model": model,
             "prompt": prompt,
             "tokens": tokens,
             "token_ids": token_ids,
         }
-        if model is not None:
-            payload["model"] = model
-
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "tokenize",
             headers=self.request_headers,
             json=payload,
-            params=params,
         )
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def detokenize(
         self,
-        model: Optional[str],
+        model: str,
         token_ids: List[int],
-        checkpoint: Optional[str] = None,
     ):
         """
         Detokenizes the given tokens.
         """
-        payload: Dict[str, Any] = {"token_ids": token_ids}
-        if model is not None:
-            payload["model"] = model
-
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
+        payload: Dict[str, Any] = {"model": model, "token_ids": token_ids}
 
         response = self.post_request(
             self.host + "detokenize",
             headers=self.request_headers,
             json=payload,
-            params=params,
         )
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def complete(
         self,
-        model: Optional[str],
+        model: str,
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
         hosting: Optional[str] = None,
         maximum_tokens: Optional[int] = 64,
@@ -270,7 +245,6 @@ class AlephAlphaClient:
         stop_sequences: Optional[List[str]] = None,
         tokens: Optional[bool] = False,
         disable_optimizations: Optional[bool] = False,
-        checkpoint: Optional[str] = None,
     ):
         """Generates samples from a prompt.
 
@@ -378,12 +352,10 @@ class AlephAlphaClient:
                 We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
 
                 Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
-
-            checkpoint (str, optional, default None)
-                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         payload = {
+            "model": model,
             "prompt": _to_serializable_prompt(prompt=prompt),
             "maximum_tokens": maximum_tokens,
             "temperature": temperature,
@@ -405,21 +377,12 @@ class AlephAlphaClient:
             "disable_optimizations": disable_optimizations,
         }
 
-        if model is not None:
-            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
-
-        # Query parameters
-        params = {}
-
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "complete",
             headers=self.request_headers,
-            params=params,
             json=payload,
         )
         _raise_for_status(response.status_code, response.text)
@@ -433,14 +396,13 @@ class AlephAlphaClient:
 
     def embed(
         self,
-        model: Optional[str],
+        model: str,
         prompt: Union[str, Sequence[Union[str, ImagePrompt]]],
         pooling: List[str],
         layers: List[int],
         hosting: Optional[str] = None,
         tokens: Optional[bool] = False,
         type: Optional[str] = None,
-        checkpoint: Optional[str] = None,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -483,9 +445,6 @@ class AlephAlphaClient:
 
             type
                 Type of the embedding (e.g. symmetric or asymmetric)
-
-            checkpoint (str, optional, default None)
-                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         serializable_prompt = _to_serializable_prompt(
@@ -496,6 +455,7 @@ class AlephAlphaClient:
             tokens = False
 
         payload = {
+            "model": model,
             "prompt": serializable_prompt,
             "layers": layers,
             "tokens": tokens,
@@ -503,32 +463,22 @@ class AlephAlphaClient:
             "type": type,
         }
 
-        if model is not None:
-            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
-
-        # Query parameters
-        params = {}
-
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "embed",
             headers=self.request_headers,
             json=payload,
-            params=params,
         )
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def semantic_embed(
         self,
-        model: Optional[str],
+        model: str,
         request: SemanticEmbeddingRequest,
         hosting: Optional[str] = None,
-        checkpoint: Optional[str] = None,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -549,9 +499,6 @@ class AlephAlphaClient:
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
-
-            checkpoint (str, optional, default None)
-                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         serializable_prompt = _to_serializable_prompt(
@@ -559,37 +506,29 @@ class AlephAlphaClient:
         )
 
         payload: Dict[str, Any] = {
+            "model": model,
             "prompt": serializable_prompt,
             "representation": request.representation.value,
             "compress_to_size": request.compress_to_size,
         }
 
-        if model is not None:
-            payload["model"] = model
-
         if hosting is not None:
             payload["hosting"] = hosting
-
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "semantic_embed",
             headers=self.request_headers,
             json=payload,
-            params=params,
         )
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def evaluate(
         self,
-        model: Optional[str],
+        model: str,
         completion_expected,
         hosting: Optional[str] = None,
         prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
-        checkpoint: Optional[str] = None,
     ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
@@ -613,39 +552,30 @@ class AlephAlphaClient:
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
-
-            checkpoint (str, optional, default None)
-                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         serializable_prompt = _to_serializable_prompt(prompt=prompt)
 
         payload = {
+            "model": model,
             "prompt": serializable_prompt,
             "completion_expected": completion_expected,
         }
 
-        if model is not None:
-            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
-
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "evaluate",
             headers=self.request_headers,
             json=payload,
-            params=params,
         )
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def qa(
         self,
-        model: Optional[str],
+        model: str,
         query: str,
         documents: List[Document],
         maximum_tokens: int = 64,
@@ -654,7 +584,6 @@ class AlephAlphaClient:
         max_answers: int = 0,
         min_score: float = 0.0,
         hosting: Optional[str] = None,
-        checkpoint: Optional[str] = None,
     ):
         """
         Answers a question about documents.
@@ -702,12 +631,10 @@ class AlephAlphaClient:
 
                 Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
                 Choose this option for maximal data privacy.
-
-            checkpoint (str, optional, default None)
-                Experimental parameter for internal users to use instead of the model parameter.
         """
 
         payload = {
+            "model": model,
             "query": query,
             "documents": [
                 document._to_serializable_document() for document in documents
@@ -719,31 +646,22 @@ class AlephAlphaClient:
             "disable_optimizations": disable_optimizations,
         }
 
-        if model is not None:
-            payload["model"] = model
-
         if hosting is not None:
             payload["hosting"] = hosting
-
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "qa",
             headers=self.request_headers,
             json=payload,
-            params=params,
         )
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def summarize(
         self,
-        model: Optional[str],
+        model: str,
         request: SummarizationRequest,
         hosting: Optional[str] = None,
-        checkpoint: Optional[str] = None,
     ):
         """
         Summarizes a document.
@@ -764,41 +682,32 @@ class AlephAlphaClient:
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
-
-            checkpoint (str, optional, default None)
-                Experimental parameter for internal users to use instead of the model parameter.
         """
         payload: Dict[str, Any] = {
+            "model": model,
             "document": request.document._to_serializable_document(),
             "disable_optimizations": request.disable_optimizations,
         }
 
-        if model is not None:
-            payload["model"] = model
         if hosting is not None:
             payload["hosting"] = hosting
-
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             self.host + "summarize",
             headers=self.request_headers,
             json=payload,
-            params=params,
         )
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def _explain(
         self,
-        model: Optional[str],
+        model: str,
         request: ExplanationRequest,
         hosting: Optional[str] = None,
-        checkpoint: Optional[str] = None,
     ):
         body = {
+            "model": model,
             "prompt": [_to_prompt_item(item) for item in request.prompt.items],
             "target": request.target,
             "suppression_factor": request.suppression_factor,
@@ -808,21 +717,13 @@ class AlephAlphaClient:
             "prompt_explain_indices": request.prompt_explain_indices,
         }
 
-        if model is not None:
-            body["model"] = model
-
         if hosting is not None:
             body["hosting"] = hosting
-
-        params = {}
-        if checkpoint is not None:
-            params["checkpoint"] = checkpoint
 
         response = self.post_request(
             f"{self.host}explain",
             headers=self.request_headers,
             json=body,
-            params=params,
         )
         _raise_for_status(response.status_code, response.text)
         return response.json()
@@ -934,13 +835,11 @@ class Client:
         endpoint: str,
         request: AnyRequest,
         model: Optional[str],
-        checkpoint: Optional[str],
-        adapter: Optional[str] = None,
     ) -> Dict[str, Any]:
 
         json_body = self._build_json_body(request, model)
 
-        query_params = self._build_query_parameters(checkpoint, adapter)
+        query_params = self._build_query_parameters()
 
         response = self.session.post(
             self.host + endpoint,
@@ -952,12 +851,8 @@ class Client:
             _raise_for_status(response.status_code, response.text)
         return response.json()
 
-    def _build_query_parameters(
-        self, checkpoint: Optional[str], adapter: Optional[str]
-    ) -> Mapping[str, str]:
+    def _build_query_parameters(self) -> Mapping[str, str]:
         return {
-            **(dict(checkpoint=checkpoint) if checkpoint else {}),
-            **(dict(adapter=adapter) if adapter else {}),
             # Cannot use str() here because we want lowercase true/false in query string.
             # Also do not want to send the nice flag with every request if it is false
             **({"nice": "true"} if self.nice else {}),
@@ -977,9 +872,7 @@ class Client:
     def complete(
         self,
         request: CompletionRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
-        adapter: Optional[str] = None,
+        model: str,
     ) -> CompletionResponse:
         """Generates completions given a prompt.
 
@@ -987,16 +880,9 @@ class Client:
             request (CompletionRequest, required):
                 Parameters for the requested completion.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
             >>> # create a prompt
@@ -1013,14 +899,13 @@ class Client:
             >>> # complete the prompt
             >>> result = client.complete(request, model=model_name)
         """
-        response = self._post_request("complete", request, model, checkpoint, adapter)
+        response = self._post_request("complete", request, model)
         return CompletionResponse.from_json(response)
 
     def tokenize(
         self,
         request: TokenizationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> TokenizationResponse:
         """Tokenizes the given prompt for the given model.
 
@@ -1028,16 +913,9 @@ class Client:
             request (TokenizationRequest, required):
                 Parameters for the requested tokenization.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
             >>> request = TokenizationRequest(
@@ -1049,15 +927,13 @@ class Client:
             "tokenize",
             request,
             model,
-            checkpoint,
         )
         return TokenizationResponse.from_json(response)
 
     def detokenize(
         self,
         request: DetokenizationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> DetokenizationResponse:
         """Detokenizes the given prompt for the given model.
 
@@ -1065,34 +941,25 @@ class Client:
             request (DetokenizationRequest, required):
                 Parameters for the requested detokenization.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-
         Examples:
             >>> request = DetokenizationRequest(token_ids=[2, 3, 4])
-            >>> response = client.detokenize(request, checkpoint=checkpoint_name)
+            >>> response = client.detokenize(request, model=model_name)
         """
         response = self._post_request(
             "detokenize",
             request,
             model,
-            checkpoint,
         )
         return DetokenizationResponse.from_json(response)
 
     def embed(
         self,
         request: EmbeddingRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> EmbeddingResponse:
         """Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -1100,16 +967,9 @@ class Client:
             request (EmbeddingRequest, required):
                 Parameters for the requested embedding.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
             >>> request = EmbeddingRequest(prompt=Prompt.from_text(
@@ -1121,15 +981,13 @@ class Client:
             "embed",
             request,
             model,
-            checkpoint,
         )
         return EmbeddingResponse.from_json(response)
 
     def semantic_embed(
         self,
         request: SemanticEmbeddingRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> SemanticEmbeddingResponse:
         """Embeds a text and returns vectors that can be used for downstream tasks
         (e.g. semantic similarity) and models (e.g. classifiers).
@@ -1138,16 +996,9 @@ class Client:
             request (SemanticEmbeddingRequest, required):
                 Parameters for the requested semnatic embedding.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
             >>> # function for symmetric embedding
@@ -1181,15 +1032,13 @@ class Client:
             "semantic_embed",
             request,
             model,
-            checkpoint,
         )
         return SemanticEmbeddingResponse.from_json(response)
 
     def evaluate(
         self,
         request: EvaluationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> EvaluationResponse:
         """Evaluates the model's likelihood to produce a completion given a prompt.
 
@@ -1201,13 +1050,6 @@ class Client:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-
         Examples:
             >>> request = EvaluationRequest(
                     prompt=Prompt.from_text("hello"), completion_expected="world"
@@ -1218,7 +1060,6 @@ class Client:
             "evaluate",
             request,
             model,
-            checkpoint,
         )
         return EvaluationResponse.from_json(response)
 
@@ -1226,7 +1067,6 @@ class Client:
         self,
         request: QaRequest,
         model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
         beta: bool = False,
     ) -> QaResponse:
         """Answers a question about documents.
@@ -1238,13 +1078,6 @@ class Client:
             model (string, optional, default None):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
 
             beta (bool, optional, default False):
                 Opt-in use of new beta implementations of the QA endpoint, if available. Setting this to true will only change the
@@ -1264,15 +1097,13 @@ class Client:
             "qa/beta" if beta else "qa",
             request,
             model,
-            checkpoint,
         )
         return QaResponse.from_json(response)
 
     def summarize(
         self,
         request: SummarizationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> SummarizationResponse:
         """Summarizes a document.
 
@@ -1284,13 +1115,6 @@ class Client:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-
         Examples:
             >>> request = SummarizationRequest(
                     document=Document.from_text("Andreas likes pizza."),
@@ -1301,21 +1125,18 @@ class Client:
             "summarize",
             request,
             model,
-            checkpoint,
         )
         return SummarizationResponse.from_json(response)
 
     def _explain(
         self,
         request: ExplanationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> ExplanationResponse:
         response = self._post_request(
             "explain",
             request,
             model,
-            checkpoint,
         )
         return ExplanationResponse.from_json(response)
 
@@ -1326,7 +1147,7 @@ class Client:
         """
         For details see https://www.aleph-alpha.com/luminous-explore-a-model-for-world-class-semantic-representation
         """
-        response = self._post_request("search", request, None, None)
+        response = self._post_request("search", request, None)
         return SearchResponse.from_json(response)
 
 
@@ -1446,13 +1267,11 @@ class AsyncClient:
         endpoint: str,
         request: AnyRequest,
         model: Optional[str],
-        checkpoint: Optional[str],
-        adapter: Optional[str] = None,
     ) -> Dict[str, Any]:
 
         json_body = self._build_json_body(request, model)
 
-        query_params = self._build_query_parameters(checkpoint, adapter)
+        query_params = self._build_query_parameters()
 
         async with self.session.post(
             self.host + endpoint, json=json_body, params=query_params
@@ -1461,12 +1280,8 @@ class AsyncClient:
                 _raise_for_status(response.status, await response.text())
             return await response.json()
 
-    def _build_query_parameters(
-        self, checkpoint: Optional[str], adapter: Optional[str]
-    ) -> Mapping[str, str]:
+    def _build_query_parameters(self) -> Mapping[str, str]:
         return {
-            **(dict(checkpoint=checkpoint) if checkpoint else {}),
-            **(dict(adapter=adapter) if adapter else {}),
             # cannot use str() here because we want lowercase true/false in query string
             # Also do not want to send the nice flag with every request if it is false
             **({"nice": "true"} if self.nice else {}),
@@ -1486,9 +1301,7 @@ class AsyncClient:
     async def complete(
         self,
         request: CompletionRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
-        adapter: Optional[str] = None,
+        model: str,
     ) -> CompletionResponse:
         """Generates completions given a prompt.
 
@@ -1496,16 +1309,9 @@ class AsyncClient:
             request (CompletionRequest, required):
                 Parameters for the requested completion.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
             >>> # create a prompt
@@ -1526,16 +1332,13 @@ class AsyncClient:
             "complete",
             request,
             model,
-            checkpoint,
-            adapter,
         )
         return CompletionResponse.from_json(response)
 
     async def tokenize(
         self,
         request: TokenizationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> TokenizationResponse:
         """Tokenizes the given prompt for the given model.
 
@@ -1547,13 +1350,6 @@ class AsyncClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-
         Examples:
             >>> request = TokenizationRequest(prompt="hello", token_ids=True, tokens=True)
             >>> response = await client.tokenize(request, model=model_name)
@@ -1562,15 +1358,13 @@ class AsyncClient:
             "tokenize",
             request,
             model,
-            checkpoint,
         )
         return TokenizationResponse.from_json(response)
 
     async def detokenize(
         self,
         request: DetokenizationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> DetokenizationResponse:
         """Detokenizes the given prompt for the given model.
 
@@ -1582,30 +1376,21 @@ class AsyncClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-
         Examples:
             >>> request = DetokenizationRequest(token_ids=[2, 3, 4])
-            >>> response = await client.detokenize(request, checkpoint=checkpoint_name)
+            >>> response = await client.detokenize(request, model=model_name)
         """
         response = await self._post_request(
             "detokenize",
             request,
             model,
-            checkpoint,
         )
         return DetokenizationResponse.from_json(response)
 
     async def embed(
         self,
         request: EmbeddingRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> EmbeddingResponse:
         """Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -1617,13 +1402,6 @@ class AsyncClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-
         Examples:
             >>> request = EmbeddingRequest(prompt=Prompt.from_text("This is an example."), layers=[-1], pooling=["mean"])
             >>> result = await client.embed(request, model=model_name)
@@ -1632,15 +1410,13 @@ class AsyncClient:
             "embed",
             request,
             model,
-            checkpoint,
         )
         return EmbeddingResponse.from_json(response)
 
     async def semantic_embed(
         self,
         request: SemanticEmbeddingRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> SemanticEmbeddingResponse:
         """Embeds a text and returns vectors that can be used for downstream tasks
         (e.g. semantic similarity) and models (e.g. classifiers).
@@ -1652,13 +1428,6 @@ class AsyncClient:
             model (string, optional, default None):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
 
         Examples:
             >>> # function for symmetric embedding
@@ -1691,15 +1460,13 @@ class AsyncClient:
             "semantic_embed",
             request,
             model,
-            checkpoint,
         )
         return SemanticEmbeddingResponse.from_json(response)
 
     async def evaluate(
         self,
         request: EvaluationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> EvaluationResponse:
         """Evaluates the model's likelihood to produce a completion given a prompt.
 
@@ -1711,13 +1478,6 @@ class AsyncClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-
         Examples:
             >>> request = EvaluationRequest(
                     prompt=Prompt.from_text("hello"), completion_expected="world"
@@ -1728,7 +1488,6 @@ class AsyncClient:
             "evaluate",
             request,
             model,
-            checkpoint,
         )
         return EvaluationResponse.from_json(response)
 
@@ -1736,7 +1495,6 @@ class AsyncClient:
         self,
         request: QaRequest,
         model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
         beta: bool = False,
     ) -> QaResponse:
         """Answers a question about documents.
@@ -1748,13 +1506,6 @@ class AsyncClient:
             model (string, optional, default None):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
-
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
 
             beta (bool, optional, default False):
                 Opt-in use of new beta implementations of the QA endpoint, if available. Setting this to true will only change the
@@ -1774,15 +1525,13 @@ class AsyncClient:
             "qa/beta" if beta else "qa",
             request,
             model,
-            checkpoint,
         )
         return QaResponse.from_json(response)
 
     async def summarize(
         self,
         request: SummarizationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> SummarizationResponse:
         """Summarizes a document.
 
@@ -1794,13 +1543,6 @@ class AsyncClient:
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
-                Need to set exactly one of model_name and checkpoint_name.
-
-            checkpoint (string, optional, default None):
-                Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-                Need to set exactly one of model_name and checkpoint_name.
-
         Examples:
             >>> request = SummarizationRequest(
                     document=Document.from_text("Andreas likes pizza."),
@@ -1811,21 +1553,18 @@ class AsyncClient:
             "summarize",
             request,
             model,
-            checkpoint,
         )
         return SummarizationResponse.from_json(response)
 
     async def _explain(
         self,
         request: ExplanationRequest,
-        model: Optional[str] = None,
-        checkpoint: Optional[str] = None,
+        model: str,
     ) -> ExplanationResponse:
         response = await self._post_request(
             "explain",
             request,
             model,
-            checkpoint,
         )
         return ExplanationResponse.from_json(response)
 
@@ -1836,5 +1575,5 @@ class AsyncClient:
         """
         For details see https://www.aleph-alpha.com/luminous-explore-a-model-for-world-class-semantic-representation
         """
-        response = await self._post_request("search", request, None, None)
+        response = await self._post_request("search", request, None)
         return SearchResponse.from_json(response)
