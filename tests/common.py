@@ -49,31 +49,6 @@ def model_name() -> str:
     return "luminous-base"
 
 
-@pytest.fixture(scope="session")
-def checkpoint_name() -> str:
-    return get_env_var("TEST_CHECKPOINT")
-
-
-@pytest.fixture(scope="session")
-def qa_checkpoint_name() -> str:
-    return get_env_var("TEST_CHECKPOINT_QA")
-
-
-@pytest.fixture(scope="session")
-def summarization_checkpoint_name() -> str:
-    return get_env_var("TEST_CHECKPOINT_SUMMARIZATION")
-
-
-@pytest.fixture(scope="session")
-def checkpoint_with_adapter_name() -> str:
-    return get_env_var("TEST_CHECKPOINT_WITH_ADAPTER")
-
-
-@pytest.fixture(scope="session")
-def adapter_name() -> str:
-    return get_env_var("TEST_ADAPTER_OF_TEST_CHECKPOINT")
-
-
 def get_env_var(env_var: str) -> str:
     value = os.environ.get(env_var)
     if value is None:

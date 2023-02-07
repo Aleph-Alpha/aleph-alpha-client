@@ -31,10 +31,8 @@ class AlephAlphaModel:
         client (AlephAlphaClient, required):
             An AlephAlphaClient object that holds the API host information and user credentials.
 
-        model_name (str, optional, default None):
+        model_name (str, required):
             Name of model to use. A model name refers to a model architecture (number of parameters among others). Always the latest version of model is used. The model output contains information as to the model version.
-
-            Need to set exactly one of model_name and checkpoint_name.
 
         hosting (str, optional, default None):
             Determines in which datacenters the request may be processed.
@@ -45,36 +43,23 @@ class AlephAlphaModel:
 
             Setting it to "aleph-alpha" allows us to only process the request in our own datacenters.
             Choose this option for maximal data privacy.
-
-        checkpoint_name (str, optional, default None):
-            Name of checkpoint to use. A checkpoint name refers to a language model architecture (number of parameters among others).
-
-            Need to set exactly one of model_name and checkpoint_name.
     """
 
     def __init__(
         self,
         client: AlephAlphaClient,
-        model_name: Optional[str] = None,
+        model_name: str,
         hosting: Optional[str] = None,
-        checkpoint_name: Optional[str] = None,
     ) -> None:
         warnings.warn(
             "AlephAlphaModel is deprecated and will be removed in the next major release. Use Client or AsyncClient instead.",
             category=DeprecationWarning,
             stacklevel=2,
         )
-        if (model_name is None and checkpoint_name is None) or (
-            model_name is not None and checkpoint_name is not None
-        ):
-            raise ValueError(
-                "Need to set exactly one of model_name and checkpoint_name."
-            )
 
         self.client = client
         self.model_name = model_name
         self.hosting = hosting
-        self.checkpoint_name = checkpoint_name
 
     @classmethod
     def from_model_name(
@@ -121,19 +106,16 @@ class AlephAlphaModel:
             model=self.model_name,
             hosting=self.hosting,
             **self.as_request_dict(request),
-            checkpoint=self.checkpoint_name
         )
         return CompletionResponse.from_json(response_json)
 
     def tokenize(self, request: TokenizationRequest) -> TokenizationResponse:
-        response_json = self.client.tokenize(
-            model=self.model_name, **request._asdict(), checkpoint=self.checkpoint_name
-        )
+        response_json = self.client.tokenize(model=self.model_name, **request._asdict())
         return TokenizationResponse.from_json(response_json)
 
     def detokenize(self, request: DetokenizationRequest) -> DetokenizationResponse:
         response_json = self.client.detokenize(
-            model=self.model_name, **request._asdict(), checkpoint=self.checkpoint_name
+            model=self.model_name, **request._asdict()
         )
         return DetokenizationResponse.from_json(response_json)
 
@@ -142,7 +124,6 @@ class AlephAlphaModel:
             model=self.model_name,
             hosting=self.hosting,
             **self.as_request_dict(request),
-            checkpoint=self.checkpoint_name
         )
         return EmbeddingResponse.from_json(response_json)
 
@@ -153,7 +134,6 @@ class AlephAlphaModel:
             model=self.model_name,
             hosting=self.hosting,
             request=request,
-            checkpoint=self.checkpoint_name,
         )
         return SemanticEmbeddingResponse.from_json(response_json)
 
@@ -167,7 +147,6 @@ class AlephAlphaModel:
             model=self.model_name,
             hosting=self.hosting,
             **self.as_request_dict(request),
-            checkpoint=self.checkpoint_name
         )
         return EvaluationResponse.from_json(response_json)
 
@@ -176,7 +155,6 @@ class AlephAlphaModel:
             model=self.model_name,
             hosting=self.hosting,
             **request._asdict(),
-            checkpoint=self.checkpoint_name
         )
         return QaResponse.from_json(response_json)
 
@@ -185,7 +163,6 @@ class AlephAlphaModel:
             model=self.model_name,
             hosting=self.hosting,
             request=request,
-            checkpoint=self.checkpoint_name,
         )
 
     def summarize(self, request: SummarizationRequest) -> SummarizationResponse:
@@ -193,7 +170,6 @@ class AlephAlphaModel:
             self.model_name,
             request,
             hosting=self.hosting,
-            checkpoint=self.checkpoint_name,
         )
         return SummarizationResponse.from_json(response_json)
 

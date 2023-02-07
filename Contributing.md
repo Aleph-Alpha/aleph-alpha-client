@@ -29,8 +29,6 @@ TEST_USERNAME=your_username
 TEST_PASSWORD=your_password
 ```
 
-Some of the tests require direct access to a checkpoint and fail when permissions are lacking.
-
 - A coverage report can be created using the optional arguments --cov-report and --cov (see pytest documentation)
 - A subset of tests can be selected by pointing to the module within tests
 

@@ -8,12 +8,8 @@ from tests.common import (
     client,
     sync_client,
     async_client,
-    checkpoint_name,
     model_name,
     model,
-    checkpoint_name,
-    checkpoint_with_adapter_name,
-    adapter_name,
 )
 
 
@@ -30,38 +26,6 @@ async def test_can_complete_with_async_client(
     )
 
     response = await async_client.complete(request, model=model_name)
-    assert len(response.completions) == 1
-    assert response.model_version is not None
-
-
-async def test_can_complete_with_async_client_against_checkpoint(
-    async_client: AsyncClient, checkpoint_name: str
-):
-    request = CompletionRequest(
-        prompt=Prompt.from_text(""),
-        maximum_tokens=7,
-    )
-
-    response = await async_client.complete(request, checkpoint=checkpoint_name)
-    assert len(response.completions) == 1
-    assert response.model_version is not None
-
-
-async def test_can_complete_with_async_client_against_checkpoint_and_adapter(
-    async_client: AsyncClient,
-    checkpoint_with_adapter_name: str,
-    adapter_name: str,
-):
-    request = CompletionRequest(
-        prompt=Prompt.from_text("Hello, World!\n"),
-        maximum_tokens=7,
-    )
-
-    response = await async_client.complete(
-        request,
-        checkpoint=checkpoint_with_adapter_name,
-        adapter=adapter_name,
-    )
     assert len(response.completions) == 1
     assert response.model_version is not None
 
@@ -96,60 +60,6 @@ def test_complete_with_token_ids(sync_client: Client, model_name: str):
 
     assert len(response.completions) == 1
     assert response.model_version is not None
-
-
-def test_complete_against_checkpoint(sync_client: Client, checkpoint_name: str):
-
-    request = CompletionRequest(
-        prompt=Prompt.from_text(""),
-        maximum_tokens=7,
-        tokens=False,
-        log_probs=0,
-        logit_bias={1: 2.0},
-    )
-
-    response = sync_client.complete(request, checkpoint=checkpoint_name)
-
-    assert len(response.completions) == 1
-    assert response.model_version is not None
-
-
-async def test_can_complete_with_sync_client_against_checkpoint_and_adapter(
-    sync_client: Client,
-    checkpoint_with_adapter_name: str,
-    adapter_name: str,
-):
-    request = CompletionRequest(
-        prompt=Prompt.from_text("Hello, World!\n"),
-        maximum_tokens=7,
-    )
-
-    response = sync_client.complete(
-        request,
-        checkpoint=checkpoint_with_adapter_name,
-        adapter=adapter_name,
-    )
-    assert len(response.completions) == 1
-    assert response.model_version is not None
-
-
-# AlephAlphaClient
-
-
-def test_complete_with_deprecated_client_against_checkpoint(
-    client: AlephAlphaClient, checkpoint_name: str
-):
-    response = client.complete(
-        model=None,
-        prompt=[""],
-        maximum_tokens=7,
-        tokens=False,
-        log_probs=0,
-        checkpoint=checkpoint_name,
-    )
-
-    assert len(response["completions"]) == 1
-    assert response["model_version"] is not None
 
 
 # AlephAlphaModel
