@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.9.0
+
+- Adjust default request timeouts
+- Fix QA Beta bug in AsyncClient
+- Remove experimental checkpoint features
+
 ## 2.8.1
 
 - Fix documentation for Client and AsyncClient for readthedocs.io
