@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.9.1
+
+Rerelease to fix tag issue
+
 ## 2.9.0
 
 - Adjust default request timeouts
