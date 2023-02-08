@@ -20,7 +20,7 @@ class DetokenizationRequest(NamedTuple):
 
 
 class DetokenizationResponse(NamedTuple):
-    result: Sequence[str]
+    result: str
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "DetokenizationResponse":
