@@ -27,7 +27,7 @@ class EvaluationRequest(NamedTuple):
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
-        payload["prompt"] = self.prompt._serialize()
+        payload["prompt"] = self.prompt.to_json()
         return payload
 
 

@@ -36,8 +36,8 @@ class SearchRequest(NamedTuple):
 
     def to_json(self) -> Dict[str, Any]:
         return {
-            "query": self.query._serialize(),
-            "corpus": {k: v._serialize() for k, v in self.corpus.items()},
+            "query": self.query.to_json(),
+            "corpus": {k: v.to_json() for k, v in self.corpus.items()},
             "max_results": self.max_results,
             "min_score": self.min_score,
         }

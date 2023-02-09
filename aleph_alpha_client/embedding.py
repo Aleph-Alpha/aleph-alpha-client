@@ -60,7 +60,7 @@ class EmbeddingRequest(NamedTuple):
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
-        payload["prompt"] = self.prompt._serialize()
+        payload["prompt"] = self.prompt.to_json()
         return payload
 
 
@@ -155,7 +155,7 @@ class SemanticEmbeddingRequest(NamedTuple):
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
         payload["representation"] = self.representation.value
-        payload["prompt"] = self.prompt._serialize()
+        payload["prompt"] = self.prompt.to_json()
         return payload
 
 

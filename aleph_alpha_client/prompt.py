@@ -1,22 +1,65 @@
-from typing import Any, Dict, List, NamedTuple, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Union
 
 from aleph_alpha_client.image import Image
 
 
+class TokenControl(NamedTuple):
+    """
+    Used for Attention Manipulation, for a given token index, you can supply
+    the factor you want to adjust the attention by.
+
+    Parameters:
+        index (int, required):
+            The index of the token in the prompt item that you want to apply
+            the factor to.
+
+        factor (float, required):
+            The amount to adjust model attention by.
+            Values between 0 and 1 will supress attention.
+            A value of 1 will have no effect.
+            Values above 1 will increase attention.
+
+    Examples:
+        >>> Tokens([1, 2, 3], controls=[TokenControl(index=1, factor=0.5)])
+    """
+
+    index: int
+    factor: float
+
+    def to_json(self) -> Dict[str, Any]:
+        return self._asdict()
+
+
 class Tokens(NamedTuple):
     """
+    A list of token ids to be sent as part of a prompt.
+
+    Parameters:
+        tokens (List(int), required):
+            The tokens you want to be passed to the model as part of your prompt.
+
+        controls (List(TokenControl), optional, default None):
+            DISCLAIMER: This may not be supported at the time of package release.
+
+            Used for Attention Manipulation. Provides the ability to change
+            attention for given token ids.
+
     Examples:
-        >>> token_ids = TokenIds([1, 2, 3])
+        >>> token_ids = Tokens([1, 2, 3])
         >>> prompt = Prompt([token_ids])
     """
 
     tokens: List[int]
+    controls: Optional[List[TokenControl]] = None
 
     def _to_prompt_item(self) -> Dict[str, Any]:
         """
         Serialize the prompt item to JSON for sending to the API.
         """
-        return {"type": "token_ids", "data": self.tokens}
+        payload = {"type": "token_ids", "data": self.tokens}
+        if self.controls:
+            payload["controls"] = [c.to_json() for c in self.controls]
+        return payload
 
 
 class Prompt(NamedTuple):
@@ -49,7 +92,7 @@ class Prompt(NamedTuple):
             tokens = Tokens(tokens)
         return Prompt([tokens])
 
-    def _serialize(self, at_least_one_token=False):
+    def to_json(self, at_least_one_token=False):
         return _to_serializable_prompt(
             self.items, at_least_one_token=at_least_one_token
         )
