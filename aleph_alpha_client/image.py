@@ -93,7 +93,7 @@ class Image:
         response.raise_for_status()
         return response.content
 
-    def _to_prompt_item(self) -> Dict[str, Any]:
+    def to_json(self) -> Dict[str, Any]:
         """
         A dict if serialized to JSON is suitable as a prompt element
         """

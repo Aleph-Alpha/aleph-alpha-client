@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Union
+from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence, Union
 
 from aleph_alpha_client.image import Image
 
@@ -9,7 +9,7 @@ class TokenControl(NamedTuple):
     the factor you want to adjust the attention by.
 
     Parameters:
-        index (int, required):
+        pos (int, required):
             The index of the token in the prompt item that you want to apply
             the factor to.
 
@@ -20,14 +20,14 @@ class TokenControl(NamedTuple):
             Values above 1 will increase attention.
 
     Examples:
-        >>> Tokens([1, 2, 3], controls=[TokenControl(index=1, factor=0.5)])
+        >>> Tokens([1, 2, 3], controls=[TokenControl(pos=1, factor=0.5)])
     """
 
-    index: int
+    pos: int
     factor: float
 
-    def to_json(self) -> Dict[str, Any]:
-        return self._asdict()
+    def to_json(self) -> Mapping[str, Any]:
+        return {"index": self.pos, "factor": self.factor}
 
 
 class Tokens(NamedTuple):
@@ -49,10 +49,10 @@ class Tokens(NamedTuple):
         >>> prompt = Prompt([token_ids])
     """
 
-    tokens: List[int]
-    controls: Optional[List[TokenControl]] = None
+    tokens: Sequence[int]
+    controls: Optional[Sequence[TokenControl]] = None
 
-    def _to_prompt_item(self) -> Dict[str, Any]:
+    def to_json(self) -> Mapping[str, Any]:
         """
         Serialize the prompt item to JSON for sending to the API.
         """
@@ -72,7 +72,7 @@ class Prompt(NamedTuple):
             ])
     """
 
-    items: List[Union[str, Image, Tokens, List[int]]]
+    items: Sequence[Union[str, Image, Tokens, Sequence[int]]]
 
     @staticmethod
     def from_text(text: str) -> "Prompt":
@@ -83,7 +83,7 @@ class Prompt(NamedTuple):
         return Prompt([image])
 
     @staticmethod
-    def from_tokens(tokens: Union[List[int], Tokens]) -> "Prompt":
+    def from_tokens(tokens: Union[Sequence[int], Tokens]) -> "Prompt":
         """
         Examples:
             >>> prompt = Prompt.from_tokens(Tokens([1, 2, 3]))
@@ -92,19 +92,19 @@ class Prompt(NamedTuple):
             tokens = Tokens(tokens)
         return Prompt([tokens])
 
-    def to_json(self, at_least_one_token=False):
-        return _to_serializable_prompt(
-            self.items, at_least_one_token=at_least_one_token
-        )
+    def to_json(self) -> Sequence[Mapping[str, Any]]:
+        return [_to_prompt_item(item) for item in self.items]
 
 
-def _to_prompt_item(item: Union[str, Image, Tokens, List[int]]) -> Dict[str, Any]:
+def _to_prompt_item(
+    item: Union[str, Image, Tokens, Sequence[int]]
+) -> Mapping[str, Any]:
     if isinstance(item, str):
         return {"type": "text", "data": item}
     elif isinstance(item, List):
         return {"type": "token_ids", "data": item}
-    elif hasattr(item, "_to_prompt_item"):
-        return item._to_prompt_item()
+    elif hasattr(item, "to_json"):
+        return item.to_json()
     else:
         raise ValueError(
             "The item in the prompt is not valid. Try either a string or an Image."
@@ -113,7 +113,7 @@ def _to_prompt_item(item: Union[str, Image, Tokens, List[int]]) -> Dict[str, Any
 
 def _to_serializable_prompt(
     prompt, at_least_one_token=False
-) -> Union[str, List[Dict[str, str]]]:
+) -> Union[str, Sequence[Mapping[str, str]]]:
     """
     Validates that a prompt and emits the format suitable for serialization as JSON
     """

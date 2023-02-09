@@ -4,12 +4,9 @@ from aleph_alpha_client import Prompt, Tokens, TokenControl
 def test_serialize_token_ids():
     tokens = [1, 2, 3, 4]
     prompt = Prompt.from_tokens(Tokens(tokens))
-    serialize = prompt.to_json()
+    serialized_prompt = prompt.to_json()
 
-    prompt_item = serialize[0]
-
-    assert prompt_item["type"] == "token_ids"
-    assert prompt_item["data"] == tokens
+    assert serialized_prompt == [{"type": "token_ids", "data": [1, 2, 3, 4]}]
 
 
 def test_serialize_token_ids_with_controls():
@@ -18,18 +15,17 @@ def test_serialize_token_ids_with_controls():
         Tokens(
             tokens,
             controls=[
-                TokenControl(index=0, factor=0.25),
-                TokenControl(index=1, factor=0.5),
+                TokenControl(pos=0, factor=0.25),
+                TokenControl(pos=1, factor=0.5),
             ],
         )
     )
-    serialize = prompt.to_json()
+    serialized_prompt = prompt.to_json()
 
-    prompt_item = serialize[0]
-
-    assert prompt_item["type"] == "token_ids"
-    assert prompt_item["data"] == tokens
-    assert prompt_item["controls"][0]["index"] == 0
-    assert prompt_item["controls"][0]["factor"] == 0.25
-    assert prompt_item["controls"][1]["index"] == 1
-    assert prompt_item["controls"][1]["factor"] == 0.5
+    assert serialized_prompt == [
+        {
+            "type": "token_ids",
+            "data": tokens,
+            "controls": [{"index": 0, "factor": 0.25}, {"index": 1, "factor": 0.5}],
+        }
+    ]
