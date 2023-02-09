@@ -7,7 +7,7 @@ from .aleph_alpha_client import (
 )
 from .aleph_alpha_model import AlephAlphaModel
 from .image import Image, ImagePrompt
-from .prompt import Prompt
+from .prompt import Prompt, Tokens
 from .explanation import ExplanationRequest
 from .embedding import (
     EmbeddingRequest,
@@ -59,4 +59,5 @@ __all__ = [
     "SummarizationResponse",
     "TokenizationRequest",
     "TokenizationResponse",
+    "Tokens",
 ]
