@@ -14,7 +14,7 @@ class Cropping:
         self.size = size
 
 
-class ImagePrompt:
+class Image:
     """
     An image send as part of a prompt to a model. The image is represented as
     base64.
@@ -22,7 +22,7 @@ class ImagePrompt:
     Examples:
         >>> # You need to choose a model with multimodal capabilities for this example.
         >>> url = "https://cdn-images-1.medium.com/max/1200/1*HunNdlTmoPj8EKpl-jqvBA.png"
-        >>> image = ImagePrompt.from_url(url)
+        >>> image = Image.from_url(url)
     """
 
     def __init__(
@@ -110,3 +110,7 @@ class ImagePrompt:
                 "y": self.cropping.upper_left_y,
                 "size": self.cropping.size,
             }
+
+
+# For backwards compatibility we still expose this with the old name
+ImagePrompt = Image

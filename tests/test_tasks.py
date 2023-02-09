@@ -1,6 +1,6 @@
 import pytest
 import time
-from aleph_alpha_client import QuotaError, POOLING_OPTIONS, ImagePrompt, Document
+from aleph_alpha_client import QuotaError, POOLING_OPTIONS, Image, Document
 from tests.common import client, model_name
 
 
@@ -280,7 +280,7 @@ def test_should_answer_question_about_image(client, model_name):
 
     prompt = [
         "Q: What shop can be seen in the picture? A:",
-        ImagePrompt.from_file("./tests/image_example.jpg"),
+        Image.from_file("./tests/image_example.jpg"),
     ]
 
     result = client.complete(
@@ -300,7 +300,7 @@ def test_should_entertain_image_cropping_params(client, model_name):
         return
 
     prompt = [
-        ImagePrompt.from_file_with_cropping("./tests/dog-and-cat-cover.jpg", 0, 0, 630),
+        Image.from_file_with_cropping("./tests/dog-and-cat-cover.jpg", 0, 0, 630),
     ]
 
     result = client.complete(

@@ -6,7 +6,7 @@ from .aleph_alpha_client import (
     Client,
 )
 from .aleph_alpha_model import AlephAlphaModel
-from .image import ImagePrompt
+from .image import Image, ImagePrompt
 from .prompt import Prompt
 from .explanation import ExplanationRequest
 from .embedding import (
@@ -43,6 +43,7 @@ __all__ = [
     "EvaluationRequest",
     "EvaluationResponse",
     "ExplanationRequest",
+    "Image",
     "ImagePrompt",
     "Prompt",
     "QaRequest",

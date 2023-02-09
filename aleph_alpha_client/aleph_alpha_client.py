@@ -13,7 +13,7 @@ from urllib3.util.retry import Retry
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.explanation import ExplanationRequest, ExplanationResponse
-from aleph_alpha_client.image import ImagePrompt
+from aleph_alpha_client.image import Image
 from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
 from aleph_alpha_client.qa import QaRequest, QaResponse
@@ -225,7 +225,7 @@ class AlephAlphaClient:
     def complete(
         self,
         model: str,
-        prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
+        prompt: Union[str, List[Union[str, Image]]] = "",
         hosting: Optional[str] = None,
         maximum_tokens: Optional[int] = 64,
         temperature: Optional[float] = 0.0,
@@ -428,7 +428,7 @@ class AlephAlphaClient:
     def embed(
         self,
         model: str,
-        prompt: Union[str, Sequence[Union[str, ImagePrompt]]],
+        prompt: Union[str, Sequence[Union[str, Image]]],
         pooling: List[str],
         layers: List[int],
         hosting: Optional[str] = None,
@@ -569,7 +569,7 @@ class AlephAlphaClient:
         model: str,
         completion_expected,
         hosting: Optional[str] = None,
-        prompt: Union[str, List[Union[str, ImagePrompt]]] = "",
+        prompt: Union[str, List[Union[str, Image]]] = "",
     ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
