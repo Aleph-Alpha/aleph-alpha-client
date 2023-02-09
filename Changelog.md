@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.10.0
+
+- add completion parameters: minimum_tokens, echo, use_multiplicative_frequency_penalty,
+  sequence_penalty, sequence_penalty_min_length, use_multiplicative_sequence_penalty
+
+## 2.9.2
+
+- fix type hint in DetokenizationResponse
+
 ## 2.9.1
 
 Rerelease to fix tag issue
