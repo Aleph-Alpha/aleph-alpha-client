@@ -27,6 +27,11 @@ class Prompt(NamedTuple):
     def from_tokens(tokens: List[int]) -> "Prompt":
         return Prompt([tokens])
 
+    def _serialize(self, at_least_one_token=False):
+        return _to_serializable_prompt(
+            self.items, at_least_one_token=at_least_one_token
+        )
+
 
 def _to_prompt_item(item: Union[str, Image, List[int]]) -> Dict[str, Any]:
     if isinstance(item, str):

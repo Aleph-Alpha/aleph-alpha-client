@@ -541,9 +541,7 @@ class AlephAlphaClient:
                 Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
         """
 
-        serializable_prompt = _to_serializable_prompt(
-            prompt=request.prompt.items, at_least_one_token=True
-        )
+        serializable_prompt = request.prompt._serialize(at_least_one_token=True)
 
         payload: Dict[str, Any] = {
             "model": model,
