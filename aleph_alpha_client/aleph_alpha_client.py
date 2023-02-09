@@ -245,6 +245,12 @@ class AlephAlphaClient:
         stop_sequences: Optional[List[str]] = None,
         tokens: Optional[bool] = False,
         disable_optimizations: Optional[bool] = False,
+        minimum_tokens: int = 0,
+        echo: bool = False,
+        use_multiplicative_frequency_penalty: bool = False,
+        sequence_penalty: float = 0.0,
+        sequence_penalty_min_length: int = 2,
+        use_multiplicative_sequence_penalty: bool = False,
     ):
         """Generates samples from a prompt.
 
@@ -352,6 +358,25 @@ class AlephAlphaClient:
                 We continually research optimal ways to work with our models. By default, we apply these optimizations to both your prompt and  completion for you.
 
                 Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
+
+            minimum_tokens (int, default 0)
+                Generate at least this number of tokens before an end-of-text token is generated.
+
+            echo (bool, default False)
+                Echo the prompt in the completion. This may be especially helpful when log_probs is set to return logprobs for the prompt.
+
+            use_multiplicative_frequency_penalty (bool, default False)
+                Flag deciding whether frequency penalty is applied multiplicatively (True) or additively (False).
+
+            sequence_penalty (float, default 0.0)
+                Increasing the sequence penalty reduces the likelihood of reproducing token sequences that already appear in the prompt
+                (if repetition_penalties_include_prompt is True) and prior completion.
+
+            sequence_penalty_min_length (int, default 2)
+                Minimal number of tokens to be considered as sequence. Must be greater or eqaul 2.
+
+            use_multiplicative_sequence_penalty (bool, default False)
+                Flag deciding whether sequence penalty is applied multiplicatively (True) or additively (False).
         """
 
         payload = {
@@ -375,6 +400,12 @@ class AlephAlphaClient:
             "stop_sequences": stop_sequences,
             "tokens": tokens,
             "disable_optimizations": disable_optimizations,
+            "minimum_tokens": minimum_tokens,
+            "echo": echo,
+            "use_multiplicative_frequency_penalty": use_multiplicative_frequency_penalty,
+            "sequence_penalty": sequence_penalty,
+            "sequence_penalty_min_length": sequence_penalty_min_length,
+            "use_multiplicative_sequence_penalty": use_multiplicative_sequence_penalty,
         }
 
         if hosting is not None:
@@ -403,6 +434,7 @@ class AlephAlphaClient:
         hosting: Optional[str] = None,
         tokens: Optional[bool] = False,
         type: Optional[str] = None,
+        normalize: bool = False,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -445,6 +477,9 @@ class AlephAlphaClient:
 
             type
                 Type of the embedding (e.g. symmetric or asymmetric)
+
+            normalize
+                Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
         """
 
         serializable_prompt = _to_serializable_prompt(
@@ -461,6 +496,7 @@ class AlephAlphaClient:
             "tokens": tokens,
             "pooling": pooling,
             "type": type,
+            "normalize": normalize,
         }
 
         if hosting is not None:
@@ -479,6 +515,7 @@ class AlephAlphaClient:
         model: str,
         request: SemanticEmbeddingRequest,
         hosting: Optional[str] = None,
+        normalize: bool = False,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -499,6 +536,9 @@ class AlephAlphaClient:
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
+
+            normalize
+                Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
         """
 
         serializable_prompt = _to_serializable_prompt(
@@ -510,6 +550,7 @@ class AlephAlphaClient:
             "prompt": serializable_prompt,
             "representation": request.representation.value,
             "compress_to_size": request.compress_to_size,
+            "normalize": normalize,
         }
 
         if hosting is not None:

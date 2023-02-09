@@ -40,6 +40,12 @@ class EmbeddingRequest(NamedTuple):
         tokens
             Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
 
+        normalize
+            Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
+
+            Note that at the moment this parameter does not yet have any effect. This will change as soon as the
+            corresponding feature is available in the backend
+
     Examples:
         >>> prompt = Prompt.from_text("This is an example.")
         >>> EmbeddingRequest(prompt=prompt, layers=[-1], pooling=["mean"])
@@ -50,6 +56,7 @@ class EmbeddingRequest(NamedTuple):
     pooling: List[str]
     type: Optional[str] = None
     tokens: bool = False
+    normalize: bool = False
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
@@ -119,6 +126,12 @@ class SemanticEmbeddingRequest(NamedTuple):
 
             The 128 size can also perform better if you are embedding really short texts or documents.
 
+        normalize
+            Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
+
+            Note that at the moment this parameter does not yet have any effect. This will change as soon as the
+            corresponding feature is available in the backend
+
     Examples
         >>> texts = [
                 "deep learning",
@@ -137,6 +150,7 @@ class SemanticEmbeddingRequest(NamedTuple):
     prompt: Prompt
     representation: SemanticRepresentation
     compress_to_size: Optional[int] = None
+    normalize: bool = False
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()

@@ -107,6 +107,25 @@ class CompletionRequest(NamedTuple):
 
             Our goal is to improve your results while using our API. But you can always pass disable_optimizations: true and we will leave your prompt and completion untouched.
 
+        minimum_tokens (int, default 0)
+            Generate at least this number of tokens before an end-of-text token is generated.
+
+        echo (bool, default False)
+            Echo the prompt in the completion. This may be especially helpful when log_probs is set to return logprobs for the prompt.
+
+        use_multiplicative_frequency_penalty (bool, default False)
+            Flag deciding whether frequency penalty is applied multiplicatively (True) or additively (False).
+
+        sequence_penalty (float, default 0.0)
+            Increasing the sequence penalty reduces the likelihood of reproducing token sequences that already appear in the prompt
+            (if repetition_penalties_include_prompt is True) and prior completion.
+
+        sequence_penalty_min_length (int, default 2)
+            Minimal number of tokens to be considered as sequence. Must be greater or eqaul 2.
+
+        use_multiplicative_sequence_penalty (bool, default False)
+            Flag deciding whether sequence penalty is applied multiplicatively (True) or additively (False).
+
     Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
         >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
@@ -131,6 +150,12 @@ class CompletionRequest(NamedTuple):
     stop_sequences: Optional[List[str]] = None
     tokens: bool = False
     disable_optimizations: bool = False
+    minimum_tokens: int = 0
+    echo: bool = False
+    use_multiplicative_frequency_penalty: bool = False
+    sequence_penalty: float = 0.0
+    sequence_penalty_min_length: int = 2
+    use_multiplicative_sequence_penalty: bool = False
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
