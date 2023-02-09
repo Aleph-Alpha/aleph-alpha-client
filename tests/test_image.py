@@ -3,7 +3,7 @@ from pytest import raises
 from pytest_httpserver import HTTPServer
 from requests import RequestException
 
-from aleph_alpha_client.image import ImagePrompt
+from aleph_alpha_client.image import Image
 
 
 def test_from_url_with_non_OK_response(httpserver: HTTPServer):
@@ -13,4 +13,4 @@ def test_from_url_with_non_OK_response(httpserver: HTTPServer):
     )
 
     with raises(RequestException) as e:
-        ImagePrompt.from_url(httpserver.url_for(path))
+        Image.from_url(httpserver.url_for(path))

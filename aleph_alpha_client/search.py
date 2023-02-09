@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence
+from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence
 
-from aleph_alpha_client.prompt import Prompt, _to_serializable_prompt
+from aleph_alpha_client.prompt import Prompt
 
 
 class SearchRequest(NamedTuple):
@@ -36,10 +36,8 @@ class SearchRequest(NamedTuple):
 
     def to_json(self) -> Dict[str, Any]:
         return {
-            "query": _to_serializable_prompt(self.query.items),
-            "corpus": {
-                k: _to_serializable_prompt(v.items) for k, v in self.corpus.items()
-            },
+            "query": self.query.to_json(),
+            "corpus": {k: v.to_json() for k, v in self.corpus.items()},
             "max_results": self.max_results,
             "min_score": self.min_score,
         }

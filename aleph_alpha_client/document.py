@@ -1,7 +1,7 @@
 import base64
 from typing import Any, Dict, List, Optional, Sequence, Union
 
-from aleph_alpha_client.image import ImagePrompt
+from aleph_alpha_client.image import Image
 from aleph_alpha_client.prompt import _to_prompt_item
 
 
@@ -13,7 +13,7 @@ class Document:
     def __init__(
         self,
         docx: Optional[str] = None,
-        prompt: Optional[Sequence[Union[str, ImagePrompt]]] = None,
+        prompt: Optional[Sequence[Union[str, Image]]] = None,
         text: Optional[str] = None,
     ):
         # We use a base_64 representation for docx documents, because we want to embed the file
@@ -44,7 +44,7 @@ class Document:
         return cls.from_docx_bytes(docx_bytes)
 
     @classmethod
-    def from_prompt(cls, prompt: Sequence[Union[str, ImagePrompt]]):
+    def from_prompt(cls, prompt: Sequence[Union[str, Image]]):
         """
         Pass a prompt that can contain multiple strings and Image prompts and prepare it to be used as a document
         """
