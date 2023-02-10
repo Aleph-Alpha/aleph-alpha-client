@@ -136,7 +136,10 @@ def test_timeout(httpserver: HTTPServer):
     """Ensures Timeouts works. AlephAlphaClient constructor calls version endpoint."""
     with pytest.raises(requests.exceptions.ConnectionError):
         AlephAlphaClient(
-            host=httpserver.url_for(""), token="AA_TOKEN", request_timeout_seconds=0.1
+            host=httpserver.url_for(""),
+            token="AA_TOKEN",
+            request_timeout_seconds=0.1,
+            total_retries=1,
         )
 
 
