@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.11.1
+
+- fix complete in deprecated client: pass None-lists as empty list
+
 ## 2.11.0
 
 - add completion parameters: completion_bias_inclusion, completion_bias_inclusion_first_token_only
