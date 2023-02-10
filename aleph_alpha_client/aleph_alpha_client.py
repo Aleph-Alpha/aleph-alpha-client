@@ -894,7 +894,10 @@ class Client:
 
     def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""
-        response = self.session.get(self.host + "version")
+        return self._get_request("version")
+
+    def _get_request(self, endpoint: str) -> str:
+        response = self.session.get(self.host + endpoint)
         if not response.ok:
             _raise_for_status(response.status_code, response.text)
         return response.text
@@ -1220,8 +1223,7 @@ class Client:
         return SearchResponse.from_json(response)
 
     def offline_tokenizer(self, model: str) -> Tokenizer:
-        response = self.session.get(self.host + f"models/{model}/tokenizer")
-        return Tokenizer.from_str(response.text)
+        return Tokenizer.from_str(self._get_request(f"models/{model}/tokenizer"))
 
 
 class AsyncClient:
@@ -1328,8 +1330,11 @@ class AsyncClient:
 
     async def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""
+        return await self._get_request("version")
+
+    async def _get_request(self, endpoint: str) -> str:
         async with self.session.get(
-            self.host + "version",
+            self.host + endpoint,
         ) as response:
             if not response.ok:
                 _raise_for_status(response.status, await response.text())
@@ -1652,10 +1657,4 @@ class AsyncClient:
         return SearchResponse.from_json(response)
 
     async def offline_tokenizer(self, model: str) -> Tokenizer:
-        async with self.session.get(
-            self.host + f"models/{model}/tokenizer",
-        ) as response:
-            if not response.ok:
-                _raise_for_status(response.status, await response.text())
-
-            return Tokenizer.from_str(await response.text())
+        return Tokenizer.from_str(await self._get_request(f"models/{model}/tokenizer"))
