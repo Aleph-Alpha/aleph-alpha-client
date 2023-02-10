@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.11.0
+
+- add completion parameters: completion_bias_inclusion, completion_bias_inclusion_first_token_only
+  completion_bias_exclusion, completion_bias_exclusion_first_token_only
+
 ## 2.10.0
 
 - add completion parameters: minimum_tokens, echo, use_multiplicative_frequency_penalty,
