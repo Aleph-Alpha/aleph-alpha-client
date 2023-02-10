@@ -126,6 +126,26 @@ class CompletionRequest(NamedTuple):
         use_multiplicative_sequence_penalty (bool, default False)
             Flag deciding whether sequence penalty is applied multiplicatively (True) or additively (False).
 
+        completion_bias_inclusion (List[str], default [])
+            Bias the completion to only generate options within this list;
+            all other tokens are disregarded at sampling
+
+            Note that strings in the inclusion list must not be prefixes
+            of strings in the exclusion list and vice versa
+
+        completion_bias_inclusion_first_token_only (bool, default False)
+            Only consider the first token for the completion_bias_inclusion
+
+        completion_bias_exclusion (List[str], default [])
+            Bias the completion to NOT generate options within this list;
+            all other tokens are unaffected in sampling
+
+            Note that strings in the inclusion list must not be prefixes
+            of strings in the exclusion list and vice versa
+
+        completion_bias_exclusion_first_token_only (bool, default False)
+            Only consider the first token for the completion_bias_exclusion
+
     Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
         >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
@@ -156,9 +176,13 @@ class CompletionRequest(NamedTuple):
     sequence_penalty: float = 0.0
     sequence_penalty_min_length: int = 2
     use_multiplicative_sequence_penalty: bool = False
+    completion_bias_inclusion: Optional[Sequence[str]] = None
+    completion_bias_inclusion_first_token_only: bool = False
+    completion_bias_exclusion: Optional[Sequence[str]] = None
+    completion_bias_exclusion_first_token_only: bool = False
 
     def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
+        payload = {k: v for k, v in self._asdict().items() if v is not None}
         payload["prompt"] = self.prompt.to_json()
         return payload
 

@@ -88,6 +88,13 @@ class AlephAlphaClient:
         request_timeout_seconds (int, optional, default 305):
             Client timeout that will be set for HTTP requests in the `requests` library's API calls.
             Server will close all requests after 300 seconds with an internal server error.
+
+        total_retries(int, optional, default 8)
+            The number of retries made in case requests fail with certain retryable status codes. If the last
+            retry fails a corresponding exception is raised. Note, that between retries an exponential backoff
+            is applied, starting with 0.5 s after the first retry and doubling for each retry made. So with the
+            default setting of 8 retries a total wait time of 63.5 s is added between the retries.
+
     """
 
     def __init__(
@@ -97,6 +104,7 @@ class AlephAlphaClient:
         email=None,
         password=None,
         request_timeout_seconds=DEFAULT_REQUEST_TIMEOUT,
+        total_retries: int = 8,
     ):
         warnings.warn(
             "AlephAlphaClient is deprecated and will be removed in the next major release. Use Client or AsyncClient instead.",
@@ -111,7 +119,7 @@ class AlephAlphaClient:
         self.request_timeout_seconds = request_timeout_seconds
 
         retry_strategy = Retry(
-            total=8,
+            total=total_retries,
             backoff_factor=0.25,
             status_forcelist=RETRY_STATUS_CODES,
             allowed_methods=["POST", "GET"],
@@ -251,6 +259,10 @@ class AlephAlphaClient:
         sequence_penalty: float = 0.0,
         sequence_penalty_min_length: int = 2,
         use_multiplicative_sequence_penalty: bool = False,
+        completion_bias_inclusion: Optional[Sequence[str]] = None,
+        completion_bias_inclusion_first_token_only: bool = False,
+        completion_bias_exclusion: Optional[Sequence[str]] = None,
+        completion_bias_exclusion_first_token_only: bool = False,
     ):
         """Generates samples from a prompt.
 
@@ -377,6 +389,20 @@ class AlephAlphaClient:
 
             use_multiplicative_sequence_penalty (bool, default False)
                 Flag deciding whether sequence penalty is applied multiplicatively (True) or additively (False).
+
+            completion_bias_inclusion (List[str], default [])
+                Bias the completion to only generate options within this list;
+                all other tokens are disregarded at sampling
+
+            completion_bias_inclusion_first_token_only (bool, default False)
+                Only consider the first token for the completion_bias_inclusion
+
+            completion_bias_exclusion (List[str], default [])
+                Bias the completion to NOT generate options within this list;
+                all other tokens are unaffected in sampling
+
+            completion_bias_exclusion_first_token_only (bool, default False)
+                Only consider the first token for the completion_bias_exclusion
         """
 
         payload = {
@@ -406,6 +432,10 @@ class AlephAlphaClient:
             "sequence_penalty": sequence_penalty,
             "sequence_penalty_min_length": sequence_penalty_min_length,
             "use_multiplicative_sequence_penalty": use_multiplicative_sequence_penalty,
+            "completion_bias_inclusion": completion_bias_inclusion,
+            "completion_bias_inclusion_first_token_only": completion_bias_inclusion_first_token_only,
+            "completion_bias_exclusion": completion_bias_exclusion,
+            "completion_bias_exclusion_first_token_only": completion_bias_exclusion_first_token_only,
         }
 
         if hosting is not None:
