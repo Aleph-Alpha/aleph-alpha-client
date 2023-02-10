@@ -1,5 +1,5 @@
 import logging
-from tokenizers import Tokenizer
+from tokenizers import Tokenizer  # type: ignore
 from types import TracebackType
 from typing import Any, List, Mapping, Optional, Dict, Sequence, Tuple, Type, Union
 import warnings
