@@ -1,8 +1,8 @@
 import logging
+from tokenizers import Tokenizer
 from types import TracebackType
 from typing import Any, List, Mapping, Optional, Dict, Sequence, Tuple, Type, Union
 import warnings
-
 import aiohttp
 from aiohttp_retry import RetryClient, ExponentialRetry
 import requests
@@ -1219,6 +1219,10 @@ class Client:
         response = self._post_request("search", request, None)
         return SearchResponse.from_json(response)
 
+    def offline_tokenizer(self, model: str) -> Tokenizer:
+        response = self.session.get(self.host + f"models/{model}/tokenizer")
+        return Tokenizer.from_str(response.text)
+
 
 class AsyncClient:
     """
@@ -1646,3 +1650,12 @@ class AsyncClient:
         """
         response = await self._post_request("search", request, None)
         return SearchResponse.from_json(response)
+
+    async def offline_tokenizer(self, model: str) -> Tokenizer:
+        async with self.session.get(
+            self.host + f"models/{model}/tokenizer",
+        ) as response:
+            if not response.ok:
+                _raise_for_status(response.status, await response.text())
+
+            return Tokenizer.from_str(await response.text())
