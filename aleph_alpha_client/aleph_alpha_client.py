@@ -399,7 +399,7 @@ class AlephAlphaClient:
 
             completion_bias_exclusion (List[str], default [])
                 Bias the completion to NOT generate options within this list;
-                all other tokens are disregarded at sampling
+                all other tokens are unaffected in sampling
 
             completion_bias_exclusion_first_token_only (bool, default False)
                 Only consider the first token for the completion_bias_exclusion
@@ -432,6 +432,10 @@ class AlephAlphaClient:
             "sequence_penalty": sequence_penalty,
             "sequence_penalty_min_length": sequence_penalty_min_length,
             "use_multiplicative_sequence_penalty": use_multiplicative_sequence_penalty,
+            "completion_bias_inclusion": completion_bias_inclusion,
+            "completion_bias_inclusion_first_token_only": completion_bias_inclusion_first_token_only,
+            "completion_bias_exclusion": completion_bias_exclusion,
+            "completion_bias_exclusion_first_token_only": completion_bias_exclusion_first_token_only,
         }
 
         if hosting is not None:

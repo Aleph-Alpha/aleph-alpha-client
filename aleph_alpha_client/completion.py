@@ -138,7 +138,7 @@ class CompletionRequest(NamedTuple):
 
         completion_bias_exclusion (List[str], default [])
             Bias the completion to NOT generate options within this list;
-            all other tokens are disregarded at sampling
+            all other tokens are unaffected in sampling
 
             Note that strings in the inclusion list must not be prefixes
             of strings in the exclusion list and vice versa
