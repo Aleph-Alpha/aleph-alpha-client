@@ -432,9 +432,9 @@ class AlephAlphaClient:
             "sequence_penalty": sequence_penalty,
             "sequence_penalty_min_length": sequence_penalty_min_length,
             "use_multiplicative_sequence_penalty": use_multiplicative_sequence_penalty,
-            "completion_bias_inclusion": completion_bias_inclusion,
+            "completion_bias_inclusion": completion_bias_inclusion or [],
             "completion_bias_inclusion_first_token_only": completion_bias_inclusion_first_token_only,
-            "completion_bias_exclusion": completion_bias_exclusion,
+            "completion_bias_exclusion": completion_bias_exclusion or [],
             "completion_bias_exclusion_first_token_only": completion_bias_exclusion_first_token_only,
         }
 
