@@ -1232,7 +1232,7 @@ class Client:
         response = self._post_request("search", request, None)
         return SearchResponse.from_json(response)
 
-    def offline_tokenizer(self, model: str) -> Tokenizer:
+    def tokenizer(self, model: str) -> Tokenizer:
         return Tokenizer.from_str(self._get_request(f"models/{model}/tokenizer").text)
 
 
@@ -1340,16 +1340,23 @@ class AsyncClient:
 
     async def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""
-        response = await self._get_request("version")
-        return await response.text()
+        return await self._get_request_text("version")
 
-    async def _get_request(self, endpoint: str) -> ClientResponse:
+    async def _get_request_text(self, endpoint: str) -> str:
         async with self.session.get(
             self.host + endpoint,
         ) as response:
             if not response.ok:
                 _raise_for_status(response.status, await response.text())
-            return response
+            return await response.text()
+
+    async def _get_request_json(self, endpoint: str) -> Mapping[str, Any]:
+        async with self.session.get(
+            self.host + endpoint,
+        ) as response:
+            if not response.ok:
+                _raise_for_status(response.status, await response.text())
+            return await response.json()
 
     async def _post_request(
         self,
@@ -1391,8 +1398,7 @@ class AsyncClient:
         """
         Queries all models which are currently available.
         """
-        response = await self._get_request("models_available")
-        return await response.json()
+        return await self._get_request_json("models_available")
 
     async def complete(
         self,
@@ -1674,6 +1680,6 @@ class AsyncClient:
         response = await self._post_request("search", request, None)
         return SearchResponse.from_json(response)
 
-    async def offline_tokenizer(self, model: str) -> Tokenizer:
-        response = await self._get_request(f"models/{model}/tokenizer")
-        return Tokenizer.from_str(await response.text())
+    async def tokenizer(self, model: str) -> Tokenizer:
+        response = await self._get_request_text(f"models/{model}/tokenizer")
+        return Tokenizer.from_str(response)
