@@ -943,7 +943,7 @@ class Client:
             json_body["hosting"] = self.hosting
         return json_body
 
-    def models(self) -> Mapping[str, Any]:
+    def models(self) -> List[Mapping[str, Any]]:
         """
         Queries all models which are currently available.
 
@@ -1357,7 +1357,9 @@ class AsyncClient:
                 _raise_for_status(response.status, await response.text())
             return await response.text()
 
-    async def _get_request_json(self, endpoint: str) -> Mapping[str, Any]:
+    async def _get_request_json(
+        self, endpoint: str
+    ) -> Union[List[Mapping[str, Any]], Mapping[str, Any]]:
         async with self.session.get(
             self.host + endpoint,
         ) as response:
@@ -1401,13 +1403,13 @@ class AsyncClient:
             json_body["hosting"] = self.hosting
         return json_body
 
-    async def models(self) -> Mapping[str, Any]:
+    async def models(self) -> List[Mapping[str, Any]]:
         """
         Queries all models which are currently available.
 
         For documentation of the response, see https://docs.aleph-alpha.com/api/available-models/
         """
-        return await self._get_request_json("models_available")
+        return await self._get_request_json("models_available")  # type: ignore
 
     async def complete(
         self,
