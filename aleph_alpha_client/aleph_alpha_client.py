@@ -16,7 +16,7 @@ import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.explanation import ExplanationRequest, ExplanationResponse
 from aleph_alpha_client.image import Image
-from aleph_alpha_client.prompt import _to_prompt_item, _to_serializable_prompt
+from aleph_alpha_client.prompt import _to_json, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
 from aleph_alpha_client.qa import QaRequest, QaResponse
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
@@ -779,7 +779,7 @@ class AlephAlphaClient:
     ):
         body = {
             "model": model,
-            "prompt": [_to_prompt_item(item) for item in request.prompt.items],
+            "prompt": [_to_json(item) for item in request.prompt.items],
             "target": request.target,
             "suppression_factor": request.suppression_factor,
             "conceptual_suppression_threshold": request.conceptual_suppression_threshold,
