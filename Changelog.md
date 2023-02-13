@@ -3,7 +3,7 @@
 ## 2.12.0
 
 - Introduce offline tokenizer
-- Add method `available_models` to Client and AsyncClient
+- Add method `models` to Client and AsyncClient to list available models
 - Fix docstrings for `complete` methods with respect to Prompt construction
 - Minor docstring fix for `evaulate` methods
 

@@ -946,6 +946,8 @@ class Client:
     def models(self):
         """
         Queries all models which are currently available.
+
+        For documentation of the response, see https://docs.aleph-alpha.com/api/available-models/
         """
         response = self._get_request("models_available")
         _raise_for_status(response.status_code, response.text)
@@ -1403,6 +1405,8 @@ class AsyncClient:
     async def models(self):
         """
         Queries all models which are currently available.
+
+        For documentation of the response, see https://docs.aleph-alpha.com/api/available-models/
         """
         return await self._get_request_json("models_available")
 
