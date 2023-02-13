@@ -74,4 +74,4 @@ async def test_available_models_async_client(
     async_client: AsyncClient, model_name: str
 ):
     models = await async_client.models()
-    assert model_name in [model["name"] for model in models]
+    assert model_name in {model["name"] for model in models}

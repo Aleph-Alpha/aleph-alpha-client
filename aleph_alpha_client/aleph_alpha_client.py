@@ -943,14 +943,13 @@ class Client:
             json_body["hosting"] = self.hosting
         return json_body
 
-    def models(self):
+    def models(self) -> Mapping[str, Any]:
         """
         Queries all models which are currently available.
 
         For documentation of the response, see https://docs.aleph-alpha.com/api/available-models/
         """
         response = self._get_request("models_available")
-        _raise_for_status(response.status_code, response.text)
         return response.json()
 
     def complete(
@@ -1402,7 +1401,7 @@ class AsyncClient:
             json_body["hosting"] = self.hosting
         return json_body
 
-    async def models(self):
+    async def models(self) -> Mapping[str, Any]:
         """
         Queries all models which are currently available.
 

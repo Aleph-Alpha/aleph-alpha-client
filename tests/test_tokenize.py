@@ -53,7 +53,7 @@ def test_tokenize_with_client_against_model(client: AlephAlphaClient, model_name
     assert len(response["token_ids"]) == 1
 
 
-def test_offline_tokenizer_sync(sync_client: Client, model_name: str):
+def test_offline_tokenize_sync(sync_client: Client, model_name: str):
     prompt = "Hello world"
 
     tokenizer = sync_client.tokenizer(model_name)
@@ -69,17 +69,20 @@ def test_offline_tokenizer_sync(sync_client: Client, model_name: str):
     assert offline_tokenization.ids == online_tokenization_response.token_ids
     assert offline_tokenization.tokens == online_tokenization_response.tokens
 
-    detokenization_request = DetokenizationRequest(
-        token_ids=online_tokenization_response.token_ids
-    )
+
+def test_offline_detokenize_sync(sync_client: Client, model_name: str):
+    prompt = "Hello world"
+
+    tokenizer = sync_client.tokenizer(model_name)
+    offline_tokenization = tokenizer.encode(prompt)
+    offline_detokenization = tokenizer.decode(offline_tokenization.ids)
+
+    detokenization_request = DetokenizationRequest(token_ids=offline_tokenization.ids)
     online_detokenization_response = sync_client.detokenize(
         detokenization_request, model_name
     )
 
-    assert (
-        tokenizer.decode(offline_tokenization.ids)
-        == online_detokenization_response.result
-    )
+    assert offline_detokenization == online_detokenization_response.result
 
 
 async def test_offline_tokenizer_async(async_client: AsyncClient, model_name: str):
