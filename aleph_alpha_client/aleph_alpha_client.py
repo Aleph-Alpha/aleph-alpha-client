@@ -943,7 +943,7 @@ class Client:
             json_body["hosting"] = self.hosting
         return json_body
 
-    def available_models(self):
+    def models(self):
         """
         Queries all models which are currently available.
         """
@@ -1400,7 +1400,7 @@ class AsyncClient:
             json_body["hosting"] = self.hosting
         return json_body
 
-    async def available_models(self):
+    async def models(self):
         """
         Queries all models which are currently available.
         """

@@ -65,7 +65,7 @@ async def test_nice_flag_on_async_client(httpserver: HTTPServer):
 
 @pytest.mark.system_test
 def test_available_models_sync_client(sync_client: Client, model_name: str):
-    models = sync_client.available_models()
+    models = sync_client.models()
     assert model_name in [model["name"] for model in models]
 
 
@@ -73,5 +73,5 @@ def test_available_models_sync_client(sync_client: Client, model_name: str):
 async def test_available_models_async_client(
     async_client: AsyncClient, model_name: str
 ):
-    models = await async_client.available_models()
+    models = await async_client.models()
     assert model_name in [model["name"] for model in models]
