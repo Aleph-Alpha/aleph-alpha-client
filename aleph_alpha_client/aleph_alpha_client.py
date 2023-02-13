@@ -1233,6 +1233,12 @@ class Client:
         return SearchResponse.from_json(response)
 
     def tokenizer(self, model: str) -> Tokenizer:
+        """Returns a Tokenizer instance with the settings that were used to train the model.
+
+        Examples:
+            >>> tokenizer = client.tokenizer(model="luminous-extended")
+            >>> tokenized_prompt = tokenizer.encode("Hello world")
+        """
         return Tokenizer.from_str(self._get_request(f"models/{model}/tokenizer").text)
 
 
@@ -1681,5 +1687,11 @@ class AsyncClient:
         return SearchResponse.from_json(response)
 
     async def tokenizer(self, model: str) -> Tokenizer:
+        """Returns a Tokenizer instance with the settings that were used to train the model.
+
+        Examples:
+            >>> tokenizer = await client.tokenizer(model="luminous-extended")
+            >>> tokenized_prompt = tokenizer.encode("Hello world")
+        """
         response = await self._get_request_text(f"models/{model}/tokenizer")
         return Tokenizer.from_str(response)
