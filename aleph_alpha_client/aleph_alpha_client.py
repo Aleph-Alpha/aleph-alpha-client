@@ -1,11 +1,13 @@
 import logging
+from tokenizers import Tokenizer  # type: ignore
 from types import TracebackType
 from typing import Any, List, Mapping, Optional, Dict, Sequence, Tuple, Type, Union
 import warnings
-
 import aiohttp
+from aiohttp import ClientResponse
 from aiohttp_retry import RetryClient, ExponentialRetry
 import requests
+from requests import Response
 from requests.adapters import HTTPAdapter
 from requests.structures import CaseInsensitiveDict
 from urllib3.util.retry import Retry
@@ -894,10 +896,13 @@ class Client:
 
     def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""
-        response = self.session.get(self.host + "version")
+        return self._get_request("version").text
+
+    def _get_request(self, endpoint: str) -> Response:
+        response = self.session.get(self.host + endpoint)
         if not response.ok:
             _raise_for_status(response.status_code, response.text)
-        return response.text
+        return response
 
     def _post_request(
         self,
@@ -938,6 +943,15 @@ class Client:
             json_body["hosting"] = self.hosting
         return json_body
 
+    def models(self) -> List[Mapping[str, Any]]:
+        """
+        Queries all models which are currently available.
+
+        For documentation of the response, see https://docs.aleph-alpha.com/api/available-models/
+        """
+        response = self._get_request("models_available")
+        return response.json()
+
     def complete(
         self,
         request: CompletionRequest,
@@ -955,7 +969,7 @@ class Client:
 
         Examples:
             >>> # create a prompt
-            >>> prompt = Prompt("An apple a day, ")
+            >>> prompt = Prompt.from_text("An apple a day, ")
             >>>
             >>> # create a completion request
             >>> request = CompletionRequest(
@@ -1121,7 +1135,7 @@ class Client:
 
         Examples:
             >>> request = EvaluationRequest(
-                    prompt=Prompt.from_text("hello"), completion_expected="world"
+                    prompt=Prompt.from_text("hello"), completion_expected=" world"
                 )
             >>> response = client.evaluate(request, model=model_name)
         """
@@ -1218,6 +1232,15 @@ class Client:
         """
         response = self._post_request("search", request, None)
         return SearchResponse.from_json(response)
+
+    def tokenizer(self, model: str) -> Tokenizer:
+        """Returns a Tokenizer instance with the settings that were used to train the model.
+
+        Examples:
+            >>> tokenizer = client.tokenizer(model="luminous-extended")
+            >>> tokenized_prompt = tokenizer.encode("Hello world")
+        """
+        return Tokenizer.from_str(self._get_request(f"models/{model}/tokenizer").text)
 
 
 class AsyncClient:
@@ -1324,12 +1347,25 @@ class AsyncClient:
 
     async def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""
+        return await self._get_request_text("version")
+
+    async def _get_request_text(self, endpoint: str) -> str:
         async with self.session.get(
-            self.host + "version",
+            self.host + endpoint,
         ) as response:
             if not response.ok:
                 _raise_for_status(response.status, await response.text())
             return await response.text()
+
+    async def _get_request_json(
+        self, endpoint: str
+    ) -> Union[List[Mapping[str, Any]], Mapping[str, Any]]:
+        async with self.session.get(
+            self.host + endpoint,
+        ) as response:
+            if not response.ok:
+                _raise_for_status(response.status, await response.text())
+            return await response.json()
 
     async def _post_request(
         self,
@@ -1367,6 +1403,14 @@ class AsyncClient:
             json_body["hosting"] = self.hosting
         return json_body
 
+    async def models(self) -> List[Mapping[str, Any]]:
+        """
+        Queries all models which are currently available.
+
+        For documentation of the response, see https://docs.aleph-alpha.com/api/available-models/
+        """
+        return await self._get_request_json("models_available")  # type: ignore
+
     async def complete(
         self,
         request: CompletionRequest,
@@ -1384,7 +1428,7 @@ class AsyncClient:
 
         Examples:
             >>> # create a prompt
-            >>> prompt = Prompt("An apple a day, ")
+            >>> prompt = Prompt.from_text("An apple a day, ")
             >>>
             >>> # create a completion request
             >>> request = CompletionRequest(
@@ -1549,7 +1593,7 @@ class AsyncClient:
 
         Examples:
             >>> request = EvaluationRequest(
-                    prompt=Prompt.from_text("hello"), completion_expected="world"
+                    prompt=Prompt.from_text("hello"), completion_expected=" world"
                 )
             >>> response = await client.evaluate(request, model=model_name)
         """
@@ -1646,3 +1690,13 @@ class AsyncClient:
         """
         response = await self._post_request("search", request, None)
         return SearchResponse.from_json(response)
+
+    async def tokenizer(self, model: str) -> Tokenizer:
+        """Returns a Tokenizer instance with the settings that were used to train the model.
+
+        Examples:
+            >>> tokenizer = await client.tokenizer(model="luminous-extended")
+            >>> tokenized_prompt = tokenizer.encode("Hello world")
+        """
+        response = await self._get_request_text(f"models/{model}/tokenizer")
+        return Tokenizer.from_str(response)
