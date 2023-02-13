@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.12.0
+
+- Introduce offline tokenizer
+- Add method `available_models` to Client and AsyncClient
+- Fix docstrings for `complete` methods with respect to Prompt construction
+- Minor docstring fix for `evaulate` methods
+
 ## 2.11.1
 
 - fix complete in deprecated client: pass None-lists as empty list
