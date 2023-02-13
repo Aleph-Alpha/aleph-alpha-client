@@ -8,7 +8,7 @@ from aleph_alpha_client.completion import (
     CompletionResult,
 )
 from aleph_alpha_client.prompt import Prompt
-from tests.common import model_name
+from tests.common import model_name, sync_client, async_client
 
 
 @pytest.mark.system_test
@@ -61,3 +61,17 @@ async def test_nice_flag_on_async_client(httpserver: HTTPServer):
         host=httpserver.url_for(""), token="AA_TOKEN", nice=True
     ) as client:
         await client.complete(request, model="luminous")
+
+
+@pytest.mark.system_test
+def test_available_models_sync_client(sync_client: Client, model_name: str):
+    models = sync_client.available_models()
+    assert model_name in [model["name"] for model in models]
+
+
+@pytest.mark.system_test
+async def test_available_models_async_client(
+    async_client: AsyncClient, model_name: str
+):
+    models = await async_client.available_models()
+    assert model_name in [model["name"] for model in models]

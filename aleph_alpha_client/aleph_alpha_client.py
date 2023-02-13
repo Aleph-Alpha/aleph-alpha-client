@@ -4,8 +4,10 @@ from types import TracebackType
 from typing import Any, List, Mapping, Optional, Dict, Sequence, Tuple, Type, Union
 import warnings
 import aiohttp
+from aiohttp import ClientResponse
 from aiohttp_retry import RetryClient, ExponentialRetry
 import requests
+from requests import Response
 from requests.adapters import HTTPAdapter
 from requests.structures import CaseInsensitiveDict
 from urllib3.util.retry import Retry
@@ -894,13 +896,13 @@ class Client:
 
     def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""
-        return self._get_request("version")
+        return self._get_request("version").text
 
-    def _get_request(self, endpoint: str) -> str:
+    def _get_request(self, endpoint: str) -> Response:
         response = self.session.get(self.host + endpoint)
         if not response.ok:
             _raise_for_status(response.status_code, response.text)
-        return response.text
+        return response
 
     def _post_request(
         self,
@@ -940,6 +942,14 @@ class Client:
         if self.hosting is not None:
             json_body["hosting"] = self.hosting
         return json_body
+
+    def available_models(self):
+        """
+        Queries all models which are currently available.
+        """
+        response = self._get_request("models_available")
+        _raise_for_status(response.status_code, response.text)
+        return response.json()
 
     def complete(
         self,
@@ -1124,7 +1134,7 @@ class Client:
 
         Examples:
             >>> request = EvaluationRequest(
-                    prompt=Prompt.from_text("hello"), completion_expected="world"
+                    prompt=Prompt.from_text("hello"), completion_expected=" world"
                 )
             >>> response = client.evaluate(request, model=model_name)
         """
@@ -1223,7 +1233,7 @@ class Client:
         return SearchResponse.from_json(response)
 
     def offline_tokenizer(self, model: str) -> Tokenizer:
-        return Tokenizer.from_str(self._get_request(f"models/{model}/tokenizer"))
+        return Tokenizer.from_str(self._get_request(f"models/{model}/tokenizer").text)
 
 
 class AsyncClient:
@@ -1330,15 +1340,16 @@ class AsyncClient:
 
     async def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""
-        return await self._get_request("version")
+        response = await self._get_request("version")
+        return await response.text()
 
-    async def _get_request(self, endpoint: str) -> str:
+    async def _get_request(self, endpoint: str) -> ClientResponse:
         async with self.session.get(
             self.host + endpoint,
         ) as response:
             if not response.ok:
                 _raise_for_status(response.status, await response.text())
-            return await response.text()
+            return response
 
     async def _post_request(
         self,
@@ -1375,6 +1386,13 @@ class AsyncClient:
         if self.hosting is not None:
             json_body["hosting"] = self.hosting
         return json_body
+
+    async def available_models(self):
+        """
+        Queries all models which are currently available.
+        """
+        response = await self._get_request("models_available")
+        return await response.json()
 
     async def complete(
         self,
@@ -1558,7 +1576,7 @@ class AsyncClient:
 
         Examples:
             >>> request = EvaluationRequest(
-                    prompt=Prompt.from_text("hello"), completion_expected="world"
+                    prompt=Prompt.from_text("hello"), completion_expected=" world"
                 )
             >>> response = await client.evaluate(request, model=model_name)
         """
@@ -1657,4 +1675,5 @@ class AsyncClient:
         return SearchResponse.from_json(response)
 
     async def offline_tokenizer(self, model: str) -> Tokenizer:
-        return Tokenizer.from_str(await self._get_request(f"models/{model}/tokenizer"))
+        response = await self._get_request(f"models/{model}/tokenizer")
+        return Tokenizer.from_str(await response.text())
