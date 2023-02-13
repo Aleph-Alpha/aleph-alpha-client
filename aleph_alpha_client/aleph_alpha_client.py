@@ -968,7 +968,7 @@ class Client:
 
         Examples:
             >>> # create a prompt
-            >>> prompt = Prompt("An apple a day, ")
+            >>> prompt = Prompt.from_text("An apple a day, ")
             >>>
             >>> # create a completion request
             >>> request = CompletionRequest(
@@ -1411,7 +1411,7 @@ class AsyncClient:
 
         Examples:
             >>> # create a prompt
-            >>> prompt = Prompt("An apple a day, ")
+            >>> prompt = Prompt.from_text("An apple a day, ")
             >>>
             >>> # create a completion request
             >>> request = CompletionRequest(
