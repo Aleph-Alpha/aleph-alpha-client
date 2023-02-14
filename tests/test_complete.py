@@ -48,8 +48,6 @@ def test_complete(sync_client: Client, model_name: str):
         tokens=False,
         log_probs=0,
         logit_bias={1: 2.0},
-        contextual_control_threshold=0.1,
-        control_log_additive=False,
     )
 
     response = sync_client.complete(request, model=model_name)
