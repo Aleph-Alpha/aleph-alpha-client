@@ -155,8 +155,8 @@ class CompletionRequest(NamedTuple):
             The similarity score is the cosine similarity of token embeddings.
 
         control_log_additive (bool, default True)
-            True: apply supression by adding the log(supression_factor) to attention scores.
-            False: apply control by (attention_scores - - attention_scores.min(-1)) * supression_factor
+            True: apply control by adding the log(control_factor) to attention scores.
+            False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
 
     Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
