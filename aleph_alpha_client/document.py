@@ -2,7 +2,7 @@ import base64
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 from aleph_alpha_client.image import Image
-from aleph_alpha_client.prompt import _to_prompt_item
+from aleph_alpha_client.prompt import PromptItem, Text, _to_json
 
 
 class Document:
@@ -65,6 +65,12 @@ class Document:
         """
         A dict if serialized to JSON is suitable as a document element
         """
+
+        def to_prompt_item(item: Union[str, Image]) -> PromptItem:
+            # document still uses a plain piece of text for text-prompts
+            # -> convert to Text-instance
+            return Text.from_text(item) if isinstance(item, str) else item
+
         if self.docx is not None:
             # Serialize docx to Document JSON format
             return {
@@ -72,7 +78,9 @@ class Document:
             }
         elif self.prompt is not None:
             # Serialize prompt to Document JSON format
-            prompt_data = [_to_prompt_item(prompt_item) for prompt_item in self.prompt]
+            prompt_data = [
+                _to_json(to_prompt_item(prompt_item)) for prompt_item in self.prompt
+            ]
             return {"prompt": prompt_data}
         elif self.text is not None:
             return {

@@ -2,7 +2,7 @@ import pytest
 from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, AsyncClient, Client
 from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.completion import CompletionRequest
-from aleph_alpha_client.prompt import Prompt
+from aleph_alpha_client.prompt import Prompt, Text, TextControl
 
 from tests.common import (
     client,
@@ -36,7 +36,14 @@ async def test_can_complete_with_async_client(
 @pytest.mark.system_test
 def test_complete(sync_client: Client, model_name: str):
     request = CompletionRequest(
-        prompt=Prompt.from_text(""),
+        prompt=Prompt(
+            [
+                Text(
+                    "Hello, World!",
+                    controls=[TextControl(start=1, length=5, factor=0.5)],
+                )
+            ]
+        ),
         maximum_tokens=7,
         tokens=False,
         log_probs=0,
