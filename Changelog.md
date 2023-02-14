@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.13.0
+
+- Add attention manipulation parameters on character level
+
 ## 2.12.0
 
 - Introduce offline tokenizer

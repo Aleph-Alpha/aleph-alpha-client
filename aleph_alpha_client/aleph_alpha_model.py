@@ -98,7 +98,7 @@ class AlephAlphaModel:
     def complete(self, request: CompletionRequest) -> CompletionResponse:
         """
         Examples:
-            >>> prompt = Prompt(["Provide a short description of AI:"])
+            >>> prompt = Prompt.from_text("Provide a short description of AI:")
             >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
             >>> result = model.complete(request)
         """

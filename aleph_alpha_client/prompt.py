@@ -121,7 +121,7 @@ class Text(NamedTuple):
         return Text(text, [])
 
 
-PromptItem = Union[Text, Tokens, Image]
+PromptItem = Union[Text, Tokens, Image, str, Sequence[int]]
 
 
 class Prompt(NamedTuple):
@@ -130,7 +130,7 @@ class Prompt(NamedTuple):
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
         >>> prompt = Prompt([
                 Image.from_url(url),
-                "Provide a short description of AI:",
+                Text.from_text("Provide a short description of AI:"),
             ])
     """
 
