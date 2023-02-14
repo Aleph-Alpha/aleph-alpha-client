@@ -146,6 +146,18 @@ class CompletionRequest(NamedTuple):
         completion_bias_exclusion_first_token_only (bool, default False)
             Only consider the first token for the completion_bias_exclusion
 
+        contextual_control_threshold (float, default None)
+            If set to None, attention control parameters only apply to those tokens that have
+            explicitly been set in the request.
+            If set to a non-None value, we apply the control parameters to similar tokens as well.
+            Controls that have been applied to one token will then be applied to all other tokens
+            that have at least the similarity score defined by this parameter.
+            The similarity score is the cosine similarity of token embeddings.
+
+        control_log_additive (bool, default True)
+            True: apply control by adding the log(control_factor) to attention scores.
+            False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
+
     Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
         >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
@@ -180,6 +192,8 @@ class CompletionRequest(NamedTuple):
     completion_bias_inclusion_first_token_only: bool = False
     completion_bias_exclusion: Optional[Sequence[str]] = None
     completion_bias_exclusion_first_token_only: bool = False
+    contextual_control_threshold: Optional[float] = None
+    control_log_additive: Optional[bool] = True
 
     def to_json(self) -> Dict[str, Any]:
         payload = {k: v for k, v in self._asdict().items() if v is not None}

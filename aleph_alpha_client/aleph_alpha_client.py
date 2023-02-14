@@ -265,6 +265,8 @@ class AlephAlphaClient:
         completion_bias_inclusion_first_token_only: bool = False,
         completion_bias_exclusion: Optional[Sequence[str]] = None,
         completion_bias_exclusion_first_token_only: bool = False,
+        contextual_control_threshold: Optional[float] = None,
+        control_log_additive: Optional[bool] = True,
     ):
         """Generates samples from a prompt.
 
@@ -405,6 +407,18 @@ class AlephAlphaClient:
 
             completion_bias_exclusion_first_token_only (bool, default False)
                 Only consider the first token for the completion_bias_exclusion
+
+            contextual_control_threshold (float, default None)
+                If set to None, attention control parameters only apply to those tokens that have
+                explicitly been set in the request.
+                If set to a non-None value, we apply the control parameters to similar tokens as well.
+                Controls that have been applied to one token will then be applied to all other tokens
+                that have at least the similarity score defined by this parameter.
+                The similarity score is the cosine similarity of token embeddings.
+
+            control_log_additive (bool, default True)
+                True: apply control by adding the log(control_factor) to attention scores.
+                False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
         """
 
         payload = {
@@ -438,6 +452,8 @@ class AlephAlphaClient:
             "completion_bias_inclusion_first_token_only": completion_bias_inclusion_first_token_only,
             "completion_bias_exclusion": completion_bias_exclusion or [],
             "completion_bias_exclusion_first_token_only": completion_bias_exclusion_first_token_only,
+            "contextual_control_threshold": contextual_control_threshold,
+            "control_log_additive": control_log_additive,
         }
 
         if hosting is not None:
@@ -467,6 +483,8 @@ class AlephAlphaClient:
         tokens: Optional[bool] = False,
         type: Optional[str] = None,
         normalize: bool = False,
+        contextual_control_threshold: Optional[float] = None,
+        control_log_additive: Optional[bool] = True,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -512,6 +530,18 @@ class AlephAlphaClient:
 
             normalize
                 Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
+
+            contextual_control_threshold (float, default None)
+                If set to None, attention control parameters only apply to those tokens that have
+                explicitly been set in the request.
+                If set to a non-None value, we apply the control parameters to similar tokens as well.
+                Controls that have been applied to one token will then be applied to all other tokens
+                that have at least the similarity score defined by this parameter.
+                The similarity score is the cosine similarity of token embeddings.
+
+            control_log_additive (bool, default True)
+                True: apply control by adding the log(control_factor) to attention scores.
+                False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
         """
 
         serializable_prompt = _to_serializable_prompt(
@@ -529,6 +559,8 @@ class AlephAlphaClient:
             "pooling": pooling,
             "type": type,
             "normalize": normalize,
+            "contextual_control_threshold": contextual_control_threshold,
+            "control_log_additive": control_log_additive,
         }
 
         if hosting is not None:
@@ -581,6 +613,8 @@ class AlephAlphaClient:
             "representation": request.representation.value,
             "compress_to_size": request.compress_to_size,
             "normalize": normalize,
+            "contextual_control_threshold": request.contextual_control_threshold,
+            "control_log_additive": request.control_log_additive,
         }
 
         if hosting is not None:
@@ -600,6 +634,8 @@ class AlephAlphaClient:
         completion_expected,
         hosting: Optional[str] = None,
         prompt: Union[str, List[Union[str, Image]]] = "",
+        contextual_control_threshold: Optional[float] = None,
+        control_log_additive: Optional[bool] = True,
     ):
         """
         Evaluates the model's likelihood to produce a completion given a prompt.
@@ -623,6 +659,18 @@ class AlephAlphaClient:
 
             prompt (str, optional, default ""):
                 The text to be completed. Unconditional completion can be used with an empty string (default). The prompt may contain a zero shot or few shot task.
+
+            contextual_control_threshold (float, default None)
+                If set to None, attention control parameters only apply to those tokens that have
+                explicitly been set in the request.
+                If set to a non-None value, we apply the control parameters to similar tokens as well.
+                Controls that have been applied to one token will then be applied to all other tokens
+                that have at least the similarity score defined by this parameter.
+                The similarity score is the cosine similarity of token embeddings.
+
+            control_log_additive (bool, default True)
+                True: apply control by adding the log(control_factor) to attention scores.
+                False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
         """
 
         serializable_prompt = _to_serializable_prompt(prompt=prompt)
@@ -631,6 +679,8 @@ class AlephAlphaClient:
             "model": model,
             "prompt": serializable_prompt,
             "completion_expected": completion_expected,
+            "contextual_control_threshold": contextual_control_threshold,
+            "control_log_additive": control_log_additive,
         }
 
         if hosting is not None:

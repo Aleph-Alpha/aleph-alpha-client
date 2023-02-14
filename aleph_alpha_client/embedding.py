@@ -46,6 +46,18 @@ class EmbeddingRequest(NamedTuple):
             Note that at the moment this parameter does not yet have any effect. This will change as soon as the
             corresponding feature is available in the backend
 
+        contextual_control_threshold (float, default None)
+            If set to None, attention control parameters only apply to those tokens that have
+            explicitly been set in the request.
+            If set to a non-None value, we apply the control parameters to similar tokens as well.
+            Controls that have been applied to one token will then be applied to all other tokens
+            that have at least the similarity score defined by this parameter.
+            The similarity score is the cosine similarity of token embeddings.
+
+        control_log_additive (bool, default True)
+            True: apply control by adding the log(control_factor) to attention scores.
+            False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
+
     Examples:
         >>> prompt = Prompt.from_text("This is an example.")
         >>> EmbeddingRequest(prompt=prompt, layers=[-1], pooling=["mean"])
@@ -57,6 +69,8 @@ class EmbeddingRequest(NamedTuple):
     type: Optional[str] = None
     tokens: bool = False
     normalize: bool = False
+    contextual_control_threshold: Optional[float] = None
+    control_log_additive: Optional[bool] = True
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
@@ -132,6 +146,18 @@ class SemanticEmbeddingRequest(NamedTuple):
             Note that at the moment this parameter does not yet have any effect. This will change as soon as the
             corresponding feature is available in the backend
 
+        contextual_control_threshold (float, default None)
+            If set to None, attention control parameters only apply to those tokens that have
+            explicitly been set in the request.
+            If set to a non-None value, we apply the control parameters to similar tokens as well.
+            Controls that have been applied to one token will then be applied to all other tokens
+            that have at least the similarity score defined by this parameter.
+            The similarity score is the cosine similarity of token embeddings.
+
+        control_log_additive (bool, default True)
+            True: apply control by adding the log(control_factor) to attention scores.
+            False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
+
     Examples
         >>> texts = [
                 "deep learning",
@@ -151,6 +177,8 @@ class SemanticEmbeddingRequest(NamedTuple):
     representation: SemanticRepresentation
     compress_to_size: Optional[int] = None
     normalize: bool = False
+    contextual_control_threshold: Optional[float] = None
+    control_log_additive: Optional[bool] = True
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
