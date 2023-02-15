@@ -18,19 +18,22 @@ class ImageControl(NamedTuple):
     """
     Attention manipulation for an Image PromptItem.
 
+    Keep in mind that your image will get center-cropped unless you specify an explicit cropping.
+    Cropping will also affect your ImageControls.
+
     Parameters:
         left (float, required):
             x-coordinate of top left corner of the control bounding box.
-            Must be a value between 0 and 1 in logical coordinates based on the size of the image.
+            Must be a value between 0 and 1, where 0 is the left corner and 1 is the right corner.
         top (float, required):
             y-coordinate of top left corner of the control bounding box
-            Must be a value between 0 and 1 in logical coordinates based on the size of the image.
+            Must be a value between 0 and 1, where 0 is the top pixel row and 1 is the bottom row.
         width (float, required):
             width of the control bounding box
-            Must be a value between 0 and 1 in logical coordinates based on the size of the image.
+            Must be a value between 0 and 1, where 1 means the full width of the image.
         height (float, required):
             height of the control bounding box
-            Must be a value between 0 and 1 in logical coordinates based on the size of the image.
+            Must be a value between 0 and 1, where 1 means the full height of the image.
         factor (float, required):
             The amount to adjust model attention by.
             Values between 0 and 1 will supress attention.
@@ -84,18 +87,20 @@ class Image:
         cls,
         bytes: bytes,
         cropping: Optional[Cropping] = None,
-        controls: Sequence[ImageControl] = [],
+        controls: Optional[Sequence[ImageControl]] = None,
     ):
         image = base64.b64encode(bytes).decode()
-        return cls(image, cropping, controls)
+        return cls(image, cropping, controls or [])
 
     @classmethod
-    def from_url(cls, url: str, controls: Sequence[ImageControl] = []):
+    def from_url(cls, url: str, controls: Optional[Sequence[ImageControl]] = None):
         """
         Downloads a file and prepare it to be used in a prompt.
         The image will be [center cropped](https://pytorch.org/vision/stable/transforms.html#torchvision.transforms.CenterCrop)
         """
-        return cls.from_bytes(cls._get_url(url), cropping=None, controls=controls)
+        return cls.from_bytes(
+            cls._get_url(url), cropping=None, controls=controls or None
+        )
 
     @classmethod
     def from_url_with_cropping(
@@ -104,7 +109,7 @@ class Image:
         upper_left_x: int,
         upper_left_y: int,
         crop_size: int,
-        controls: Sequence[ImageControl] = [],
+        controls: Optional[Sequence[ImageControl]] = None,
     ):
         """
         Downloads a file and prepare it to be used in a prompt.
@@ -114,17 +119,17 @@ class Image:
             upper_left_x=upper_left_x, upper_left_y=upper_left_y, size=crop_size
         )
         bytes = cls._get_url(url)
-        return cls.from_bytes(bytes, cropping=cropping, controls=controls)
+        return cls.from_bytes(bytes, cropping=cropping, controls=controls or [])
 
     @classmethod
-    def from_file(cls, path: str, controls: Sequence[ImageControl] = []):
+    def from_file(cls, path: str, controls: Optional[Sequence[ImageControl]] = None):
         """
         Load an image from disk and prepare it to be used in a prompt
         If they are not provided then the image will be [center cropped](https://pytorch.org/vision/stable/transforms.html#torchvision.transforms.CenterCrop)
         """
         with open(path, "rb") as f:
             image = f.read()
-        return cls.from_bytes(image, None, controls)
+        return cls.from_bytes(image, None, controls or [])
 
     @classmethod
     def from_file_with_cropping(
@@ -133,7 +138,7 @@ class Image:
         upper_left_x: int,
         upper_left_y: int,
         crop_size: int,
-        controls: Sequence[ImageControl] = [],
+        controls: Optional[Sequence[ImageControl]] = None,
     ):
         """
         Load an image from disk and prepare it to be used in a prompt
@@ -144,7 +149,7 @@ class Image:
         )
         with open(path, "rb") as f:
             bytes = f.read()
-        return cls.from_bytes(bytes, cropping=cropping, controls=controls)
+        return cls.from_bytes(bytes, cropping=cropping, controls=controls or None)
 
     @classmethod
     def _get_url(cls, url: str) -> bytes:
