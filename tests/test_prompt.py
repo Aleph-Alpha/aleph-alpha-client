@@ -1,5 +1,9 @@
 from aleph_alpha_client import Prompt, Tokens, TokenControl, Image, ImageControl
-from aleph_alpha_client.prompt import TextControl
+from aleph_alpha_client.aleph_alpha_client import Client
+from aleph_alpha_client.completion import CompletionRequest
+from aleph_alpha_client.image import ImagePrompt
+from aleph_alpha_client.prompt import Text, TextControl
+from tests.common import sync_client, model_name
 
 
 def test_serialize_token_ids():
@@ -71,3 +75,26 @@ def test_serialize_image_with_controls():
             ],
         }
     ]
+
+
+def test_image_controls_with_cats_and_dogs(sync_client: Client, model_name: str):
+    image = ImagePrompt.from_file_with_cropping(
+        "tests/dog-and-cat-cover.jpg",
+        # crop exactly 600x600 pixels out of the image
+        300,
+        0,
+        600,
+        controls=[
+            # Suppress the cat
+            ImageControl(left=0.5, top=0.0, width=0.5, height=1.0, factor=0.0)
+        ],
+    )
+    text = Text.from_text("A picture of ")
+    request = CompletionRequest(
+        prompt=Prompt([image, text]),
+        maximum_tokens=16,
+        control_log_additive=True,
+        disable_optimizations=False,
+    )
+    result = sync_client.complete(request, model="luminous-extended")
+    assert result.completions[0].completion == " a dog"
