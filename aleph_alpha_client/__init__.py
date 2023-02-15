@@ -6,8 +6,8 @@ from .aleph_alpha_client import (
     Client,
 )
 from .aleph_alpha_model import AlephAlphaModel
-from .image import Image, ImagePrompt
-from .prompt import Prompt, Tokens, TokenControl
+from .image import Image, ImagePrompt, ImageControl
+from .prompt import Prompt, Tokens, TokenControl, Text, TextControl
 from .explanation import ExplanationRequest
 from .embedding import (
     EmbeddingRequest,
@@ -44,6 +44,7 @@ __all__ = [
     "EvaluationResponse",
     "ExplanationRequest",
     "Image",
+    "ImageControl",
     "ImagePrompt",
     "Prompt",
     "QaRequest",
@@ -57,6 +58,8 @@ __all__ = [
     "SemanticRepresentation",
     "SummarizationRequest",
     "SummarizationResponse",
+    "Text",
+    "TextControl",
     "TokenizationRequest",
     "TokenizationResponse",
     "TokenControl",
