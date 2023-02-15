@@ -86,7 +86,7 @@ def test_image_controls_with_cats_and_dogs(sync_client: Client, model_name: str)
         600,
         controls=[
             # Suppress the cat
-            ImageControl(left=0.5, top=0.0, width=0.5, height=1.0, factor=0.0)
+            ImageControl(left=0.5, top=0.0, width=0.25, height=1.0, factor=0.0)
         ],
     )
     text = Text.from_text("A picture of ")
