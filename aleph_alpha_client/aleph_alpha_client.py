@@ -579,7 +579,6 @@ class AlephAlphaClient:
         model: str,
         request: SemanticEmbeddingRequest,
         hosting: Optional[str] = None,
-        normalize: bool = False,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -612,7 +611,7 @@ class AlephAlphaClient:
             "prompt": serializable_prompt,
             "representation": request.representation.value,
             "compress_to_size": request.compress_to_size,
-            "normalize": normalize,
+            "normalize": request.normalize,
             "contextual_control_threshold": request.contextual_control_threshold,
             "control_log_additive": request.control_log_additive,
         }
