@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.14.0
+
+- Add attention manipulation parameters for images in multimodal prompts
+
 ## 2.13.0
 
 - Add attention manipulation parameters on character level
