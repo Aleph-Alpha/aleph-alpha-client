@@ -267,6 +267,7 @@ class AlephAlphaClient:
         completion_bias_exclusion_first_token_only: bool = False,
         contextual_control_threshold: Optional[float] = None,
         control_log_additive: Optional[bool] = True,
+        repetition_penalties_include_completion: bool = True,
     ):
         """Generates samples from a prompt.
 
@@ -316,7 +317,9 @@ class AlephAlphaClient:
                 Flag deciding whether presence penalty is applied multiplicatively (True) or additively (False). This changes the formula stated for presence and frequency penalty.
 
             penalty_bias (string, optional)
-                If set, all tokens in this text will be used in addition to the already penalized tokens for repetition penalties. These consist of the already generated completion tokens and the prompt tokens, if `repetition_penalties_include_prompt` is set to `true`.
+                If set, all tokens in this text will be used in addition to the already penalized tokens for repetition penalties.
+                These consist of the already generated completion tokens if ``repetition_penalties_include_completion`` is set to ``true``
+                and the prompt tokens, if `repetition_penalties_include_prompt` is set to `true`.
 
                 *Potential use case for a chatbot-based completion:*
 
@@ -386,7 +389,7 @@ class AlephAlphaClient:
 
             sequence_penalty (float, default 0.0)
                 Increasing the sequence penalty reduces the likelihood of reproducing token sequences that already appear in the prompt
-                (if repetition_penalties_include_prompt is True) and prior completion.
+                (if repetition_penalties_include_prompt is True) and completion (if repetition_penalties_include_completion is True).
 
             sequence_penalty_min_length (int, default 2)
                 Minimal number of tokens to be considered as sequence. Must be greater or eqaul 2.
@@ -419,6 +422,9 @@ class AlephAlphaClient:
             control_log_additive (bool, default True)
                 True: apply control by adding the log(control_factor) to attention scores.
                 False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
+
+            repetition_penalties_include_completion (bool, optional, default True)
+                Flag deciding whether presence penalty or frequency penalty are updated from the completion
         """
 
         payload = {
@@ -454,6 +460,7 @@ class AlephAlphaClient:
             "completion_bias_exclusion_first_token_only": completion_bias_exclusion_first_token_only,
             "contextual_control_threshold": contextual_control_threshold,
             "control_log_additive": control_log_additive,
+            "repetition_penalties_include_completion": repetition_penalties_include_completion,
         }
 
         if hosting is not None:

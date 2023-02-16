@@ -34,21 +34,25 @@ class CompletionRequest(NamedTuple):
             It is recommended to use either temperature, top_k or top_p and not all at the same time. If a combination of temperature, top_k or top_p is used rescaling of logits with temperature will be performed first. Then top_k is applied. Top_p follows last.
 
         presence_penalty (float, optional, default 0.0)
-            The presence penalty reduces the likelihood of generating tokens that are already present in the text.
+            The presence penalty reduces the likelihood of generating tokens that are already present in the
+            generated text (`repetition_penalties_include_completion=true`) respectively the prompt (`repetition_penalties_include_prompt=true`).
             Presence penalty is independent of the number of occurences. Increase the value to produce text that is not repeating the input.
 
         frequency_penalty (float, optional, default 0.0)
-            The frequency penalty reduces the likelihood of generating tokens that are already present in the text.
+            The frequency penalty reduces the likelihood of generating tokens that are already present in the
+            generated text (`repetition_penalties_include_completion=true`) respectively the prompt (`repetition_penalties_include_prompt=true`).
             Frequency penalty is dependent on the number of occurences of a token.
 
         repetition_penalties_include_prompt (bool, optional, default False)
-            Flag deciding whether presence penalty or frequency penalty are applied to the prompt and completion (True) or only the completion (False)
+            Flag deciding whether presence penalty or frequency penalty are updated from the prompt
 
         use_multiplicative_presence_penalty (bool, optional, default True)
             Flag deciding whether presence penalty is applied multiplicatively (True) or additively (False). This changes the formula stated for presence and frequency penalty.
 
         penalty_bias (string, optional)
-            If set, all tokens in this text will be used in addition to the already penalized tokens for repetition penalties. These consist of the already generated completion tokens and the prompt tokens, if ``repetition_penalties_include_prompt`` is set to ``true``\,
+            If set, all tokens in this text will be used in addition to the already penalized tokens for repetition penalties.
+            These consist of the already generated completion tokens if ``repetition_penalties_include_completion`` is set to ``true``
+            and the prompt tokens, if ``repetition_penalties_include_prompt`` is set to ``true``\,
 
             *Potential use case for a chatbot-based completion:*
 
@@ -118,7 +122,7 @@ class CompletionRequest(NamedTuple):
 
         sequence_penalty (float, default 0.0)
             Increasing the sequence penalty reduces the likelihood of reproducing token sequences that already appear in the prompt
-            (if repetition_penalties_include_prompt is True) and prior completion.
+            (if repetition_penalties_include_prompt is True) and prior completion (if repetition_penalties_include_completion is True).
 
         sequence_penalty_min_length (int, default 2)
             Minimal number of tokens to be considered as sequence. Must be greater or eqaul 2.
@@ -158,6 +162,9 @@ class CompletionRequest(NamedTuple):
             True: apply control by adding the log(control_factor) to attention scores.
             False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
 
+        repetition_penalties_include_completion (bool, optional, default True)
+            Flag deciding whether presence penalty or frequency penalty are updated from the completion
+
     Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
         >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
@@ -194,6 +201,7 @@ class CompletionRequest(NamedTuple):
     completion_bias_exclusion_first_token_only: bool = False
     contextual_control_threshold: Optional[float] = None
     control_log_additive: Optional[bool] = True
+    repetition_penalties_include_completion: bool = True
 
     def to_json(self) -> Dict[str, Any]:
         payload = {k: v for k, v in self._asdict().items() if v is not None}
