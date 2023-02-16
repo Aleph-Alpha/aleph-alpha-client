@@ -39,8 +39,6 @@ class Tokens(NamedTuple):
             The tokens you want to be passed to the model as part of your prompt.
 
         controls (List(TokenControl), optional, default None):
-            DISCLAIMER: This may not be supported at the time of package release.
-
             Used for Attention Manipulation. Provides the ability to change
             attention for given token ids.
 
