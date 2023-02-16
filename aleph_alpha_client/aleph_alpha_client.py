@@ -579,7 +579,6 @@ class AlephAlphaClient:
         model: str,
         request: SemanticEmbeddingRequest,
         hosting: Optional[str] = None,
-        normalize: bool = False,
     ):
         """
         Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
@@ -600,9 +599,6 @@ class AlephAlphaClient:
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
-
-            normalize
-                Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
         """
 
         serializable_prompt = request.prompt.to_json()
@@ -612,7 +608,7 @@ class AlephAlphaClient:
             "prompt": serializable_prompt,
             "representation": request.representation.value,
             "compress_to_size": request.compress_to_size,
-            "normalize": normalize,
+            "normalize": request.normalize,
             "contextual_control_threshold": request.contextual_control_threshold,
             "control_log_additive": request.control_log_additive,
         }
