@@ -599,9 +599,6 @@ class AlephAlphaClient:
 
             request (SemanticEmbeddingRequest, required)
                 NamedTuple containing all necessary request parameters.
-
-            normalize
-                Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
         """
 
         serializable_prompt = request.prompt.to_json()
