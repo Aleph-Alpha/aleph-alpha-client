@@ -160,7 +160,7 @@ class Prompt(NamedTuple):
 
 def _to_json(item: PromptItem) -> Mapping[str, Any]:
     if hasattr(item, "to_json"):
-        return item.to_json()
+        return item.to_json()  # type: ignore
     # Required for backwards compatibility
     # item could be a plain piece of text or a plain list of token-ids
     elif isinstance(item, str):
