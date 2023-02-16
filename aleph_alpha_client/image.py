@@ -18,8 +18,12 @@ class ImageControl(NamedTuple):
     """
     Attention manipulation for an Image PromptItem.
 
-    Keep in mind that your image will get center-cropped unless you specify an explicit cropping.
-    Cropping will also affect your ImageControls.
+    All coordinates of the bounding box are logical coordinates (between 0 and 1) and relative to
+    the entire image.
+
+    Keep in mind, non-square images are center-cropped by default before going to the model. (You
+    can specify a custom cropping if you want.). Since control coordinates are relative to the
+    entire image, all or a portion of your control may be outside the "model visible area".
 
     Parameters:
         left (float, required):
@@ -63,6 +67,13 @@ class Image:
     """
     An image send as part of a prompt to a model. The image is represented as
     base64.
+
+    Note: The models operate on square images. All non-square images are center-cropped
+    before going to the model, so portions of the image may not be visible.
+
+    You can supply specific cropping parameters if you like, to choose a different area
+    of the image than a center-crop. Or, you can always transform the image yourself to
+    a square before sending it.
 
     Examples:
         >>> # You need to choose a model with multimodal capabilities for this example.
