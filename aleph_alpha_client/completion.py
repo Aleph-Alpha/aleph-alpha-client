@@ -98,6 +98,8 @@ class CompletionRequest(NamedTuple):
         log_probs (int, optional, default None)
             Number of top log probabilities to be returned for each generated token. Log probabilities may be used in downstream tasks or to assess the model's certainty when producing tokens.
 
+            If set to 0, you will always get the log probability of the sampled token. 1 or more will return the argmax token(s) plus the sampled one, if not already included.
+
         stop_sequences (List(str), optional, default None)
             List of strings which will stop generation if they're generated. Stop sequences may be helpful in structured texts.
 
