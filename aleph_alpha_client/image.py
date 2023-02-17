@@ -1,4 +1,5 @@
 import base64
+from pathlib import Path
 from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence, Union
 from urllib.parse import urlparse
 
@@ -98,7 +99,7 @@ class Image:
     @classmethod
     def from_image_source(
         cls,
-        image_source: Union[str, bytes],
+        image_source: Union[str, Path, bytes],
         controls: Optional[Sequence[ImageControl]] = None,
     ):
         """
@@ -107,13 +108,16 @@ class Image:
         or a bytes array, just use the method and we will figure out which of the methods of image initialization to use
         The image will be [center cropped](https://pytorch.org/vision/stable/transforms.html#torchvision.transforms.CenterCrop)
         """
+        if isinstance(image_source, Path):
+            return cls.from_file(path=str(image_source), controls=controls)
+
         if isinstance(image_source, str):
             try:
                 p = urlparse(image_source)
                 if p.scheme:
                     return cls.from_url(url=image_source, controls=controls)
-            except UnicodeDecodeError:
-                # we assume that If the string runs into a UnicodeDecodeError it isn't not a valid ulr
+            except Exception as e:
+                # we assume that If the string runs into a Exception it isn't not a valid ulr
                 pass
 
             return cls.from_file(path=image_source, controls=controls)
