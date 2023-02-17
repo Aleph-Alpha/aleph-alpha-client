@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.15.0
+
+- Add completion parameter: repetition_penalties_include_completion, raw_completion
+- Fix json deserialization bug: Ignore additional unknown fields in json
+
 ## 2.14.0
 
 - Add attention manipulation parameters for images in multimodal prompts
