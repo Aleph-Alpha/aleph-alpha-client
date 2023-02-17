@@ -218,6 +218,16 @@ class CompletionResult(NamedTuple):
     finish_reason: Optional[str] = None
     raw_completion: Optional[str] = None
 
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "CompletionResult":
+        return CompletionResult(
+            log_probs=json.get("log_probs"),
+            completion=json.get("completion"),
+            completion_tokens=json.get("completion_tokens"),
+            finish_reason=json.get("finish_reason"),
+            raw_completion=json.get("raw_completion"),
+        )
+
 
 class CompletionResponse(NamedTuple):
     model_version: str
@@ -228,7 +238,9 @@ class CompletionResponse(NamedTuple):
     def from_json(json: Dict[str, Any]) -> "CompletionResponse":
         return CompletionResponse(
             model_version=json["model_version"],
-            completions=[CompletionResult(**item) for item in json["completions"]],
+            completions=[
+                CompletionResult.from_json(item) for item in json["completions"]
+            ],
             optimized_prompt=json.get("optimized_prompt"),
         )
 
