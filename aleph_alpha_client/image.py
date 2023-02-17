@@ -1,5 +1,7 @@
 import base64
-from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence
+from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence, Union
+from urllib.parse import urlparse
+
 import requests
 
 
@@ -92,6 +94,37 @@ class Image:
         self.base_64 = base_64
         self.cropping = cropping
         self.controls: Sequence[ImageControl] = controls
+
+    @classmethod
+    def from_image_source(
+        cls,
+        image_source: Union[str, bytes],
+        controls: Optional[Sequence[ImageControl]] = None,
+    ):
+        """
+        Abstraction on top of the existing methods of image initialization.
+        If you are not sure what the exact type of your image, but you know it is either a URL, a file path,
+        or a bytes array, just use the method and we will figure out which of the methods of image initialization to use
+        The image will be [center cropped](https://pytorch.org/vision/stable/transforms.html#torchvision.transforms.CenterCrop)
+        """
+        if isinstance(image_source, str):
+            try:
+                p = urlparse(image_source)
+                if p.scheme:
+                    return cls.from_url(url=image_source, controls=controls)
+            except UnicodeDecodeError:
+                # we assume that If the string runs into a UnicodeDecodeError it isn't not a valid ulr
+                pass
+
+            return cls.from_file(path=image_source, controls=controls)
+
+        elif isinstance(image_source, bytes):
+            return cls.from_bytes(bytes=image_source, controls=controls)
+
+        else:
+            raise TypeError(
+                f"The image source: {image_source} should be either str or bytes"
+            )
 
     @classmethod
     def from_bytes(
