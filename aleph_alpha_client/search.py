@@ -58,6 +58,10 @@ class SearchResult(NamedTuple):
     id: str
     score: float
 
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "SearchResult":
+        return SearchResult(id=json["id"], score=json["score"])
+
 
 class SearchResponse(NamedTuple):
     model_version: str
@@ -67,5 +71,5 @@ class SearchResponse(NamedTuple):
     def from_json(json: Dict[str, Any]) -> "SearchResponse":
         return SearchResponse(
             model_version=json["model_version"],
-            results=[SearchResult(**item) for item in json["results"]],
+            results=[SearchResult.from_json(item) for item in json["results"]],
         )
