@@ -127,7 +127,7 @@ class Image:
 
         else:
             raise TypeError(
-                f"The image source: {image_source} should be either str or bytes"
+                f"The image source: {image_source} should be either Path, str or bytes"
             )
 
     @classmethod
