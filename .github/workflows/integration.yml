@@ -1,6 +1,6 @@
 name: Test things on pushes
 
-on: push
+on: [push, pull_request]
 
 jobs:
   lint-and-test:
