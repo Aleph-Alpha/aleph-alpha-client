@@ -106,7 +106,6 @@ class Image:
         Abstraction on top of the existing methods of image initialization.
         If you are not sure what the exact type of your image, but you know it is either a Path object, URL, a file path,
         or a bytes array, just use the method and we will figure out which of the methods of image initialization to use
-        The image will be [center cropped](https://pytorch.org/vision/stable/transforms.html#torchvision.transforms.CenterCrop)
         """
         if isinstance(image_source, Path):
             return cls.from_file(path=str(image_source), controls=controls)
