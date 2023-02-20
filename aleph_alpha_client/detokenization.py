@@ -24,4 +24,4 @@ class DetokenizationResponse(NamedTuple):
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "DetokenizationResponse":
-        return DetokenizationResponse(**json)
+        return DetokenizationResponse(result=json["result"])
