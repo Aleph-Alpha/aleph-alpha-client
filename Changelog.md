@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.16.0
+
+- Add Image.from_image_source
+
 ## 2.15.0
 
 - Add completion parameter: repetition_penalties_include_completion, raw_completion
