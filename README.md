@@ -54,7 +54,7 @@ This table contains interactive code examples, further exercises can be found in
 | 3 | Simple search | [Template 3](https://github.com/Aleph-Alpha/examples/blob/main/boilerplate/03_simple_search.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Aleph-Alpha/examples/blob/main/boilerplate/03_simple_search.ipynb)|
 | 4 | Symmetric and Asymmetric Search | [Template 4](https://github.com/Aleph-Alpha/examples/blob/main/boilerplate/04_semantic_search.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Aleph-Alpha/examples/blob/main/boilerplate/04_semantic_search.ipynb)|
 | 5 | Hidden Embeddings | [Template 5](https://github.com/Aleph-Alpha/examples/blob/main/boilerplate/05_hidden_embeddings.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Aleph-Alpha/examples/blob/main/boilerplate/05_hidden_embeddings.ipynb)|
-| 6 | Task-specific Endpoints | [Template 6](boilerplate/06_task_specific_endpoints.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Aleph-Alpha/examples/blob/main/boilerplate/06_task_specific_endpoints.ipynb)|
+| 6 | Task-specific Endpoints | [Template 6](https://github.com/Aleph-Alpha/examples/blob/main/boilerplate/06_task_specific_endpoints.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Aleph-Alpha/examples/blob/main/boilerplate/06_task_specific_endpoints.ipynb)|
 
 ## Installation
 
