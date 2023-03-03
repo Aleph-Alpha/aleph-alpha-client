@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.16.1
+
+- AsyncClient now respects http proxy env variables, as Client did all the time
+- Update examples links in Readme.md
+
 ## 2.16.0
 
 - Add Image.from_image_source
