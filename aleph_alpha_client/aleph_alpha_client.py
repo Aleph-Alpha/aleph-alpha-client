@@ -1368,6 +1368,7 @@ class AsyncClient:
             statuses=set(RETRY_STATUS_CODES),
         )
         self.session = RetryClient(
+            trust_env=True,  # same behaviour as requests/(Sync)Client wrt. http_proxy
             raise_for_status=False,
             retry_options=retry_options,
             timeout=aiohttp.ClientTimeout(self.request_timeout_seconds),
