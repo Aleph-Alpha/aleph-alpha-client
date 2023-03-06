@@ -14,7 +14,12 @@ from urllib3.util.retry import Retry
 
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
-from aleph_alpha_client.explanation import ExplanationRequest, ExplanationResponse
+from aleph_alpha_client.explanation import (
+    Explanation2Request,
+    Explanation2Response,
+    ExplanationRequest,
+    ExplanationResponse,
+)
 from aleph_alpha_client.image import Image
 from aleph_alpha_client.prompt import _to_json, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
@@ -871,6 +876,7 @@ AnyRequest = Union[
     QaRequest,
     SummarizationRequest,
     ExplanationRequest,
+    Explanation2Request,
     SearchRequest,
 ]
 
@@ -1283,6 +1289,18 @@ class Client:
             model,
         )
         return ExplanationResponse.from_json(response)
+
+    def _explain2(
+        self,
+        request: Explanation2Request,
+        model: str,
+    ) -> Explanation2Response:
+        response = self._post_request(
+            "explain2",
+            request,
+            model,
+        )
+        return Explanation2Response.from_json(response)
 
     def _search(
         self,
