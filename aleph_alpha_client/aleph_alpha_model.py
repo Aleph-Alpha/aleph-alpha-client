@@ -14,7 +14,6 @@ from aleph_alpha_client.embedding import (
     SemanticEmbeddingResponse,
 )
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
-from aleph_alpha_client.explanation import ExplanationRequest
 from aleph_alpha_client.qa import QaRequest, QaResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
@@ -157,13 +156,6 @@ class AlephAlphaModel:
             **request._asdict(),
         )
         return QaResponse.from_json(response_json)
-
-    def _explain(self, request: ExplanationRequest) -> Mapping[str, Any]:
-        return self.client._explain(
-            model=self.model_name,
-            hosting=self.hosting,
-            request=request,
-        )
 
     def summarize(self, request: SummarizationRequest) -> SummarizationResponse:
         response_json = self.client.summarize(
