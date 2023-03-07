@@ -48,10 +48,10 @@ def test_explanation(sync_client: Client, model_name: str):
 def test_explanation2(sync_client: Client, model_name: str):
     request = Explanation2Request(
         prompt=Prompt.from_text("I am a programmer and French. My favourite food is"),
-        target=" pizza",
+        target=" pizza with cheese",
     )
 
     explanation = sync_client._explain2(request, model=model_name)
 
-    assert len(explanation.explanations) > 0
-    print(explanation.explanations)
+    assert len(explanation.explanations) == 3
+    assert all([len(exp.items) == 2 for exp in explanation.explanations])

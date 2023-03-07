@@ -53,32 +53,73 @@ class TextImportance(NamedTuple):
         )
 
 
-class ItemImportance(NamedTuple):
-    scores: List[Union[float, TextImportance]]
+class TargetImportance(NamedTuple):
+    start: int
+    length: int
+    score: float
 
     @staticmethod
-    def score_from_json(score: Any) -> Union[float, TextImportance]:
-        if isinstance(score, float):
-            return score
-        else:
-            return TextImportance.from_json(score)
-
-    @staticmethod
-    def from_json(json: Dict[str, Any]) -> "ItemImportance":
-        return ItemImportance(
-            scores=[ItemImportance.score_from_json(score) for score in json["scores"]]
+    def from_json(score: Any) -> "TextImportance":
+        return TextImportance(
+            start=score["start"],
+            length=score["length"],
+            score=score["score"],
         )
+
+
+class TokenImportance(NamedTuple):
+    start: int
+    length: int
+    score: float
+
+    @staticmethod
+    def from_json(score: Any) -> "TextImportance":
+        return TextImportance(
+            start=score["start"],
+            length=score["length"],
+            score=score["score"],
+        )
+
+
+class PromptItemExplanation(NamedTuple):
+    scores: List[Union[TextImportance, TargetImportance, TokenImportance]]
+
+    @staticmethod
+    def from_json(item: Dict[str, Any]) -> "PromptItemExplanation":
+        if item["type"] == "text":
+            return PromptItemExplanation(
+                scores=[
+                    TextImportance.from_json(importance)
+                    for importance in item["scores"]
+                ]
+            )
+        elif item["type"] == "target":
+            return PromptItemExplanation(
+                scores=[
+                    TargetImportance.from_json(importance)
+                    for importance in item["scores"]
+                ]
+            )
+        elif item["type"] == "token_ids":
+            return PromptItemExplanation(
+                scores=[
+                    TokenImportance.from_json(importance)
+                    for importance in item["scores"]
+                ]
+            )
+        else:
+            raise NotImplementedError("Unsupported explanation type")
 
 
 class Explanation(NamedTuple):
     target: str
-    items: List[ItemImportance]
+    items: List[PromptItemExplanation]
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "Explanation":
         return Explanation(
             target=json["target"],
-            items=[ItemImportance.from_json(item) for item in json["items"]],
+            items=[PromptItemExplanation.from_json(item) for item in json["items"]],
         )
 
 
