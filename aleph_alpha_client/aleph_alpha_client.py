@@ -15,8 +15,8 @@ from urllib3.util.retry import Retry
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.explanation import (
-    Explanation2Request,
-    Explanation2Response,
+    ExplanationRequest,
+    ExplanationResponse,
     ExplanationRequest,
     ExplanationResponse,
 )
@@ -837,34 +837,6 @@ class AlephAlphaClient:
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
-    def _explain(
-        self,
-        model: str,
-        request: ExplanationRequest,
-        hosting: Optional[str] = None,
-    ):
-        body = {
-            "model": model,
-            "prompt": [_to_json(item) for item in request.prompt.items],
-            "target": request.target,
-            "suppression_factor": request.suppression_factor,
-            "conceptual_suppression_threshold": request.conceptual_suppression_threshold,
-            "normalize": request.normalize,
-            "square_outputs": request.square_outputs,
-            "prompt_explain_indices": request.prompt_explain_indices,
-        }
-
-        if hosting is not None:
-            body["hosting"] = hosting
-
-        response = self.post_request(
-            f"{self.host}explain",
-            headers=self.request_headers,
-            json=body,
-        )
-        _raise_for_status(response.status_code, response.text)
-        return response.json()
-
 
 AnyRequest = Union[
     CompletionRequest,
@@ -876,7 +848,7 @@ AnyRequest = Union[
     QaRequest,
     SummarizationRequest,
     ExplanationRequest,
-    Explanation2Request,
+    ExplanationRequest,
     SearchRequest,
 ]
 
@@ -1284,23 +1256,11 @@ class Client:
         model: str,
     ) -> ExplanationResponse:
         response = self._post_request(
-            "explain",
-            request,
-            model,
-        )
-        return ExplanationResponse.from_json(response)
-
-    def _explain2(
-        self,
-        request: Explanation2Request,
-        model: str,
-    ) -> Explanation2Response:
-        response = self._post_request(
             "explain2",
             request,
             model,
         )
-        return Explanation2Response.from_json(response)
+        return ExplanationResponse.from_json(response)
 
     def _search(
         self,
@@ -1755,7 +1715,7 @@ class AsyncClient:
         model: str,
     ) -> ExplanationResponse:
         response = await self._post_request(
-            "explain",
+            "explain2",
             request,
             model,
         )
