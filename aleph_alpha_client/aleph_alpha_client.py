@@ -14,7 +14,12 @@ from urllib3.util.retry import Retry
 
 import aleph_alpha_client
 from aleph_alpha_client.document import Document
-from aleph_alpha_client.explanation import ExplanationRequest, ExplanationResponse
+from aleph_alpha_client.explanation import (
+    ExplanationRequest,
+    ExplanationResponse,
+    ExplanationRequest,
+    ExplanationResponse,
+)
 from aleph_alpha_client.image import Image
 from aleph_alpha_client.prompt import _to_json, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
@@ -832,34 +837,6 @@ class AlephAlphaClient:
         _raise_for_status(response.status_code, response.text)
         return response.json()
 
-    def _explain(
-        self,
-        model: str,
-        request: ExplanationRequest,
-        hosting: Optional[str] = None,
-    ):
-        body = {
-            "model": model,
-            "prompt": [_to_json(item) for item in request.prompt.items],
-            "target": request.target,
-            "suppression_factor": request.suppression_factor,
-            "conceptual_suppression_threshold": request.conceptual_suppression_threshold,
-            "normalize": request.normalize,
-            "square_outputs": request.square_outputs,
-            "prompt_explain_indices": request.prompt_explain_indices,
-        }
-
-        if hosting is not None:
-            body["hosting"] = hosting
-
-        response = self.post_request(
-            f"{self.host}explain",
-            headers=self.request_headers,
-            json=body,
-        )
-        _raise_for_status(response.status_code, response.text)
-        return response.json()
-
 
 AnyRequest = Union[
     CompletionRequest,
@@ -870,6 +847,7 @@ AnyRequest = Union[
     SemanticEmbeddingRequest,
     QaRequest,
     SummarizationRequest,
+    ExplanationRequest,
     ExplanationRequest,
     SearchRequest,
 ]
@@ -1278,7 +1256,7 @@ class Client:
         model: str,
     ) -> ExplanationResponse:
         response = self._post_request(
-            "explain",
+            "explain2",
             request,
             model,
         )
@@ -1737,7 +1715,7 @@ class AsyncClient:
         model: str,
     ) -> ExplanationResponse:
         response = await self._post_request(
-            "explain",
+            "explain2",
             request,
             model,
         )
