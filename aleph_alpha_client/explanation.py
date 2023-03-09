@@ -1,13 +1,11 @@
 from enum import Enum
 from typing import (
     Any,
-    Generic,
     List,
     Dict,
     Mapping,
     NamedTuple,
     Optional,
-    TypeVar,
     Union,
 )
 from aleph_alpha_client.prompt import Prompt
@@ -58,7 +56,19 @@ class ExplanationRequest(NamedTuple):
     normalize: Optional[bool] = None
 
     def to_json(self) -> Dict[str, Any]:
-        payload = {k: v for k, v in self._asdict().items() if v is not None}
+        # Keys that have defaults on the scheduler, but can't be sent as null
+        non_null_keys = [
+            "control_factor",
+            "control_log_additive",
+            "granularity",
+            "postprocessing",
+            "normalize",
+        ]
+        payload = {
+            k: v
+            for k, v in self._asdict().items()
+            if k in non_null_keys and v is not None
+        }
         payload["prompt"] = self.prompt.to_json()
         if self.granularity is not None:
             payload["granularity"] = self.granularity.to_json()
