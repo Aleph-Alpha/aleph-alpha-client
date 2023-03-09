@@ -64,7 +64,7 @@ def test_explanation(sync_client: Client, model_name: str):
     explanation = sync_client._explain(request, model=model_name)
 
     assert len(explanation.explanations) == 3
-    assert all([len(exp.items) == 3 for exp in explanation.explanations])
+    assert all([len(exp.items) == 4 for exp in explanation.explanations])
     # At least one of the following options must be set in the request
     # to make all scores positive (or zero):
     # postprocessing=ExplanationPostProcessing.Absolute
