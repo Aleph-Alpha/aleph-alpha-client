@@ -8,7 +8,12 @@ from .aleph_alpha_client import (
 from .aleph_alpha_model import AlephAlphaModel
 from .image import Image, ImagePrompt, ImageControl
 from .prompt import Prompt, Tokens, TokenControl, Text, TextControl
-from .explanation import ExplanationRequest
+from .explanation import (
+    ExplanationRequest,
+    ExplanationGranularity,
+    ExplanationPostprocessing,
+    ExplanationResponse,
+)
 from .embedding import (
     EmbeddingRequest,
     EmbeddingResponse,
@@ -42,7 +47,10 @@ __all__ = [
     "EmbeddingResponse",
     "EvaluationRequest",
     "EvaluationResponse",
+    "ExplanationGranularity",
+    "ExplanationPostprocessing",
     "ExplanationRequest",
+    "ExplanationResponse",
     "Image",
     "ImageControl",
     "ImagePrompt",

@@ -1,14 +1,70 @@
-from typing import Any, Generic, List, Dict, NamedTuple, Optional, TypeVar, Union
+from enum import Enum
+from typing import (
+    Any,
+    Generic,
+    List,
+    Dict,
+    Mapping,
+    NamedTuple,
+    Optional,
+    TypeVar,
+    Union,
+)
 from aleph_alpha_client.prompt import Prompt
+
+
+class ExplanationGranularity(Enum):
+    """
+    Available types of explanation granularity for text or image prompt items
+
+    Token:
+        Explain token by token
+    Word:
+        Explain word by word. Consecutive whitespace characters define a word boundary.
+    """
+
+    Token = "token"
+    Word = "word"
+
+    def to_json(self) -> Mapping[str, Any]:
+        return {"type": self.value}
+
+
+class ExplanationPostprocessing(Enum):
+    """
+    Available types of explanation postprocessing.
+
+    Square:
+        Square each score
+    Absolute:
+        Take the absolute value of each score
+    """
+
+    Square = "square"
+    Absolute = "absolute"
+
+    def to_json(self) -> str:
+        return self.value
 
 
 class ExplanationRequest(NamedTuple):
     prompt: Prompt
     target: str
+    granularity: Optional[ExplanationGranularity] = None
+    control_factor: Optional[float] = None
+    contextual_control_threshold: Optional[float] = None
+    control_log_additive: Optional[bool] = None
+    postprocessing: Optional[ExplanationPostprocessing] = None
+    normalize: Optional[bool] = None
 
     def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
+        payload = {k: v for k, v in self._asdict().items() if v is not None}
         payload["prompt"] = self.prompt.to_json()
+        if self.granularity is not None:
+            payload["granularity"] = self.granularity.to_json()
+        if self.postprocessing is not None:
+            payload["postprocessing"] = self.postprocessing.to_json()
+
         return payload
 
 
@@ -22,6 +78,24 @@ class TextScore(NamedTuple):
         return TextScore(
             start=score["start"],
             length=score["length"],
+            score=score["score"],
+        )
+
+
+class ImageScore(NamedTuple):
+    left: float
+    top: float
+    width: float
+    height: float
+    score: float
+
+    @staticmethod
+    def from_json(score: Any) -> "ImageScore":
+        return ImageScore(
+            left=score["rect"]["left"],
+            top=score["rect"]["top"],
+            width=score["rect"]["width"],
+            height=score["rect"]["height"],
             score=score["score"],
         )
 
@@ -47,6 +121,16 @@ class TokenScore(NamedTuple):
     def from_json(score: Any) -> "TokenScore":
         return TokenScore(
             score=score,
+        )
+
+
+class ImagePromptItemExplanation(NamedTuple):
+    scores: List[ImageScore]
+
+    @staticmethod
+    def from_json(item: Dict[str, Any]) -> "ImagePromptItemExplanation":
+        return ImagePromptItemExplanation(
+            scores=[ImageScore.from_json(score) for score in item["scores"]]
         )
 
 
@@ -87,6 +171,7 @@ class Explanation(NamedTuple):
             TextPromptItemExplanation,
             TargetPromptItemExplanation,
             TokenPromptItemExplanation,
+            ImagePromptItemExplanation,
         ]
     ]
 
@@ -94,6 +179,7 @@ class Explanation(NamedTuple):
         item: Any,
     ) -> Union[
         TextPromptItemExplanation,
+        ImagePromptItemExplanation,
         TargetPromptItemExplanation,
         TokenPromptItemExplanation,
     ]:
@@ -101,6 +187,8 @@ class Explanation(NamedTuple):
             return TextPromptItemExplanation.from_json(item)
         elif item["type"] == "target":
             return TargetPromptItemExplanation.from_json(item)
+        elif item["type"] == "image":
+            return ImagePromptItemExplanation.from_json(item)
         elif item["type"] == "token_ids":
             return TokenPromptItemExplanation.from_json(item)
         else:
