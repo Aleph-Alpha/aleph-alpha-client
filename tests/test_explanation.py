@@ -56,7 +56,7 @@ def test_explanation(sync_client: Client, model_name: str):
             ]
         ),
         target=" pizza with cheese",
-        granularity=ExplanationGranularity.Word,
+        granularity=ExplanationGranularity.Sentence,
         postprocessing=ExplanationPostprocessing.Absolute,
         normalize=True,
     )
@@ -73,3 +73,27 @@ def test_explanation(sync_client: Client, model_name: str):
     for exp in explanation.explanations:
         for prompt_item in exp.items:
             assert all([score.score >= 0.0 for score in prompt_item.scores])
+
+
+def test_explanation_auto_granularity(sync_client: Client, model_name: str):
+    image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
+    img = Image.from_image_source(image_source=str(image_source_path))
+
+    request = ExplanationRequest(
+        prompt=Prompt(
+            [
+                img,
+                Text.from_text("I am a programmer and French. My favourite food is"),
+                # " My favorite food is"
+                [4014, 36316, 5681, 387],
+            ]
+        ),
+        target=" pizza with cheese",
+        granularity=None,
+    )
+
+    explanation = sync_client._explain(request, model=model_name)
+
+    assert len(explanation.explanations) == 3
+    assert all([len(exp.items) == 4 for exp in explanation.explanations])
+
