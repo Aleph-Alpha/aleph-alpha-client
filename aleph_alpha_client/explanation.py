@@ -4,13 +4,19 @@ from typing import (
     Generic,
     List,
     Dict,
-    Literal,
     Mapping,
     NamedTuple,
     Optional,
     TypeVar,
     Union,
 )
+
+# Import Literal with Python 3.7 fallback
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 from aleph_alpha_client.prompt import Prompt
 
 

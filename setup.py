@@ -47,6 +47,7 @@ setup(
         "aiodns >= 3.0.0",
         "aiohttp-retry >= 2.8.3",
         "tokenizers >= 0.13.2",
+        "typing_extensions >= 4.5.0",
     ],
     tests_require=tests_require,
     extras_require={
