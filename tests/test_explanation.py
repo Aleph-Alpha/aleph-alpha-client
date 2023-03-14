@@ -5,7 +5,7 @@ from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client import ExplanationGranularity, ExplanationRequest
 from aleph_alpha_client import Image
 from aleph_alpha_client import Prompt, Text
-from aleph_alpha_client.explanation import ExplanationPostprocessing
+from aleph_alpha_client.explanation import CustomGranularity, ExplanationPostprocessing
 
 from tests.common import (
     sync_client,
@@ -25,12 +25,15 @@ async def test_can_explain_with_async_client(
     request = ExplanationRequest(
         prompt=Prompt(
             [
-                Text.from_text("I am a programmer and French. My favourite food is"),
+                Text.from_text(
+                    "I am a programmer...I am French...I don't like pizza...My favourite food is"
+                ),
                 # " My favorite food is"
                 [4014, 36316, 5681, 387],
             ]
         ),
         target=" pizza with cheese",
+        granularity=CustomGranularity("..."),
     )
 
     explanation = await async_client._explain(request, model=model_name)
@@ -56,7 +59,7 @@ def test_explanation(sync_client: Client, model_name: str):
             ]
         ),
         target=" pizza with cheese",
-        granularity=ExplanationGranularity.Sentence,
+        granularity="sentence",
         postprocessing=ExplanationPostprocessing.Absolute,
         normalize=True,
     )
@@ -96,4 +99,3 @@ def test_explanation_auto_granularity(sync_client: Client, model_name: str):
 
     assert len(explanation.explanations) == 3
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
-

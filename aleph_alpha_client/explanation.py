@@ -10,30 +10,11 @@ from typing import (
     TypeVar,
     Union,
 )
+
+# Import Literal with Python 3.7 fallback
+from typing_extensions import Literal
+
 from aleph_alpha_client.prompt import Prompt
-
-
-class ExplanationGranularity(Enum):
-    """
-    Available types of explanation granularity for text or image prompt items
-
-    Token:
-        Explain token by token
-    Word:
-        Explain word by word. Consecutive whitespace characters define a word boundary.
-    Sentence:
-        Explain sentence by sentence
-    Paragraph:
-        Explain paragraph by paragraph. Splitting paragraphs by 2 or more newlines.
-    """
-
-    Token = "token"
-    Word = "word"
-    Sentence = "sentence"
-    Paragraph = "paragraph"
-
-    def to_json(self) -> Mapping[str, Any]:
-        return {"type": self.value}
 
 
 class ExplanationPostprocessing(Enum):
@@ -51,6 +32,29 @@ class ExplanationPostprocessing(Enum):
 
     def to_json(self) -> str:
         return self.value
+
+
+class CustomGranularity(NamedTuple):
+    delimiter: str
+
+    def to_json(self) -> Mapping[str, Any]:
+        return {"type": "custom", "delimiter": self.delimiter}
+
+
+ExplanationGranularity = Union[
+    Literal["token"],
+    Literal["word"],
+    Literal["sentence"],
+    Literal["paragraph"],
+    CustomGranularity,
+]
+
+
+def granularity_to_json(granularity: ExplanationGranularity) -> Mapping[str, Any]:
+    if isinstance(granularity, str):
+        return {"type": granularity}
+
+    return granularity.to_json()
 
 
 class ExplanationRequest(NamedTuple):
@@ -74,7 +78,7 @@ class ExplanationRequest(NamedTuple):
         if self.control_log_additive is not None:
             payload["control_log_additive"] = self.control_log_additive
         if self.granularity is not None:
-            payload["granularity"] = self.granularity.to_json()
+            payload["granulariy"] = granularity_to_json(self.granularity)
         if self.postprocessing is not None:
             payload["postprocessing"] = self.postprocessing.to_json()
         if self.normalize is not None:
