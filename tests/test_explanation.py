@@ -25,12 +25,16 @@ async def test_can_explain_with_async_client(
     request = ExplanationRequest(
         prompt=Prompt(
             [
-                Text.from_text("I am a programmer and French. My favourite food is"),
+                Text.from_text(
+                    "I am a programmer...I am French...I don't like pizza...My favourite food is"
+                ),
                 # " My favorite food is"
                 [4014, 36316, 5681, 387],
             ]
         ),
         target=" pizza with cheese",
+        granularity=ExplanationGranularity.Custom,
+        delimiter="...",
     )
 
     explanation = await async_client._explain(request, model=model_name)
@@ -96,4 +100,3 @@ def test_explanation_auto_granularity(sync_client: Client, model_name: str):
 
     assert len(explanation.explanations) == 3
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
-

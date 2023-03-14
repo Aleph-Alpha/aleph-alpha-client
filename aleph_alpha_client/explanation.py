@@ -31,9 +31,13 @@ class ExplanationGranularity(Enum):
     Word = "word"
     Sentence = "sentence"
     Paragraph = "paragraph"
+    Custom = "custom"
 
-    def to_json(self) -> Mapping[str, Any]:
-        return {"type": self.value}
+    def to_json(self, delimiter) -> Mapping[str, Any]:
+        granularity = {"type": self.value}
+        if delimiter is not None and self == ExplanationGranularity.Custom:
+            granularity["delimiter"] = delimiter
+        return granularity
 
 
 class ExplanationPostprocessing(Enum):
@@ -62,6 +66,7 @@ class ExplanationRequest(NamedTuple):
     granularity: Optional[ExplanationGranularity] = None
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None
+    delimiter: Optional[str] = None
 
     def to_json(self) -> Dict[str, Any]:
         payload: Dict[str, Any] = {
@@ -74,7 +79,7 @@ class ExplanationRequest(NamedTuple):
         if self.control_log_additive is not None:
             payload["control_log_additive"] = self.control_log_additive
         if self.granularity is not None:
-            payload["granularity"] = self.granularity.to_json()
+            payload["granularity"] = self.granularity.to_json(self.delimiter)
         if self.postprocessing is not None:
             payload["postprocessing"] = self.postprocessing.to_json()
         if self.normalize is not None:
