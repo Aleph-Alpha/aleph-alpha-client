@@ -47,7 +47,7 @@ __all__ = [
     "EmbeddingResponse",
     "EvaluationRequest",
     "EvaluationResponse",
-    "ExplanationGranularity",
+    "CustomGranularity",
     "ExplanationPostprocessing",
     "ExplanationRequest",
     "ExplanationResponse",

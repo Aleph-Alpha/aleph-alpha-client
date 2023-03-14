@@ -5,7 +5,7 @@ from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client import ExplanationGranularity, ExplanationRequest
 from aleph_alpha_client import Image
 from aleph_alpha_client import Prompt, Text
-from aleph_alpha_client.explanation import ExplanationPostprocessing
+from aleph_alpha_client.explanation import CustomGranularity, ExplanationPostprocessing
 
 from tests.common import (
     sync_client,
@@ -33,8 +33,7 @@ async def test_can_explain_with_async_client(
             ]
         ),
         target=" pizza with cheese",
-        granularity=ExplanationGranularity.Custom,
-        delimiter="...",
+        granularity=CustomGranularity("..."),
     )
 
     explanation = await async_client._explain(request, model=model_name)

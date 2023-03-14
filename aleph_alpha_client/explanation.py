@@ -4,6 +4,7 @@ from typing import (
     Generic,
     List,
     Dict,
+    Literal,
     Mapping,
     NamedTuple,
     Optional,
@@ -11,33 +12,6 @@ from typing import (
     Union,
 )
 from aleph_alpha_client.prompt import Prompt
-
-
-class ExplanationGranularity(Enum):
-    """
-    Available types of explanation granularity for text or image prompt items
-
-    Token:
-        Explain token by token
-    Word:
-        Explain word by word. Consecutive whitespace characters define a word boundary.
-    Sentence:
-        Explain sentence by sentence
-    Paragraph:
-        Explain paragraph by paragraph. Splitting paragraphs by 2 or more newlines.
-    """
-
-    Token = "token"
-    Word = "word"
-    Sentence = "sentence"
-    Paragraph = "paragraph"
-    Custom = "custom"
-
-    def to_json(self, delimiter) -> Mapping[str, Any]:
-        granularity = {"type": self.value}
-        if delimiter is not None and self == ExplanationGranularity.Custom:
-            granularity["delimiter"] = delimiter
-        return granularity
 
 
 class ExplanationPostprocessing(Enum):
@@ -57,6 +31,29 @@ class ExplanationPostprocessing(Enum):
         return self.value
 
 
+class CustomGranularity(NamedTuple):
+    delimiter: str
+
+    def to_json(self) -> Mapping[str, Any]:
+        return {"type": "custom", "delimiter": self.delimiter}
+
+
+ExplanationGranularity = Union[
+    Literal["token"],
+    Literal["word"],
+    Literal["sentence"],
+    Literal["paragraph"],
+    CustomGranularity,
+]
+
+
+def granularity_to_json(granularity: ExplanationGranularity) -> Mapping[str, Any]:
+    if isinstance(granularity, str):
+        return {"type": granularity}
+
+    return granularity.to_json()
+
+
 class ExplanationRequest(NamedTuple):
     prompt: Prompt
     target: str
@@ -66,7 +63,6 @@ class ExplanationRequest(NamedTuple):
     granularity: Optional[ExplanationGranularity] = None
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None
-    delimiter: Optional[str] = None
 
     def to_json(self) -> Dict[str, Any]:
         payload: Dict[str, Any] = {
@@ -79,7 +75,7 @@ class ExplanationRequest(NamedTuple):
         if self.control_log_additive is not None:
             payload["control_log_additive"] = self.control_log_additive
         if self.granularity is not None:
-            payload["granularity"] = self.granularity.to_json(self.delimiter)
+            payload["granulariy"] = granularity_to_json(self.granularity)
         if self.postprocessing is not None:
             payload["postprocessing"] = self.postprocessing.to_json()
         if self.normalize is not None:
