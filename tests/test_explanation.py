@@ -59,7 +59,7 @@ def test_explanation(sync_client: Client, model_name: str):
             ]
         ),
         target=" pizza with cheese",
-        granularity=ExplanationGranularity.Sentence,
+        granularity="sentence",
         postprocessing=ExplanationPostprocessing.Absolute,
         normalize=True,
     )
