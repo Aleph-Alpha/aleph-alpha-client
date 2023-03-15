@@ -1256,7 +1256,7 @@ class Client:
         model: str,
     ) -> ExplanationResponse:
         response = self._post_request(
-            "explain2",
+            "explain",
             request,
             model,
         )
@@ -1715,7 +1715,7 @@ class AsyncClient:
         model: str,
     ) -> ExplanationResponse:
         response = await self._post_request(
-            "explain2",
+            "explain",
             request,
             model,
         )
