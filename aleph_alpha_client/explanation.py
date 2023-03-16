@@ -13,8 +13,9 @@ from typing import (
 
 # Import Literal with Python 3.7 fallback
 from typing_extensions import Literal
+from aleph_alpha_client.image import Image
 
-from aleph_alpha_client.prompt import Prompt
+from aleph_alpha_client.prompt import Prompt, PromptItem
 
 
 class ExplanationPostprocessing(Enum):
@@ -152,6 +153,23 @@ class ImagePromptItemExplanation(NamedTuple):
             scores=[ImageScore.from_json(score) for score in item["scores"]]
         )
 
+    def in_pixels(self, prompt_item: PromptItem) -> "ImagePromptItemExplanation":
+        if not isinstance(prompt_item, Image):
+            raise ValueError
+        (original_image_width, original_image_height) = prompt_item.dimensions()
+        return ImagePromptItemExplanation(
+            [
+                ImageScore(
+                    left=int(score.left * original_image_width),
+                    width=int(score.width * original_image_width),
+                    top=int(score.top * original_image_height),
+                    height=int(score.height * original_image_height),
+                    score=score.score,
+                )
+                for score in self.scores
+            ]
+        )
+
 
 class TextPromptItemExplanation(NamedTuple):
     scores: List[TextScore]
@@ -220,6 +238,17 @@ class Explanation(NamedTuple):
             items=[Explanation.prompt_item_from_json(item) for item in json["items"]],
         )
 
+    def with_image_prompt_items_in_pixels(self, prompt: Prompt) -> "Explanation":
+        return Explanation(
+            target=self.target,
+            items=[
+                item.in_pixels(prompt.items[item_index])
+                if isinstance(item, ImagePromptItemExplanation)
+                else item
+                for item_index, item in enumerate(self.items)
+            ],
+        )
+
 
 class ExplanationResponse(NamedTuple):
     model_version: str
@@ -234,3 +263,12 @@ class ExplanationResponse(NamedTuple):
                 for explanation in json["explanations"]
             ],
         )
+
+    def with_image_prompt_items_in_pixels(
+        self, prompt: Prompt
+    ) -> "ExplanationResponse":
+        mapped_explanations = [
+            explanation.with_image_prompt_items_in_pixels(prompt)
+            for explanation in self.explanations
+        ]
+        return ExplanationResponse(self.model_version, mapped_explanations)

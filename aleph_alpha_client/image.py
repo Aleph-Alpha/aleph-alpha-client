@@ -1,6 +1,8 @@
 import base64
+import io
+from PIL import Image as PImage
 from pathlib import Path
-from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence, Union
+from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence, Tuple, Union
 from urllib.parse import urlparse
 
 import requests
@@ -223,6 +225,13 @@ class Image:
                 "size": self.cropping.size,
                 "controls": [control.to_json() for control in self.controls],
             }
+
+    def to_image(self) -> PImage:
+        return PImage.open(io.BytesIO(base64.b64decode(self.base_64)))
+
+    def dimensions(self) -> Tuple[int, int]:
+        image = self.to_image()
+        return (image.width, image.height)
 
 
 # For backwards compatibility we still expose this with the old name
