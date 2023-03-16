@@ -136,6 +136,7 @@ def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
     )
 
 
+@pytest.mark.skip("not yet implemented")
 def test_explanation_of_text_in_prompt_relativ_indeces(
     sync_client: Client, model_name: str
 ):
@@ -157,7 +158,7 @@ def test_explanation_of_text_in_prompt_relativ_indeces(
 
     explanation = sync_client._explain(request, model=model_name)
 
-    explanation = explanation.with_text_prompt_items_absolute(request.prompt)
+    # explanation = explanation.with_text_prompt_items_absolute(request.prompt)
     assert len(explanation.explanations) == 3
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
     assert all(

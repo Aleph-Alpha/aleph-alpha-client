@@ -1,6 +1,7 @@
 import base64
 import io
-from PIL import Image as PImage
+from PIL.Image import Image as PILImage
+import PIL
 from pathlib import Path
 from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence, Tuple, Union
 from urllib.parse import urlparse
@@ -226,8 +227,8 @@ class Image:
                 "controls": [control.to_json() for control in self.controls],
             }
 
-    def to_image(self) -> PImage:
-        return PImage.open(io.BytesIO(base64.b64decode(self.base_64)))
+    def to_image(self) -> PILImage:
+        return PIL.Image.open(io.BytesIO(base64.b64decode(self.base_64)))
 
     def dimensions(self) -> Tuple[int, int]:
         image = self.to_image()
