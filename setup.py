@@ -19,7 +19,7 @@ tests_require = [
     "pytest-aiohttp",
 ]
 
-types_require = ["mypy", "types-requests"]
+types_require = ["mypy", "types-requests", "types-Pillow"]
 
 dev_require = (
     tests_require
