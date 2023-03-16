@@ -26,20 +26,21 @@ async def test_can_explain_with_async_client(
         prompt=Prompt(
             [
                 Text.from_text(
-                    "I am a programmer...I am French...I don't like pizza...My favourite food is"
+                    "I am a programmer###I am French###I don't like pizza###My favourite food is"
                 ),
                 # " My favorite food is"
                 [4014, 36316, 5681, 387],
             ]
         ),
         target=" pizza with cheese",
-        granularity=CustomGranularity("..."),
+        granularity=CustomGranularity("###"),
     )
 
     explanation = await async_client._explain(request, model=model_name)
 
     assert len(explanation.explanations) == 3
     assert all([len(exp.items) == 3 for exp in explanation.explanations])
+    assert len(explanation.explanations[0].items[0].scores) == 4
 
 
 # Client

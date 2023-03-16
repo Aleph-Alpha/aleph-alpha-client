@@ -78,7 +78,7 @@ class ExplanationRequest(NamedTuple):
         if self.control_log_additive is not None:
             payload["control_log_additive"] = self.control_log_additive
         if self.granularity is not None:
-            payload["granulariy"] = granularity_to_json(self.granularity)
+            payload["granularity"] = granularity_to_json(self.granularity)
         if self.postprocessing is not None:
             payload["postprocessing"] = self.postprocessing.to_json()
         if self.normalize is not None:
