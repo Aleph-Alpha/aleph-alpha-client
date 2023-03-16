@@ -5,7 +5,11 @@ from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client import ExplanationGranularity, ExplanationRequest
 from aleph_alpha_client import Image
 from aleph_alpha_client import Prompt, Text
-from aleph_alpha_client.explanation import CustomGranularity, ExplanationPostprocessing
+from aleph_alpha_client.explanation import (
+    CustomGranularity,
+    ExplanationPostprocessing,
+    ImageScore,
+)
 
 from tests.common import (
     sync_client,
@@ -100,3 +104,66 @@ def test_explanation_auto_granularity(sync_client: Client, model_name: str):
 
     assert len(explanation.explanations) == 3
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
+
+
+def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
+    image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
+    img = Image.from_image_source(image_source=str(image_source_path))
+
+    request = ExplanationRequest(
+        prompt=Prompt(
+            [
+                img,
+                Text.from_text("I am a programmer and French. My favourite food is"),
+                # " My favorite food is"
+                [4014, 36316, 5681, 387],
+            ]
+        ),
+        target=" pizza with cheese",
+        granularity=None,
+    )
+
+    explanation = sync_client._explain(request, model=model_name)
+
+    explanation = explanation.with_image_prompt_items_in_pixels(request.prompt)
+    assert len(explanation.explanations) == 3
+    assert all([len(exp.items) == 4 for exp in explanation.explanations])
+    assert all(
+        [
+            isinstance(image_score, ImageScore) and isinstance(image_score.left, int)
+            for image_score in explanation.explanations[0].items[0].scores
+        ]
+    )
+
+
+@pytest.mark.skip("not yet implemented")
+def test_explanation_of_text_in_prompt_relativ_indeces(
+    sync_client: Client, model_name: str
+):
+    image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
+    img = Image.from_image_source(image_source=str(image_source_path))
+
+    request = ExplanationRequest(
+        prompt=Prompt(
+            [
+                img,
+                Text.from_text("I am a programmer and French. My favourite food is"),
+                # " My favorite food is"
+                [4014, 36316, 5681, 387],
+            ]
+        ),
+        target=" pizza with cheese",
+        granularity=None,
+    )
+
+    explanation = sync_client._explain(request, model=model_name)
+
+    # explanation = explanation.with_text_prompt_items_absolute(request.prompt)
+    assert len(explanation.explanations) == 3
+    assert all([len(exp.items) == 4 for exp in explanation.explanations])
+    assert all(
+        [
+            isinstance(image_score, ImageScore) and isinstance(image_score.left, int)
+            for image_score in explanation.explanations[0].items[0].scores
+        ]
+    )

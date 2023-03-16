@@ -19,7 +19,7 @@ tests_require = [
     "pytest-aiohttp",
 ]
 
-types_require = ["mypy", "types-requests"]
+types_require = ["mypy", "types-requests", "types-Pillow"]
 
 dev_require = (
     tests_require
@@ -48,6 +48,7 @@ setup(
         "aiohttp-retry >= 2.8.3",
         "tokenizers >= 0.13.2",
         "typing_extensions >= 4.5.0",
+        "Pillow >= 9.2.0",
     ],
     tests_require=tests_require,
     extras_require={
