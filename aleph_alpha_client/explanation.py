@@ -42,7 +42,7 @@ class CustomGranularity(NamedTuple):
         return {"type": "custom", "delimiter": self.delimiter}
 
 
-ExplanationGranularity = Union[
+PromptGranularity = Union[
     Literal["token"],
     Literal["word"],
     Literal["sentence"],
@@ -51,11 +51,13 @@ ExplanationGranularity = Union[
 ]
 
 
-def granularity_to_json(granularity: ExplanationGranularity) -> Mapping[str, Any]:
-    if isinstance(granularity, str):
-        return {"type": granularity}
+def prompt_granularity_to_json(
+    prompt_granularity: PromptGranularity,
+) -> Mapping[str, Any]:
+    if isinstance(prompt_granularity, str):
+        return {"type": prompt_granularity}
 
-    return granularity.to_json()
+    return prompt_granularity.to_json()
 
 
 class ExplanationRequest(NamedTuple):
@@ -64,7 +66,7 @@ class ExplanationRequest(NamedTuple):
     contextual_control_threshold: Optional[float] = None
     control_factor: Optional[float] = None
     control_log_additive: Optional[bool] = None
-    granularity: Optional[ExplanationGranularity] = None
+    prompt_granularity: Optional[PromptGranularity] = None
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None
 
@@ -72,14 +74,17 @@ class ExplanationRequest(NamedTuple):
         payload: Dict[str, Any] = {
             "prompt": self.prompt.to_json(),
             "target": self.target,
-            "contextual_control_threshold": self.contextual_control_threshold,
         }
+        if self.contextual_control_threshold is not None:
+            payload["contextual_control_threshold"] = self.contextual_control_threshold
         if self.control_factor is not None:
             payload["control_factor"] = self.control_factor
         if self.control_log_additive is not None:
             payload["control_log_additive"] = self.control_log_additive
-        if self.granularity is not None:
-            payload["granularity"] = granularity_to_json(self.granularity)
+        if self.prompt_granularity is not None:
+            payload["prompt_granularity"] = prompt_granularity_to_json(
+                self.prompt_granularity
+            )
         if self.postprocessing is not None:
             payload["postprocessing"] = self.postprocessing.to_json()
         if self.normalize is not None:

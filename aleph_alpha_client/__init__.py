@@ -10,7 +10,6 @@ from .image import Image, ImagePrompt, ImageControl
 from .prompt import Prompt, Tokens, TokenControl, Text, TextControl
 from .explanation import (
     ExplanationRequest,
-    ExplanationGranularity,
     ExplanationPostprocessing,
     ExplanationResponse,
 )
