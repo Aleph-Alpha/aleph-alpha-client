@@ -1,13 +1,11 @@
 from enum import Enum
 from typing import (
     Any,
-    Generic,
     List,
     Dict,
     Mapping,
     NamedTuple,
     Optional,
-    TypeVar,
     Union,
 )
 
@@ -60,6 +58,23 @@ def prompt_granularity_to_json(
     return prompt_granularity.to_json()
 
 
+class TargetGranularity(Enum):
+    """
+    How many explanations should be returned in the output.
+
+    Complete:
+        Return one explanation for the entire target. Helpful in many cases to determine which parts of the prompt contribute overall to the given completion.
+    Token:
+        Return one explanation for each token in the target.
+    """
+
+    Complete = "complete"
+    Token = "token"
+
+    def to_json(self) -> str:
+        return self.value
+
+
 class ExplanationRequest(NamedTuple):
     prompt: Prompt
     target: str
@@ -67,6 +82,7 @@ class ExplanationRequest(NamedTuple):
     control_factor: Optional[float] = None
     control_log_additive: Optional[bool] = None
     prompt_granularity: Optional[PromptGranularity] = None
+    target_granularity: Optional[TargetGranularity] = None
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None
 
@@ -85,6 +101,8 @@ class ExplanationRequest(NamedTuple):
             payload["prompt_granularity"] = prompt_granularity_to_json(
                 self.prompt_granularity
             )
+        if self.target_granularity is not None:
+            payload["target_granularity"] = self.target_granularity.to_json()
         if self.postprocessing is not None:
             payload["postprocessing"] = self.postprocessing.to_json()
         if self.normalize is not None:
