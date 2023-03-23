@@ -1,12 +1,15 @@
 from pathlib import Path
 import pytest
-from aleph_alpha_client import ExplanationRequest, AlephAlphaClient
-from aleph_alpha_client import AsyncClient, Client
-from aleph_alpha_client import ExplanationGranularity, ExplanationRequest
-from aleph_alpha_client import Image
-from aleph_alpha_client import Prompt, Text
-from aleph_alpha_client.explanation import (
+from aleph_alpha_client import (
+    ExplanationRequest,
+    AsyncClient,
+    Client,
+    ExplanationRequest,
+    Image,
+    Prompt,
+    Text,
     CustomGranularity,
+    TargetGranularity,
     ExplanationPostprocessing,
     ImageScore,
 )
@@ -37,7 +40,8 @@ async def test_can_explain_with_async_client(
             ]
         ),
         target=" pizza with cheese",
-        granularity=CustomGranularity("###"),
+        prompt_granularity=CustomGranularity("###"),
+        target_granularity=TargetGranularity.Token,
     )
 
     explanation = await async_client._explain(request, model=model_name)
@@ -64,9 +68,10 @@ def test_explanation(sync_client: Client, model_name: str):
             ]
         ),
         target=" pizza with cheese",
-        granularity="sentence",
+        prompt_granularity="sentence",
         postprocessing=ExplanationPostprocessing.Absolute,
         normalize=True,
+        target_granularity=TargetGranularity.Token,
     )
 
     explanation = sync_client._explain(request, model=model_name)
@@ -97,12 +102,12 @@ def test_explanation_auto_granularity(sync_client: Client, model_name: str):
             ]
         ),
         target=" pizza with cheese",
-        granularity=None,
+        prompt_granularity=None,
     )
 
     explanation = sync_client._explain(request, model=model_name)
 
-    assert len(explanation.explanations) == 3
+    assert len(explanation.explanations) == 1
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
 
 
@@ -120,13 +125,13 @@ def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
             ]
         ),
         target=" pizza with cheese",
-        granularity=None,
+        prompt_granularity=None,
     )
 
     explanation = sync_client._explain(request, model=model_name)
 
     explanation = explanation.with_image_prompt_items_in_pixels(request.prompt)
-    assert len(explanation.explanations) == 3
+    assert len(explanation.explanations) == 1
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
     assert all(
         [
@@ -153,7 +158,8 @@ def test_explanation_of_text_in_prompt_relativ_indeces(
             ]
         ),
         target=" pizza with cheese",
-        granularity=None,
+        prompt_granularity=None,
+        target_granularity=TargetGranularity.Token,
     )
 
     explanation = sync_client._explain(request, model=model_name)
