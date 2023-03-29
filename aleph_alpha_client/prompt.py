@@ -436,7 +436,7 @@ class Prompt(NamedTuple):
             ])
     """
 
-    items: Sequence[PromptItem]
+    items: Union[str, Sequence[PromptItem]]
 
     @staticmethod
     def from_text(
@@ -459,7 +459,10 @@ class Prompt(NamedTuple):
         return Prompt([Tokens(tokens, controls or [])])
 
     def to_json(self) -> Sequence[Mapping[str, Any]]:
-        return [_to_json(item) for item in self.items]
+        if isinstance(self.items, str):
+            return [_to_json(self.items)]
+        else:
+            return [_to_json(item) for item in self.items]
 
 
 def _to_json(item: PromptItem) -> Mapping[str, Any]:
