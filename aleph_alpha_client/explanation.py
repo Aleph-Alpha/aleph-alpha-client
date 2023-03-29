@@ -33,6 +33,17 @@ class ExplanationPostprocessing(Enum):
 
 
 class CustomGranularity(NamedTuple):
+    """
+    Allows for passing a custom delimiter to determine the granularity to
+    to explain the prompt by. The text of the prompt will be split by the
+    delimiter you provide.
+
+    Parameters:
+        delimiter (str, required):
+            String to split the text in the prompt by for generating
+            explanations for your prompt.
+    """
+
     delimiter: str
 
     def to_json(self) -> Mapping[str, Any]:
@@ -75,6 +86,73 @@ class TargetGranularity(Enum):
 
 
 class ExplanationRequest(NamedTuple):
+    """
+    Describes an Explanation request you want to make agains the API.
+
+    Parameters:
+        prompt (Prompt, required)
+            Prompt you want to generate explanations for a target completion.
+        target (str, required)
+            The completion string to be explained based on model probabilities.
+        contextual_control_threshold (float, default None)
+            If set to None, attention control parameters only apply to those tokens that have
+            explicitly been set in the request.
+            If set to a non-None value, we apply the control parameters to similar tokens as well.
+            Controls that have been applied to one token will then be applied to all other tokens
+            that have at least the similarity score defined by this parameter.
+            The similarity score is the cosine similarity of token embeddings.
+        control_factor (float, default None):
+            The amount to adjust model attention by.
+            For Explanation, you want to supress attention, and the API will default to 0.1.
+            Values between 0 and 1 will supress attention.
+            A value of 1 will have no effect.
+            Values above 1 will increase attention.
+        control_token_overlap (ControlTokenOverlap, default None)
+            What to do if a control partially overlaps with a text or image token.
+            If set to "partial", the factor will be adjusted proportionally with the amount
+            of the token it overlaps. So a factor of 2.0 of a control that only covers 2 of
+            4 token characters, would be adjusted to 1.5.
+            If set to "complete", the full factor will be applied as long as the control
+            overlaps with the token at all.
+        control_log_additive (bool, default None)
+            True: apply control by adding the log(control_factor) to attention scores.
+            False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
+            If None, the API will default to True
+        prompt_granularity (PromptGranularity, default None)
+            At which granularity should the target be explained in terms of the prompt.
+            If you choose, for example, "sentence" then we report the importance score of each
+            sentence in the prompt towards generating the target output.
+
+            If you do not choose a granularity then we will try to find the granularity that
+            brings you closest to around 30 explanations. For large documents, this would likely
+            be sentences. For short prompts this might be individual words or even tokens.
+
+            If you choose a custom granularity then you must provide a custom delimiter. We then
+            split your prompt by that delimiter. This might be helpful if you are using few-shot
+            prompts that contain stop sequences.
+
+            For image prompt items, the granularities determine into how many tiles we divide
+            the image for the explanation.
+            "token" -> 12x12
+            "word" -> 6x6
+            "sentence" -> 3x3
+            "paragraph" -> 1
+        target_granularity (TargetGranularity, default None)
+            How many explanations should be returned in the output.
+
+            "complete" -> Return one explanation for the entire target. Helpful in many cases to determine which parts of the prompt contribute overall to the given completion.
+            "token" -> Return one explanation for each token in the target.
+
+            If None, API will default to "complete"
+        postprocessing (ExplanationPostprocessing, default None)
+            Optionally apply postprocessing to the difference in cross entropy scores for each token.
+            "none": Apply no postprocessing.
+            "absolute": Return the absolute value of each value.
+            "square": Square each value
+        normalize (bool, default None)
+            Return normalized scores. Minimum score becomes 0 and maximum score becomes 1. Applied after any postprocessing
+    """
+
     prompt: Prompt
     target: str
     contextual_control_threshold: Optional[float] = None
