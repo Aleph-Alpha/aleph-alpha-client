@@ -136,8 +136,8 @@ class TextControl(NamedTuple):
     factor: float
     token_overlap: Optional[ControlTokenOverlap] = None
 
-    def to_json(self) -> Mapping[str, Any]:
-        payload = {
+    def to_json(self) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {
             "start": self.start,
             "length": self.length,
             "factor": self.factor,
