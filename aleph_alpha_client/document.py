@@ -1,8 +1,7 @@
 import base64
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, Optional, Sequence, Union
 
-from aleph_alpha_client.image import Image
-from aleph_alpha_client.prompt import PromptItem, Text, _to_json
+from aleph_alpha_client.prompt import Image, PromptItem, Text, _to_json
 
 
 class Document:

@@ -1,7 +1,14 @@
-from aleph_alpha_client import Prompt, Tokens, TokenControl, Image, ImageControl
+from aleph_alpha_client import (
+    ControlTokenOverlap,
+    Prompt,
+    Tokens,
+    TokenControl,
+    Image,
+    ImageControl,
+)
 from aleph_alpha_client.aleph_alpha_client import Client
 from aleph_alpha_client.completion import CompletionRequest
-from aleph_alpha_client.image import ImagePrompt
+from aleph_alpha_client import ImagePrompt
 from aleph_alpha_client.prompt import Text, TextControl
 from tests.common import sync_client, model_name
 
@@ -38,7 +45,18 @@ def test_serialize_token_ids_with_controls():
 
 def test_serialize_text_with_controls():
     prompt_text = "An apple a day"
-    prompt = Prompt.from_text(prompt_text, [TextControl(start=3, length=5, factor=1.5)])
+    prompt = Prompt.from_text(
+        prompt_text,
+        [
+            TextControl(start=3, length=5, factor=1.5),
+            TextControl(
+                start=3,
+                length=5,
+                factor=1.5,
+                token_overlap=ControlTokenOverlap.Complete,
+            ),
+        ],
+    )
 
     serialized_prompt = prompt.to_json()
 
@@ -46,14 +64,28 @@ def test_serialize_text_with_controls():
         {
             "type": "text",
             "data": prompt_text,
-            "controls": [{"start": 3, "length": 5, "factor": 1.5}],
+            "controls": [
+                {"start": 3, "length": 5, "factor": 1.5},
+                {"start": 3, "length": 5, "factor": 1.5, "token_overlap": "complete"},
+            ],
         }
     ]
 
 
 def test_serialize_image_with_controls():
     image = Image.from_file(
-        "tests/dog-and-cat-cover.jpg", [ImageControl(0.0, 0.0, 0.5, 0.5, 0.5)]
+        "tests/dog-and-cat-cover.jpg",
+        [
+            ImageControl(0.0, 0.0, 0.5, 0.5, 0.5),
+            ImageControl(
+                left=0.0,
+                top=0.0,
+                width=0.5,
+                height=0.5,
+                factor=0.5,
+                token_overlap=ControlTokenOverlap.Partial,
+            ),
+        ],
     )
     prompt = Prompt.from_image(image)
     serialized_prompt = prompt.to_json()
@@ -71,7 +103,17 @@ def test_serialize_image_with_controls():
                         "height": 0.5,
                     },
                     "factor": 0.5,
-                }
+                },
+                {
+                    "rect": {
+                        "left": 0.0,
+                        "top": 0.0,
+                        "width": 0.5,
+                        "height": 0.5,
+                    },
+                    "factor": 0.5,
+                    "token_overlap": "partial",
+                },
             ],
         }
     ]

@@ -1,6 +1,7 @@
 from pathlib import Path
 import pytest
 from aleph_alpha_client import (
+    ControlTokenOverlap,
     ExplanationRequest,
     AsyncClient,
     Client,
@@ -72,6 +73,7 @@ def test_explanation(sync_client: Client, model_name: str):
         postprocessing=ExplanationPostprocessing.Absolute,
         normalize=True,
         target_granularity=TargetGranularity.Token,
+        control_token_overlap=ControlTokenOverlap.Complete,
     )
 
     explanation = sync_client._explain(request, model=model_name)
