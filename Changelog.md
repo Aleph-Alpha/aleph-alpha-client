@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.17.0
+
+### Features
+
+- Allow specifying token overlap behavior in AtMan by @benbrandt in https://github.com/Aleph-Alpha/aleph-alpha-client/pull/106
+
+### Bug Fixes
+
+- Better handle case when Prompt is supplied a string instead of a list by @benbrandt in https://github.com/Aleph-Alpha/aleph-alpha-client/pull/107
+
+### Experimental
+
+- New Explain interface for internal testing by @ahartel and @benbrandt in https://github.com/Aleph-Alpha/aleph-alpha-client/pull/97 https://github.com/Aleph-Alpha/aleph-alpha-client/pull/98 https://github.com/Aleph-Alpha/aleph-alpha-client/pull/99 https://github.com/Aleph-Alpha/aleph-alpha-client/pull/100 https://github.com/Aleph-Alpha/aleph-alpha-client/pull/101 https://github.com/Aleph-Alpha/aleph-alpha-client/pull/102 https://github.com/Aleph-Alpha/aleph-alpha-client/pull/103 https://github.com/Aleph-Alpha/aleph-alpha-client/pull/104
+
 ## 2.16.1
 
 - AsyncClient now respects http proxy env variables, as Client did all the time
