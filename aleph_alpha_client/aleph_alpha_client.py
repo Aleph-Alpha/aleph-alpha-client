@@ -20,7 +20,7 @@ from aleph_alpha_client.explanation import (
     ExplanationRequest,
     ExplanationResponse,
 )
-from aleph_alpha_client.image import Image
+from aleph_alpha_client import Image
 from aleph_alpha_client.prompt import _to_json, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
 from aleph_alpha_client.qa import QaRequest, QaResponse

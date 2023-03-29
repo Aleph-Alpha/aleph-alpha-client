@@ -11,9 +11,8 @@ from typing import (
 
 # Import Literal with Python 3.7 fallback
 from typing_extensions import Literal
-from aleph_alpha_client.image import Image
 
-from aleph_alpha_client.prompt import Prompt, PromptItem
+from aleph_alpha_client.prompt import ControlTokenOverlap, Image, Prompt, PromptItem
 
 
 class ExplanationPostprocessing(Enum):
@@ -80,6 +79,7 @@ class ExplanationRequest(NamedTuple):
     target: str
     contextual_control_threshold: Optional[float] = None
     control_factor: Optional[float] = None
+    control_token_overlap: Optional[ControlTokenOverlap] = None
     control_log_additive: Optional[bool] = None
     prompt_granularity: Optional[PromptGranularity] = None
     target_granularity: Optional[TargetGranularity] = None
@@ -93,8 +93,10 @@ class ExplanationRequest(NamedTuple):
         }
         if self.contextual_control_threshold is not None:
             payload["contextual_control_threshold"] = self.contextual_control_threshold
-        if self.control_factor is not None:
-            payload["control_factor"] = self.control_factor
+        if self.control_token_overlap is not None:
+            payload["control_token_overlap"] = self.control_token_overlap.to_json()
+        if self.postprocessing is not None:
+            payload["postprocessing"] = self.postprocessing.to_json()
         if self.control_log_additive is not None:
             payload["control_log_additive"] = self.control_log_additive
         if self.prompt_granularity is not None:

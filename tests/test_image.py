@@ -5,7 +5,7 @@ from pytest import raises
 from pytest_httpserver import HTTPServer
 from requests import RequestException
 
-from aleph_alpha_client.image import Image
+from aleph_alpha_client import Image
 
 
 def test_from_url_with_non_OK_response(httpserver: HTTPServer):
