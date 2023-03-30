@@ -174,7 +174,7 @@ class Client:
         self,
         endpoint: str,
         request: AnyRequest,
-        model: Optional[str],
+        model: Optional[str] = None,
     ) -> Dict[str, Any]:
 
         json_body = self._build_json_body(request, model)
@@ -412,41 +412,21 @@ class Client:
         )
         return EvaluationResponse.from_json(response)
 
-    def qa(
-        self,
-        request: QaRequest,
-        model: Optional[str] = None,
-        beta: bool = False,
-    ) -> QaResponse:
+    def qa(self, request: QaRequest) -> QaResponse:
         """Answers a question about documents.
 
         Parameters:
             request (QaRequest, required):
                 Parameters for the qa request.
 
-            model (string, optional, default None):
-                Name of model to use. A model name refers to a model architecture (number of parameters among others).
-                Always the latest version of model is used.
-
-            beta (bool, optional, default False):
-                Opt-in use of new beta implementations of the QA endpoint, if available. Setting this to true will only change the
-                behavior if there is a currently running beta available.
-
-                Disclaimer: Pricing, performance, and behavior are subject to change at any time for beta implementations. Please be
-                aware of this before using. You can always reach out to support@alepha-alpha.com if you have questions.
-
         Examples:
             >>> request = QaRequest(
                     query="Who likes pizza?",
                     documents=[Document.from_text("Andreas likes pizza.")],
                 )
-            >>> response = client.qa(request, model="luminous-extended")
+            >>> response = client.qa(request)
         """
-        response = self._post_request(
-            "qa/beta" if beta else "qa",
-            request,
-            model,
-        )
+        response = self._post_request("qa/beta", request)
         return QaResponse.from_json(response)
 
     def summarize(
@@ -638,7 +618,7 @@ class AsyncClient:
         self,
         endpoint: str,
         request: AnyRequest,
-        model: Optional[str],
+        model: Optional[str] = None,
     ) -> Dict[str, Any]:
 
         json_body = self._build_json_body(request, model)
@@ -871,28 +851,12 @@ class AsyncClient:
         )
         return EvaluationResponse.from_json(response)
 
-    async def qa(
-        self,
-        request: QaRequest,
-        model: Optional[str] = None,
-        beta: bool = False,
-    ) -> QaResponse:
+    async def qa(self, request: QaRequest) -> QaResponse:
         """Answers a question about documents.
 
         Parameters:
             request (QaRequest, required):
                 Parameters for the qa request.
-
-            model (string, optional, default None):
-                Name of model to use. A model name refers to a model architecture (number of parameters among others).
-                Always the latest version of model is used.
-
-            beta (bool, optional, default False):
-                Opt-in use of new beta implementations of the QA endpoint, if available. Setting this to true will only change the
-                behavior if there is a currently running beta available.
-
-                Disclaimer: Pricing, performance, and behavior are subject to change at any time for beta implementations. Please be
-                aware of this before using. You can always reach out to support@alepha-alpha.com if you have questions.
 
         Examples:
             >>> request = QaRequest(
@@ -901,11 +865,7 @@ class AsyncClient:
                 )
             >>> response = await client.qa(request, model="luminous-extended")
         """
-        response = await self._post_request(
-            "qa/beta" if beta else "qa",
-            request,
-            model,
-        )
+        response = await self._post_request("qa/beta", request)
         return QaResponse.from_json(response)
 
     async def summarize(

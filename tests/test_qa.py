@@ -19,9 +19,8 @@ async def test_can_qa_with_async_client(async_client: AsyncClient):
         documents=[Document.from_text("Andreas likes pizza.")],
     )
 
-    response = await async_client.qa(request, model="luminous-extended")
+    response = await async_client.qa(request)
     assert len(response.answers) == 1
-    assert response.model_version is not None
     assert response.answers[0].score > 0.0
 
 
@@ -36,11 +35,10 @@ def test_qa(sync_client: Client):
         documents=[Document.from_prompt(["Andreas likes pizza."])],
     )
 
-    response = sync_client.qa(request, model="luminous-extended")
+    response = sync_client.qa(request)
 
     # the response should exist and be in the form of a named tuple class
     assert len(response.answers) == 1
-    assert response.model_version is not None
 
 
 @pytest.mark.system_test
@@ -51,11 +49,10 @@ def test_qa_no_answer_found(sync_client: Client):
         documents=[],
     )
 
-    response = sync_client.qa(request, model="luminous-extended")
+    response = sync_client.qa(request)
 
     # the response should exist and be in the form of a named tuple class
     assert len(response.answers) == 0
-    assert response.model_version is not None
 
 
 @pytest.mark.system_test
@@ -67,35 +64,8 @@ def test_text(sync_client: Client):
     )
 
     # then we expect an exception tue to a bad request response from the API
-    response = sync_client.qa(request, model="luminous-extended")
+    response = sync_client.qa(request)
 
     # The response should exist in the form of a json dict
     assert len(response.answers) == 1
-    assert response.model_version is not None
     assert response.answers[0].score > 0.5
-
-
-def test_can_send_beta_request_and_no_model(sync_client: Client):
-    # when posting a QA request with a QaRequest object
-    request = QaRequest(
-        query="Who likes pizza?",
-        documents=[Document.from_prompt(["Andreas likes pizza."])],
-    )
-
-    response = sync_client.qa(request, beta=True)
-
-    # the response should exist and be in the form of a named tuple class
-    assert len(response.answers) == 1
-    assert response.model_version is not None
-
-
-async def test_can_send_async_beta_request_and_no_model(async_client: AsyncClient):
-    request = QaRequest(
-        query="Who likes pizza?",
-        documents=[Document.from_text("Andreas likes pizza.")],
-    )
-
-    response = await async_client.qa(request, beta=True)
-    assert len(response.answers) == 1
-    assert response.model_version is not None
-    assert response.answers[0].score > 0.0
