@@ -1,13 +1,11 @@
 import pytest
-from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, AsyncClient, Client
+from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.document import Document
 from aleph_alpha_client.qa import QaRequest
 
 from tests.common import (
     sync_client,
-    client,
     model_name,
-    luminous_extended,
     async_client,
 )
 
@@ -75,27 +73,6 @@ def test_text(sync_client: Client):
     assert len(response.answers) == 1
     assert response.model_version is not None
     assert response.answers[0].score > 0.5
-
-
-# AlephAlphaClient
-
-
-@pytest.mark.system_test
-def test_qa_with_client(client: AlephAlphaClient):
-    model_name = "luminous-extended"
-    # given a client
-    assert model_name in map(lambda model: model["name"], client.available_models())
-
-    # when posting a QA request with explicit parameters
-    response = client.qa(
-        model_name,
-        query="Who likes pizza?",
-        documents=[Document.from_prompt(["Andreas likes pizza."])],
-    )
-
-    # The response should exist in the form of a json dict
-    assert len(response["answers"]) == 1
-    assert response["model_version"] is not None
 
 
 def test_can_send_beta_request_and_no_model(sync_client: Client):

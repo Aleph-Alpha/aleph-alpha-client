@@ -1,15 +1,12 @@
 import pytest
-from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, AsyncClient, Client
-from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
+from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.completion import CompletionRequest
 from aleph_alpha_client.prompt import ControlTokenOverlap, Prompt, Text, TextControl
 
 from tests.common import (
-    client,
     sync_client,
     async_client,
     model_name,
-    model,
 )
 
 
@@ -72,25 +69,6 @@ def test_complete_with_token_ids(sync_client: Client, model_name: str):
     )
 
     response = sync_client.complete(request, model=model_name)
-
-    assert len(response.completions) == 1
-    assert response.model_version is not None
-
-
-# AlephAlphaModel
-
-
-@pytest.mark.system_test
-def test_deprecated_complete(model: AlephAlphaModel):
-    request = CompletionRequest(
-        prompt=Prompt.from_text(""),
-        maximum_tokens=7,
-        tokens=False,
-        log_probs=0,
-        logit_bias={1: 2.0},
-    )
-
-    response = model.complete(request)
 
     assert len(response.completions) == 1
     assert response.model_version is not None

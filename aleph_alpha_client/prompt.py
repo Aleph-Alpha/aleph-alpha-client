@@ -419,10 +419,6 @@ class Image:
         return (image.width, image.height)
 
 
-# For backwards compatibility we still expose this with the old name
-ImagePrompt = Image
-
-
 PromptItem = Union[Text, Tokens, Image, str, Sequence[int]]
 
 

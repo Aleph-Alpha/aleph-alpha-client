@@ -17,9 +17,7 @@ from aleph_alpha_client import (
 
 from tests.common import (
     sync_client,
-    client,
     model_name,
-    model,
     async_client,
 )
 

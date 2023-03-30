@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0
+
+### Breaking Changes
+
+- Removed deprecated `AlephAlphaClient` and `AlephAlphaModel`. Use `Client` or `AsyncClient` instead.
+- Removed deprecated `ImagePrompt`. Import `Image` instead for image prompt items.
+
 ## 2.17.0
 
 ### Features

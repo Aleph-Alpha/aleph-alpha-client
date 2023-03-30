@@ -1,16 +1,10 @@
-from multiprocessing.sharedctypes import Value
-from typing import List
 import pytest
-from aleph_alpha_client import AlephAlphaClient
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
-from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.evaluation import EvaluationRequest
 from aleph_alpha_client.prompt import Prompt
 from tests.common import (
     sync_client,
-    client,
     model_name,
-    model,
     async_client,
 )
 
@@ -45,14 +39,3 @@ def test_evaluate(sync_client: Client, model_name: str):
 
     assert result.model_version is not None
     assert result.result is not None
-
-
-# AlephAlphaClient
-
-
-@pytest.mark.system_test
-def test_evaluate_with_client(client: AlephAlphaClient, model_name: str):
-    result = client.evaluate(model_name, prompt="hello", completion_expected="world")
-
-    assert result["model_version"] is not None
-    assert result["result"] is not None

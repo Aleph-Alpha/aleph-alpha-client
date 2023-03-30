@@ -2,7 +2,6 @@ from .prompt import (
     ControlTokenOverlap,
     Image,
     ImageControl,
-    ImagePrompt,
     Prompt,
     Text,
     TextControl,
@@ -11,12 +10,10 @@ from .prompt import (
 )
 from .aleph_alpha_client import (
     POOLING_OPTIONS,
-    AlephAlphaClient,
     AsyncClient,
     Client,
     QuotaError,
 )
-from .aleph_alpha_model import AlephAlphaModel
 from .completion import CompletionRequest, CompletionResponse
 from .detokenization import DetokenizationRequest, DetokenizationResponse
 from .document import Document
@@ -52,8 +49,6 @@ from .utils import load_base64_from_file, load_base64_from_url
 from .version import __version__
 
 __all__ = [
-    "AlephAlphaClient",
-    "AlephAlphaModel",
     "AsyncClient",
     "Client",
     "CompletionRequest",
@@ -73,7 +68,6 @@ __all__ = [
     "ExplanationResponse",
     "Image",
     "ImageControl",
-    "ImagePrompt",
     "ImagePromptItemExplanation",
     "ImageScore",
     "POOLING_OPTIONS",
