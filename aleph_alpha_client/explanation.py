@@ -12,6 +12,8 @@ from typing import (
 # Import Literal with Python 3.7 fallback
 from typing_extensions import Literal
 
+from aleph_alpha_client import Text
+
 from aleph_alpha_client.prompt import ControlTokenOverlap, Image, Prompt, PromptItem
 
 
@@ -204,6 +206,20 @@ class TextScore(NamedTuple):
             score=score["score"],
         )
 
+class TextScoreWithRaw(NamedTuple):
+    start: int
+    length: int
+    score: float
+    text: str
+
+    @staticmethod
+    def from_text_score(score: TextScore, prompt: Text) -> "TextScoreWithRaw":
+        return TextScoreWithRaw(
+            start=score.start,
+            length=score.length,
+            score=score.score,
+            text=prompt.text[score.start:score.start + score.length],
+        )
 
 class ImageScore(NamedTuple):
     left: float
@@ -236,6 +252,20 @@ class TargetScore(NamedTuple):
             score=score["score"],
         )
 
+class TargetScoreWithRaw(NamedTuple):
+    start: int
+    length: int
+    score: float
+    text: str
+
+    @staticmethod
+    def from_target_score(score: TextScore, target: str) -> "TargetScore":
+        return TargetScoreWithRaw(
+            start=score.start,
+            length=score.length,
+            score=score.score,
+            text=target[score.start:score.start + score.length],
+        )
 
 class TokenScore(NamedTuple):
     score: float
@@ -275,13 +305,19 @@ class ImagePromptItemExplanation(NamedTuple):
 
 
 class TextPromptItemExplanation(NamedTuple):
-    scores: List[TextScore]
+    scores: List[Union[TextScore, TextScoreWithRaw]]
 
     @staticmethod
     def from_json(item: Dict[str, Any]) -> "TextPromptItemExplanation":
         return TextPromptItemExplanation(
             scores=[TextScore.from_json(score) for score in item["scores"]]
         )
+    
+    def with_text(self, prompt: Text) -> "TextPromptItemExplanation":
+        return TextPromptItemExplanation(
+            scores=[TextScoreWithRaw.from_text_score(score, prompt) for score in self.scores]
+        )
+
 
 
 class TargetPromptItemExplanation(NamedTuple):
@@ -292,6 +328,14 @@ class TargetPromptItemExplanation(NamedTuple):
         return TargetPromptItemExplanation(
             scores=[TargetScore.from_json(score) for score in item["scores"]]
         )
+    
+    def with_text(self, prompt: str) -> "TargetPromptItemExplanation":
+        return TargetPromptItemExplanation(
+            scores=[TargetScoreWithRaw.from_target_score(score, prompt) for score in self.scores]
+        )
+    
+
+
 
 
 class TokenPromptItemExplanation(NamedTuple):
@@ -353,6 +397,22 @@ class Explanation(NamedTuple):
         )
 
 
+    def with_text_from_prompt(self, prompt: Prompt, target: str) -> "Explanation":
+        items = []
+        for item_index, item in enumerate(self.items): 
+            if isinstance(item, TextPromptItemExplanation): 
+                items.append( item.with_text(prompt.items[item_index]))
+            elif isinstance(item, TargetPromptItemExplanation):
+                items.append(item.with_text(target))
+            else:
+                items.append(item)
+        return Explanation(
+            target=self.target,
+            items=items,
+        )
+
+
+
 class ExplanationResponse(NamedTuple):
     model_version: str
     explanations: List[Explanation]
@@ -372,6 +432,15 @@ class ExplanationResponse(NamedTuple):
     ) -> "ExplanationResponse":
         mapped_explanations = [
             explanation.with_image_prompt_items_in_pixels(prompt)
+            for explanation in self.explanations
+        ]
+        return ExplanationResponse(self.model_version, mapped_explanations)
+    
+    def with_text_from_prompt(
+        self, request: ExplanationRequest
+    ) -> "ExplanationResponse":
+        mapped_explanations = [
+            explanation.with_text_from_prompt(request.prompt, request.target)
             for explanation in self.explanations
         ]
         return ExplanationResponse(self.model_version, mapped_explanations)
