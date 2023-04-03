@@ -426,7 +426,7 @@ class Client:
                 )
             >>> response = client.qa(request)
         """
-        response = self._post_request("qa/beta", request)
+        response = self._post_request("qa", request)
         return QaResponse.from_json(response)
 
     def summarize(
@@ -859,7 +859,7 @@ class AsyncClient:
                 )
             >>> response = await client.qa(request, model="luminous-extended")
         """
-        response = await self._post_request("qa/beta", request)
+        response = await self._post_request("qa", request)
         return QaResponse.from_json(response)
 
     async def summarize(

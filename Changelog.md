@@ -9,6 +9,8 @@
 - New Q&A interface. We've improved the Q&A implementation, and most parameters are no longer needed.
   - You only need to specify your documents, a query, and (optional) the max number of answers you want to receive.
   - You no longer specify a model.
+- Removed "model" parameter from summarize method
+- Removed "model_version" from `SummarizationResponse`
 
 ## 2.17.0
 
