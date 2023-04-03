@@ -12,12 +12,11 @@ from aleph_alpha_client.prompt import Text, TextControl
 from tests.common import sync_client, model_name
 
 
-def test_serialize_prompt_init_with_str():
+def test_init_prompt_with_str():
     text = "text prompt"
     prompt = Prompt(text)
-    serialized_prompt = prompt.to_json()
 
-    assert serialized_prompt == [{"type": "text", "data": text}]
+    assert prompt == Prompt.from_text(text)
 
 
 def test_serialize_token_ids():
