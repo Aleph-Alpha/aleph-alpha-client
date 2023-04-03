@@ -259,7 +259,7 @@ class TargetScoreWithRaw(NamedTuple):
     text: str
 
     @staticmethod
-    def from_target_score(score: TextScore, target: str) -> "TargetScore":
+    def from_target_score(score: TargetScore, target: str) -> "TargetScoreWithRaw":
         return TargetScoreWithRaw(
             start=score.start,
             length=score.length,
@@ -315,13 +315,13 @@ class TextPromptItemExplanation(NamedTuple):
     
     def with_text(self, prompt: Text) -> "TextPromptItemExplanation":
         return TextPromptItemExplanation(
-            scores=[TextScoreWithRaw.from_text_score(score, prompt) for score in self.scores]
+            scores=[TextScoreWithRaw.from_text_score(score, prompt) if isinstance(score, TextScore) else score for score in self.scores]
         )
 
 
 
 class TargetPromptItemExplanation(NamedTuple):
-    scores: List[TargetScore]
+    scores: List[Union[TargetScore, TargetScoreWithRaw]]
 
     @staticmethod
     def from_json(item: Dict[str, Any]) -> "TargetPromptItemExplanation":
@@ -331,7 +331,7 @@ class TargetPromptItemExplanation(NamedTuple):
     
     def with_text(self, prompt: str) -> "TargetPromptItemExplanation":
         return TargetPromptItemExplanation(
-            scores=[TargetScoreWithRaw.from_target_score(score, prompt) for score in self.scores]
+            scores=[TargetScoreWithRaw.from_target_score(score, prompt) if isinstance(score, TargetScore) else score for score in self.scores]
         )
     
 
@@ -396,12 +396,21 @@ class Explanation(NamedTuple):
             ],
         )
 
-
     def with_text_from_prompt(self, prompt: Prompt, target: str) -> "Explanation":
-        items = []
+        items: List[Union[
+            TextPromptItemExplanation,
+            ImagePromptItemExplanation,
+            TargetPromptItemExplanation,
+            TokenPromptItemExplanation,
+        ]] = []
         for item_index, item in enumerate(self.items): 
-            if isinstance(item, TextPromptItemExplanation): 
-                items.append( item.with_text(prompt.items[item_index]))
+            if isinstance(item, TextPromptItemExplanation):
+                # separate variable to fix linting error
+                prompt_item = prompt.items[item_index]
+                if isinstance(prompt_item, Text): 
+                    items.append(item.with_text(prompt_item))
+                else:
+                    items.append(item)
             elif isinstance(item, TargetPromptItemExplanation):
                 items.append(item.with_text(target))
             else:
