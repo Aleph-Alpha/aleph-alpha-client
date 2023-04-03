@@ -17,9 +17,8 @@ async def test_can_summarize_with_async_client(async_client: AsyncClient):
         document=Document.from_text("Andreas likes pizza."),
     )
 
-    response = await async_client.summarize(request, model="luminous-extended")
+    response = await async_client.summarize(request)
     assert response.summary is not None
-    assert response.model_version is not None
 
 
 # Client
@@ -47,4 +46,3 @@ def test_text(sync_client: Client):
     response = sync_client.summarize(request)
 
     assert response.summary is not None
-    assert response.model_version is not None

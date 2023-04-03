@@ -865,7 +865,6 @@ class AsyncClient:
     async def summarize(
         self,
         request: SummarizationRequest,
-        model: str,
     ) -> SummarizationResponse:
         """Summarizes a document.
 
@@ -886,7 +885,6 @@ class AsyncClient:
         response = await self._post_request(
             "summarize",
             request,
-            model,
         )
         return SummarizationResponse.from_json(response)
 
