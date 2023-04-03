@@ -32,11 +32,10 @@ def test_summarize(sync_client: Client):
         document=Document.from_prompt(["Andreas likes pizza."]),
     )
 
-    response = sync_client.summarize(request, model="luminous-extended")
+    response = sync_client.summarize(request)
 
     # the response should exist and be in the form of a named tuple class
     assert response.summary is not None
-    assert response.model_version is not None
 
 
 @pytest.mark.system_test
@@ -45,7 +44,7 @@ def test_text(sync_client: Client):
         document=Document.from_text("Andreas likes pizza."),
     )
 
-    response = sync_client.summarize(request, model="luminous-extended")
+    response = sync_client.summarize(request)
 
     assert response.summary is not None
     assert response.model_version is not None

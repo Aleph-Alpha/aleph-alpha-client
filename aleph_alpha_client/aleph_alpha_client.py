@@ -432,17 +432,12 @@ class Client:
     def summarize(
         self,
         request: SummarizationRequest,
-        model: str,
     ) -> SummarizationResponse:
         """Summarizes a document.
 
         Parameters:
             request (SummarizationRequest, required):
                 Parameters for the requested summarization.
-
-            model (string, optional, default None):
-                Name of model to use. A model name refers to a model architecture (number of parameters among others).
-                Always the latest version of model is used.
 
         Examples:
             >>> request = SummarizationRequest(
@@ -453,7 +448,6 @@ class Client:
         response = self._post_request(
             "summarize",
             request,
-            model,
         )
         return SummarizationResponse.from_json(response)
 
