@@ -1,4 +1,5 @@
 from pathlib import Path
+from aleph_alpha_client.prompt import Tokens
 import pytest
 from aleph_alpha_client import (
     ControlTokenOverlap,
@@ -35,7 +36,7 @@ async def test_can_explain_with_async_client(
                     "I am a programmer###I am French###I don't like pizza###My favourite food is"
                 ),
                 # " My favorite food is"
-                [4014, 36316, 5681, 387],
+                Tokens.from_token_ids([4014, 36316, 5681, 387]),
             ]
         ),
         target=" pizza with cheese",
@@ -63,7 +64,7 @@ def test_explanation(sync_client: Client, model_name: str):
                 img,
                 Text.from_text("I am a programmer and French. My favourite food is"),
                 # " My favorite food is"
-                [4014, 36316, 5681, 387],
+                Tokens.from_token_ids([4014, 36316, 5681, 387]),
             ]
         ),
         target=" pizza with cheese",
@@ -98,7 +99,7 @@ def test_explanation_auto_granularity(sync_client: Client, model_name: str):
                 img,
                 Text.from_text("I am a programmer and French. My favourite food is"),
                 # " My favorite food is"
-                [4014, 36316, 5681, 387],
+                Tokens.from_token_ids([4014, 36316, 5681, 387]),
             ]
         ),
         target=" pizza with cheese",
@@ -121,7 +122,7 @@ def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
                 img,
                 Text.from_text("I am a programmer and French. My favourite food is"),
                 # " My favorite food is"
-                [4014, 36316, 5681, 387],
+                Tokens.from_token_ids([4014, 36316, 5681, 387]),
             ]
         ),
         target=" pizza with cheese",
@@ -154,7 +155,7 @@ def test_explanation_of_text_in_prompt_relativ_indeces(
                 img,
                 Text.from_text("I am a programmer and French. My favourite food is"),
                 # " My favorite food is"
-                [4014, 36316, 5681, 387],
+                Tokens.from_token_ids([4014, 36316, 5681, 387]),
             ]
         ),
         target=" pizza with cheese",
