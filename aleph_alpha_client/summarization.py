@@ -40,9 +40,8 @@ class SummarizationRequest(NamedTuple):
 
 
 class SummarizationResponse(NamedTuple):
-    model_version: str
     summary: str
 
     @classmethod
     def from_json(cls, json: Mapping[str, Any]) -> "SummarizationResponse":
-        return cls(model_version=json["model_version"], summary=json["summary"])
+        return cls(summary=json["summary"])

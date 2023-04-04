@@ -1,24 +1,22 @@
 from aleph_alpha_client import (
     ControlTokenOverlap,
     Prompt,
-    Tokens,
     TokenControl,
     Image,
     ImageControl,
 )
 from aleph_alpha_client.aleph_alpha_client import Client
 from aleph_alpha_client.completion import CompletionRequest
-from aleph_alpha_client import ImagePrompt
+from aleph_alpha_client import Image
 from aleph_alpha_client.prompt import Text, TextControl
 from tests.common import sync_client, model_name
 
 
-def test_serialize_prompt_init_with_str():
+def test_init_prompt_with_str():
     text = "text prompt"
     prompt = Prompt(text)
-    serialized_prompt = prompt.to_json()
 
-    assert serialized_prompt == [{"type": "text", "data": text}]
+    assert prompt == Prompt.from_text(text)
 
 
 def test_serialize_token_ids():
@@ -127,8 +125,8 @@ def test_serialize_image_with_controls():
     ]
 
 
-def test_image_controls_with_cats_and_dogs(sync_client: Client, model_name: str):
-    image = ImagePrompt.from_file_with_cropping(
+def test_image_controls_with_cats_and_dogs(sync_client: Client):
+    image = Image.from_file_with_cropping(
         "tests/dog-and-cat-cover.jpg",
         # crop exactly 600x600 pixels out of the image
         300,

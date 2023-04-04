@@ -1,8 +1,6 @@
-from typing import List
 import pytest
-from aleph_alpha_client import AlephAlphaClient, EmbeddingRequest
+from aleph_alpha_client import EmbeddingRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
-from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
 from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticRepresentation,
@@ -11,10 +9,7 @@ from aleph_alpha_client.prompt import Prompt
 from tests.common import (
     sync_client,
     async_client,
-    client,
     model_name,
-    luminous_base,
-    model,
 )
 
 # AsyncClient
@@ -119,38 +114,3 @@ def test_embed_semantic(sync_client: Client):
     assert result.model_version is not None
     assert result.embedding
     assert len(result.embedding) == 128
-
-
-# AlephAlphaClient
-
-
-@pytest.mark.system_test
-def test_embed_with_client(client: AlephAlphaClient, model_name: str):
-    layers = [0, -1]
-    pooling = ["mean", "max"]
-    prompt = ["hello"]
-
-    result = client.embed(model_name, prompt, pooling, layers)
-
-    assert result["model_version"] is not None
-    assert len(result["embeddings"]) == len(layers)
-    assert len(result["embeddings"]["layer_0"]) == len(pooling)
-    assert result["tokens"] is None
-
-
-@pytest.mark.system_test
-def test_embed_semantic_with_client(client: AlephAlphaClient):
-    request = SemanticEmbeddingRequest(
-        prompt=Prompt.from_text("hello"),
-        representation=SemanticRepresentation.Symmetric,
-        compress_to_size=128,
-    )
-    result = client.semantic_embed(
-        model="luminous-base",
-        request=request,
-    )
-    # result = luminous_base.semantic_embed(request=request)
-
-    assert result["model_version"] is not None
-    assert result["embedding"]
-    assert len(result["embedding"]) == 128

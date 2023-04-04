@@ -1,15 +1,11 @@
 import pytest
-from aleph_alpha_client.aleph_alpha_client import AlephAlphaClient, AsyncClient, Client
-from aleph_alpha_client.aleph_alpha_model import AlephAlphaModel
-from aleph_alpha_client.prompt import Prompt
+from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.tokenization import TokenizationRequest
 from aleph_alpha_client.detokenization import DetokenizationRequest
 
 from tests.common import (
     sync_client,
-    client,
     model_name,
-    model,
     async_client,
 )
 
@@ -40,17 +36,6 @@ def test_tokenize(sync_client: Client, model_name: str):
 
     assert response.tokens and len(response.tokens) == 1
     assert response.token_ids and len(response.token_ids) == 1
-
-
-# ALephAlphaClient
-
-
-@pytest.mark.system_test
-def test_tokenize_with_client_against_model(client: AlephAlphaClient, model_name: str):
-    response = client.tokenize(model_name, prompt="Hello", tokens=True, token_ids=True)
-
-    assert len(response["tokens"]) == 1
-    assert len(response["token_ids"]) == 1
 
 
 def test_offline_tokenize_sync(sync_client: Client, model_name: str):

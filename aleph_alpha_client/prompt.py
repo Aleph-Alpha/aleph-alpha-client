@@ -1,4 +1,5 @@
 import base64
+from dataclasses import dataclass
 import io
 from enum import Enum
 from pathlib import Path
@@ -419,14 +420,11 @@ class Image:
         return (image.width, image.height)
 
 
-# For backwards compatibility we still expose this with the old name
-ImagePrompt = Image
+PromptItem = Union[Text, Tokens, Image]
 
 
-PromptItem = Union[Text, Tokens, Image, str, Sequence[int]]
-
-
-class Prompt(NamedTuple):
+@dataclass
+class Prompt:
     """
     Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
@@ -436,7 +434,12 @@ class Prompt(NamedTuple):
             ])
     """
 
-    items: Union[str, Sequence[PromptItem]]
+    items: Sequence[PromptItem]
+
+    def __init__(self, items: Union[str, Sequence[PromptItem]]):
+        if isinstance(items, str):
+            items = [Text(items, [])]
+        self.items = items
 
     @staticmethod
     def from_text(
@@ -459,10 +462,7 @@ class Prompt(NamedTuple):
         return Prompt([Tokens(tokens, controls or [])])
 
     def to_json(self) -> Sequence[Mapping[str, Any]]:
-        if isinstance(self.items, str):
-            return [_to_json(self.items)]
-        else:
-            return [_to_json(item) for item in self.items]
+        return [_to_json(item) for item in self.items]
 
 
 def _to_json(item: PromptItem) -> Mapping[str, Any]:

@@ -1,4 +1,3 @@
-import pytest
 from aleph_alpha_client import AsyncClient, Prompt, SearchRequest, Client
 from .common import async_client, sync_client
 
