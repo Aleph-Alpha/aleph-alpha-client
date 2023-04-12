@@ -395,7 +395,7 @@ class Client:
             request (EvaluationRequest, required):
                 Parameters for the requested evaluation.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
@@ -451,11 +451,29 @@ class Client:
         )
         return SummarizationResponse.from_json(response)
 
-    def _explain(
+    def explain(
         self,
         request: ExplanationRequest,
         model: str,
     ) -> ExplanationResponse:
+        """Better understand the source of a completion, specifically on how much each section of a
+        prompt impacts each token of the completion.
+
+        Parameters:
+            request (ExplanationRequest, required):
+                Parameters for the requested explanation.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> request = ExplanationRequest(
+                    prompt=Prompt.from_text("Andreas likes"),
+                    target=" pizza."
+                )
+            >>> response = client.explain(request, model="luminous-extended")
+        """
         response = self._post_request(
             "explain",
             request,
@@ -700,7 +718,7 @@ class AsyncClient:
             request (TokenizationRequest, required):
                 Parameters for the requested tokenization.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
@@ -726,7 +744,7 @@ class AsyncClient:
             request (DetokenizationRequest, required):
                 Parameters for the requested detokenization.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
@@ -752,7 +770,7 @@ class AsyncClient:
             request (EmbeddingRequest, required):
                 Parameters for the requested embedding.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
@@ -779,7 +797,7 @@ class AsyncClient:
             request (SemanticEmbeddingRequest, required):
                 Parameters for the requested semnatic embedding.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
@@ -828,7 +846,7 @@ class AsyncClient:
             request (EvaluationRequest, required):
                 Parameters for the requested evaluation.
 
-            model (string, optional, default None):
+            model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
@@ -871,11 +889,6 @@ class AsyncClient:
         Parameters:
             request (SummarizationRequest, required):
                 Parameters for the requested summarization.
-
-            model (string, optional, default None):
-                Name of model to use. A model name refers to a model architecture (number of parameters among others).
-                Always the latest version of model is used.
-
         Examples:
             >>> request = SummarizationRequest(
                     document=Document.from_text("Andreas likes pizza."),
@@ -888,11 +901,29 @@ class AsyncClient:
         )
         return SummarizationResponse.from_json(response)
 
-    async def _explain(
+    async def explain(
         self,
         request: ExplanationRequest,
         model: str,
     ) -> ExplanationResponse:
+        """Better understand the source of a completion, specifically on how much each section of a
+        prompt impacts each token of the completion.
+
+        Parameters:
+            request (ExplanationRequest, required):
+                Parameters for the requested explanation.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> request = ExplanationRequest(
+                    prompt=Prompt.from_text("Andreas likes"),
+                    target=" pizza."
+                )
+            >>> response = await client.explain(request, model="luminous-extended")
+        """
         response = await self._post_request(
             "explain",
             request,

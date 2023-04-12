@@ -45,7 +45,7 @@ async def test_can_explain_with_async_client(
         target_granularity=TargetGranularity.Token,
     )
 
-    explanation = await async_client._explain(request, model=model_name)
+    explanation = await async_client.explain(request, model=model_name)
 
     assert len(explanation.explanations) == 3
     assert all([len(exp.items) == 3 for exp in explanation.explanations])
@@ -76,7 +76,7 @@ def test_explanation(sync_client: Client, model_name: str):
         control_token_overlap=ControlTokenOverlap.Complete,
     )
 
-    explanation = sync_client._explain(request, model=model_name)
+    explanation = sync_client.explain(request, model=model_name)
 
     assert len(explanation.explanations) == 3
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
@@ -107,7 +107,7 @@ def test_explanation_auto_granularity(sync_client: Client, model_name: str):
         prompt_granularity=None,
     )
 
-    explanation = sync_client._explain(request, model=model_name)
+    explanation = sync_client.explain(request, model=model_name)
 
     assert len(explanation.explanations) == 1
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
@@ -130,7 +130,7 @@ def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
         prompt_granularity=None,
     )
 
-    explanation = sync_client._explain(request, model=model_name)
+    explanation = sync_client.explain(request, model=model_name)
 
     explanation = explanation.with_image_prompt_items_in_pixels(request.prompt)
     assert len(explanation.explanations) == 1
@@ -150,7 +150,6 @@ def test_explanation_of_text_in_prompt_relativ_indeces(
         prompt=Prompt(
             [
                 Text.from_text("I am a programmer and French. My favourite food is"),
-
                 # " My favorite food is"
                 Tokens.from_token_ids([4014, 36316, 5681, 387]),
             ]
@@ -160,20 +159,22 @@ def test_explanation_of_text_in_prompt_relativ_indeces(
         target_granularity=TargetGranularity.Token,
     )
 
-    explanation = sync_client._explain(request, model=model_name)
+    explanation = sync_client.explain(request, model=model_name)
 
     explanation = explanation.with_text_from_prompt(request)
     assert len(explanation.explanations) == 3
     assert all([len(exp.items) == 3 for exp in explanation.explanations])
     assert all(
         [
-            isinstance(raw_text_score, TextScoreWithRaw) and isinstance(raw_text_score.text, str)
+            isinstance(raw_text_score, TextScoreWithRaw)
+            and isinstance(raw_text_score.text, str)
             for raw_text_score in explanation.explanations[0].items[0].scores
         ]
     )
     assert all(
         [
-            isinstance(raw_text_score, TargetScoreWithRaw) and isinstance(raw_text_score.text, str)
+            isinstance(raw_text_score, TargetScoreWithRaw)
+            and isinstance(raw_text_score.text, str)
             for raw_text_score in explanation.explanations[1].items[2].scores
         ]
     )

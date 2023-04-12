@@ -206,6 +206,7 @@ class TextScore(NamedTuple):
             score=score["score"],
         )
 
+
 class TextScoreWithRaw(NamedTuple):
     start: int
     length: int
@@ -218,8 +219,9 @@ class TextScoreWithRaw(NamedTuple):
             start=score.start,
             length=score.length,
             score=score.score,
-            text=prompt.text[score.start:score.start + score.length],
+            text=prompt.text[score.start : score.start + score.length],
         )
+
 
 class ImageScore(NamedTuple):
     left: float
@@ -252,6 +254,7 @@ class TargetScore(NamedTuple):
             score=score["score"],
         )
 
+
 class TargetScoreWithRaw(NamedTuple):
     start: int
     length: int
@@ -264,8 +267,9 @@ class TargetScoreWithRaw(NamedTuple):
             start=score.start,
             length=score.length,
             score=score.score,
-            text=target[score.start:score.start + score.length],
+            text=target[score.start : score.start + score.length],
         )
+
 
 class TokenScore(NamedTuple):
     score: float
@@ -278,6 +282,13 @@ class TokenScore(NamedTuple):
 
 
 class ImagePromptItemExplanation(NamedTuple):
+    """
+    Explains the importance of an image prompt item.
+    The amount of items in the "scores" array depends on the granularity setting.
+    Each score object contains the top-left corner of a rectangular area in the image prompt.
+    The coordinates are all between 0 and 1 in terms of the total image size
+    """
+
     scores: List[ImageScore]
 
     @staticmethod
@@ -305,6 +316,13 @@ class ImagePromptItemExplanation(NamedTuple):
 
 
 class TextPromptItemExplanation(NamedTuple):
+    """
+    Explains the importance of a text prompt item.
+    The amount of items in the "scores" array depends on the granularity setting.
+    Each score object contains an inclusive start character and a length of the substring plus
+    a floating point score value.
+    """
+
     scores: List[Union[TextScore, TextScoreWithRaw]]
 
     @staticmethod
@@ -312,15 +330,27 @@ class TextPromptItemExplanation(NamedTuple):
         return TextPromptItemExplanation(
             scores=[TextScore.from_json(score) for score in item["scores"]]
         )
-    
+
     def with_text(self, prompt: Text) -> "TextPromptItemExplanation":
         return TextPromptItemExplanation(
-            scores=[TextScoreWithRaw.from_text_score(score, prompt) if isinstance(score, TextScore) else score for score in self.scores]
+            scores=[
+                TextScoreWithRaw.from_text_score(score, prompt)
+                if isinstance(score, TextScore)
+                else score
+                for score in self.scores
+            ]
         )
 
 
-
 class TargetPromptItemExplanation(NamedTuple):
+    """
+    Explains the importance of text in the target string that came before the currently
+    to-be-explained target token. The amount of items in the "scores" array depends on the
+    granularity setting.
+    Each score object contains an inclusive start character and a length of the substring plus
+    a floating point score value.
+    """
+
     scores: List[Union[TargetScore, TargetScoreWithRaw]]
 
     @staticmethod
@@ -328,17 +358,23 @@ class TargetPromptItemExplanation(NamedTuple):
         return TargetPromptItemExplanation(
             scores=[TargetScore.from_json(score) for score in item["scores"]]
         )
-    
+
     def with_text(self, prompt: str) -> "TargetPromptItemExplanation":
         return TargetPromptItemExplanation(
-            scores=[TargetScoreWithRaw.from_target_score(score, prompt) if isinstance(score, TargetScore) else score for score in self.scores]
+            scores=[
+                TargetScoreWithRaw.from_target_score(score, prompt)
+                if isinstance(score, TargetScore)
+                else score
+                for score in self.scores
+            ]
         )
-    
-
-
 
 
 class TokenPromptItemExplanation(NamedTuple):
+    """Explains the importance of a request prompt item of type "token_ids".
+    Will contain one floating point importance value for each token in the same order as in the original prompt.
+    """
+
     scores: List[TokenScore]
 
     @staticmethod
@@ -349,6 +385,16 @@ class TokenPromptItemExplanation(NamedTuple):
 
 
 class Explanation(NamedTuple):
+    """
+    Explanations for a given portion of the target.
+
+    Parameters:
+        target (str, required)
+            If target_granularity was set to "complete", then this will be the entire target. If it was set to "token", this will be a single target token.
+        items (List[Union[TextPromptItemExplanation, TargetPromptItemExplanation, TokenPromptItemExplanation, ImagePromptItemExplanation], required)
+            Contains one item for each prompt item (in order), and the last item refers to the target.
+    """
+
     target: str
     items: List[
         Union[
@@ -397,17 +443,19 @@ class Explanation(NamedTuple):
         )
 
     def with_text_from_prompt(self, prompt: Prompt, target: str) -> "Explanation":
-        items: List[Union[
-            TextPromptItemExplanation,
-            ImagePromptItemExplanation,
-            TargetPromptItemExplanation,
-            TokenPromptItemExplanation,
-        ]] = []
-        for item_index, item in enumerate(self.items): 
+        items: List[
+            Union[
+                TextPromptItemExplanation,
+                ImagePromptItemExplanation,
+                TargetPromptItemExplanation,
+                TokenPromptItemExplanation,
+            ]
+        ] = []
+        for item_index, item in enumerate(self.items):
             if isinstance(item, TextPromptItemExplanation):
                 # separate variable to fix linting error
                 prompt_item = prompt.items[item_index]
-                if isinstance(prompt_item, Text): 
+                if isinstance(prompt_item, Text):
                     items.append(item.with_text(prompt_item))
                 else:
                     items.append(item)
@@ -421,8 +469,17 @@ class Explanation(NamedTuple):
         )
 
 
-
 class ExplanationResponse(NamedTuple):
+    """
+    The top-level response data structure that will be returned from an explanation request.
+
+    Parameters:
+        model_version (str, required)
+            Version of the model used to generate the explanation.
+        explanations (List[Explanation], required)
+            This array will contain one explanation object for each portion of the target.
+    """
+
     model_version: str
     explanations: List[Explanation]
 
@@ -444,7 +501,7 @@ class ExplanationResponse(NamedTuple):
             for explanation in self.explanations
         ]
         return ExplanationResponse(self.model_version, mapped_explanations)
-    
+
     def with_text_from_prompt(
         self, request: ExplanationRequest
     ) -> "ExplanationResponse":
