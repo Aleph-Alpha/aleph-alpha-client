@@ -1,5 +1,55 @@
 # Changelog
 
+## 3.1.0
+
+### Features
+
+### New `.explain()` method 🎉
+
+Better understand the source of a completion, specifically on how much each section of a prompt impacts the completion.
+
+To get started, you can simply pass in a prompt you used with a model and the completion the model gave and generate an explanation:
+
+```python
+from aleph_alpha_client import Client, CompletionRequest, ExplanationRequest, Prompt
+
+client = Client(token=os.environ["AA_TOKEN"])
+prompt = Prompt.from_text("An apple a day, ")
+model_name = "luminous-extended"
+
+# create a completion request
+request = CompletionRequest(prompt=prompt, maximum_tokens=32)
+response = client.complete(request, model=model_name)
+
+# generate an explanation
+request = ExplanationRequest(prompt=prompt, target=response.completions[0].completion)
+response = client.explain(request, model=model_name)
+```
+
+To visually see the results, you can also use this in our [Playground](https://app.aleph-alpha.com/playground/explanation).
+
+We also have more [documentation and examples](https://docs.aleph-alpha.com/docs/tasks/explain/) available for you to read.
+
+### AtMan (Attention Manipulation)
+
+Under the hood, we are leveraging the method from our [AtMan paper](https://arxiv.org/abs/2301.08110) to help generate these explanations. And we've also exposed these controls anywhere you can submit us a prompt!
+
+So if you have other use cases for attention manipulation, you can pass these AtMan controls as part of your prompt items.
+
+```python
+from aleph_alpha_client import Prompt, Text, TextControl
+
+Prompt([
+  Text("Hello, World!", controls=[TextControl(start=0, length=5, factor=0.5)]),
+  Image.from_url(
+    "https://cdn-images-1.medium.com/max/1200/1*HunNdlTmoPj8EKpl-jqvBA.png",
+    controls=[ImageControl(top=0.25, left=0.25, height=0.5, width=0.5, factor=2.0)]
+  )
+])
+```
+
+For more information, check out our [documentation and examples](https://docs.aleph-alpha.com/docs/explainability/attention-manipulation/).
+
 ## 3.0.0
 
 ### Breaking Changes
