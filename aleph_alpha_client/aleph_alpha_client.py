@@ -432,12 +432,16 @@ class Client:
     def summarize(
         self,
         request: SummarizationRequest,
+        model: str,
     ) -> SummarizationResponse:
         """Summarizes a document.
 
         Parameters:
             request (SummarizationRequest, required):
                 Parameters for the requested summarization.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture
 
         Examples:
             >>> request = SummarizationRequest(
@@ -448,6 +452,7 @@ class Client:
         response = self._post_request(
             "summarize",
             request,
+            model,
         )
         return SummarizationResponse.from_json(response)
 
@@ -883,12 +888,16 @@ class AsyncClient:
     async def summarize(
         self,
         request: SummarizationRequest,
+        model: str,
     ) -> SummarizationResponse:
         """Summarizes a document.
 
         Parameters:
             request (SummarizationRequest, required):
                 Parameters for the requested summarization.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture
         Examples:
             >>> request = SummarizationRequest(
                     document=Document.from_text("Andreas likes pizza."),
@@ -898,6 +907,7 @@ class AsyncClient:
         response = await self._post_request(
             "summarize",
             request,
+            model,
         )
         return SummarizationResponse.from_json(response)
 
