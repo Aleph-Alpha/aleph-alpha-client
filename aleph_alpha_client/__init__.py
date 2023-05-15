@@ -72,7 +72,6 @@ __all__ = [
     "ImageScore",
     "POOLING_OPTIONS",
     "Prompt",
-    "PromptGranularity",
     "QaRequest",
     "QaResponse",
     "QuotaError",

@@ -52,21 +52,18 @@ class CustomGranularity(NamedTuple):
         return {"type": "custom", "delimiter": self.delimiter}
 
 
-class PromptGranularity(Enum):
-    Token = "token"
-    Word = "word"
-    Sentence = "sentence"
-    Paragraph = "paragraph"
-
-    def to_json(self):
-        return {"type": self.value}
+PromptGranularity = Union[
+    Literal["token"],
+    Literal["word"],
+    Literal["sentence"],
+    Literal["paragraph"],
+    CustomGranularity,
+]
 
 
 def prompt_granularity_to_json(
-    prompt_granularity: Union[PromptGranularity, str, CustomGranularity],
+    prompt_granularity: PromptGranularity,
 ) -> Mapping[str, Any]:
-    # we allow str for backwards compatibility
-    # This was previously possible because PromptGranularity was not an Enum
     if isinstance(prompt_granularity, str):
         return {"type": prompt_granularity}
 
@@ -164,7 +161,7 @@ class ExplanationRequest(NamedTuple):
     control_factor: Optional[float] = None
     control_token_overlap: Optional[ControlTokenOverlap] = None
     control_log_additive: Optional[bool] = None
-    prompt_granularity: Optional[Union[PromptGranularity, CustomGranularity]] = None
+    prompt_granularity: Optional[PromptGranularity] = None
     target_granularity: Optional[TargetGranularity] = None
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None

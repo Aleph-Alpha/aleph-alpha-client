@@ -1,9 +1,5 @@
 from pathlib import Path
-from aleph_alpha_client.explanation import (
-    PromptGranularity,
-    TargetScoreWithRaw,
-    TextScoreWithRaw,
-)
+from aleph_alpha_client.explanation import TargetScoreWithRaw, TextScoreWithRaw
 from aleph_alpha_client.prompt import Tokens
 import pytest
 from aleph_alpha_client import (
@@ -73,7 +69,7 @@ def test_explanation(sync_client: Client, model_name: str):
             ]
         ),
         target=" pizza with cheese",
-        prompt_granularity=PromptGranularity.Sentence,
+        prompt_granularity="sentence",
         postprocessing=ExplanationPostprocessing.Absolute,
         normalize=True,
         target_granularity=TargetGranularity.Token,
@@ -147,11 +143,14 @@ def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
     )
 
 
-def test_explanation_with_text_from_request(sync_client: Client, model_name: str):
+def test_explanation_of_text_in_prompt_relativ_indeces(
+    sync_client: Client, model_name: str
+):
     request = ExplanationRequest(
         prompt=Prompt(
             [
                 Text.from_text("I am a programmer and French. My favourite food is"),
+                # " My favorite food is"
                 Tokens.from_token_ids([4014, 36316, 5681, 387]),
             ]
         ),
