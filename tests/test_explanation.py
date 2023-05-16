@@ -1,6 +1,5 @@
 from pathlib import Path
 from aleph_alpha_client.explanation import (
-    PromptGranularity,
     TargetScoreWithRaw,
     TextScoreWithRaw,
 )
@@ -58,7 +57,7 @@ async def test_can_explain_with_async_client(
 
 # Client
 
-
+@pytest.mark.system_test
 def test_explanation(sync_client: Client, model_name: str):
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     img = Image.from_image_source(image_source=str(image_source_path))
