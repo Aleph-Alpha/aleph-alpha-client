@@ -1,5 +1,8 @@
 from pathlib import Path
-from aleph_alpha_client.explanation import TargetScoreWithRaw, TextScoreWithRaw
+from aleph_alpha_client.explanation import (
+    TargetScoreWithRaw,
+    TextScoreWithRaw,
+)
 from aleph_alpha_client.prompt import Tokens
 import pytest
 from aleph_alpha_client import (
@@ -54,7 +57,7 @@ async def test_can_explain_with_async_client(
 
 # Client
 
-
+@pytest.mark.system_test
 def test_explanation(sync_client: Client, model_name: str):
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     img = Image.from_image_source(image_source=str(image_source_path))
@@ -143,14 +146,11 @@ def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
     )
 
 
-def test_explanation_of_text_in_prompt_relativ_indeces(
-    sync_client: Client, model_name: str
-):
+def test_explanation_with_text_from_request(sync_client: Client, model_name: str):
     request = ExplanationRequest(
         prompt=Prompt(
             [
                 Text.from_text("I am a programmer and French. My favourite food is"),
-                # " My favorite food is"
                 Tokens.from_token_ids([4014, 36316, 5681, 387]),
             ]
         ),

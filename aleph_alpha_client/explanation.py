@@ -52,18 +52,21 @@ class CustomGranularity(NamedTuple):
         return {"type": "custom", "delimiter": self.delimiter}
 
 
-PromptGranularity = Union[
-    Literal["token"],
-    Literal["word"],
-    Literal["sentence"],
-    Literal["paragraph"],
-    CustomGranularity,
-]
+class PromptGranularity(Enum):
+    Token = "token"
+    Word = "word"
+    Sentence = "sentence"
+    Paragraph = "paragraph"
+
+    def to_json(self):
+        return {"type": self.value}
 
 
 def prompt_granularity_to_json(
-    prompt_granularity: PromptGranularity,
+    prompt_granularity: Union[PromptGranularity, str, CustomGranularity],
 ) -> Mapping[str, Any]:
+    # we allow str for backwards compatibility
+    # This was previously possible because PromptGranularity was not an Enum
     if isinstance(prompt_granularity, str):
         return {"type": prompt_granularity}
 
@@ -120,7 +123,7 @@ class ExplanationRequest(NamedTuple):
             True: apply control by adding the log(control_factor) to attention scores.
             False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
             If None, the API will default to True
-        prompt_granularity (PromptGranularity, default None)
+        prompt_granularity (Union[PromptGranularity, str, CustomGranularity], default None)
             At which granularity should the target be explained in terms of the prompt.
             If you choose, for example, "sentence" then we report the importance score of each
             sentence in the prompt towards generating the target output.
@@ -132,6 +135,12 @@ class ExplanationRequest(NamedTuple):
             If you choose a custom granularity then you must provide a custom delimiter. We then
             split your prompt by that delimiter. This might be helpful if you are using few-shot
             prompts that contain stop sequences.
+
+            We currently support providing the prompt_granularity as PromptGranularity (recommended)
+            or CustomGranularity (if needed) or str (deprecated). Note that supplying plain strings
+            only makes sense if you choose one of the values defined in the PromptGranularity enum.
+            All other strings will be rejected by the API. In future versions we might cut support
+            for plain str values.
 
             For image prompt items, the granularities determine into how many tiles we divide
             the image for the explanation.
@@ -161,7 +170,7 @@ class ExplanationRequest(NamedTuple):
     control_factor: Optional[float] = None
     control_token_overlap: Optional[ControlTokenOverlap] = None
     control_log_additive: Optional[bool] = None
-    prompt_granularity: Optional[PromptGranularity] = None
+    prompt_granularity: Optional[Union[PromptGranularity, str, CustomGranularity]] = None
     target_granularity: Optional[TargetGranularity] = None
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None
