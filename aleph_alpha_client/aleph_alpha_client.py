@@ -560,7 +560,7 @@ class AsyncClient:
 
         retry_options = ExponentialRetry(
             attempts=total_retries + 1,
-            exceptions=[aiohttp.ClientConnectionError],
+            exceptions={aiohttp.ClientConnectionError},
             start_timeout=0.25,
             statuses=set(RETRY_STATUS_CODES),
         )
