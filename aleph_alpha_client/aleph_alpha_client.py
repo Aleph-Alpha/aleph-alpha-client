@@ -16,7 +16,6 @@ from aleph_alpha_client.explanation import (
     ExplanationRequest,
     ExplanationResponse,
 )
-from aleph_alpha_client.prompt import _to_json, _to_serializable_prompt
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
 from aleph_alpha_client.qa import QaRequest, QaResponse
 from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
@@ -561,6 +560,7 @@ class AsyncClient:
 
         retry_options = ExponentialRetry(
             attempts=total_retries + 1,
+            exceptions=[aiohttp.ClientConnectionError],
             start_timeout=0.25,
             statuses=set(RETRY_STATUS_CODES),
         )
