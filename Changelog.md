@@ -1,11 +1,17 @@
 # Changelog
 
+## 3.1.2
+
+### Bug fixes
+
+- **AsyncClient**: Retry on ClientConnectionErrors as well.
+
 ## 3.1.1
 
 ### Bug Fixes
 
 `PromptGranularity` for `ExplanationRequest`s is now an enum. This was previously just a type alias
-for a union of literals but we felt that it would be more natural to have a dedicated enum. 
+for a union of literals but we felt that it would be more natural to have a dedicated enum.
 
 ## 3.1.0
 

@@ -478,24 +478,3 @@ def _to_json(item: PromptItem) -> Mapping[str, Any]:
         raise ValueError(
             "The item in the prompt is not valid. Try either a string or an Image."
         )
-
-
-def _to_serializable_prompt(
-    prompt, at_least_one_token=False
-) -> Union[str, Sequence[Mapping[str, str]]]:
-    """
-    Validates that a prompt and emits the format suitable for serialization as JSON
-    """
-    if isinstance(prompt, str):
-        if at_least_one_token:
-            if len(prompt) == 0:
-                raise ValueError("prompt must contain at least one character")
-        # Just pass the string through as is.
-        return prompt
-
-    elif isinstance(prompt, list):
-        return [_to_json(item) for item in prompt]
-
-    raise ValueError(
-        "Invalid prompt. Prompt must either be a string, or a list of valid multimodal propmt items."
-    )
