@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.3
+
+### Bug fixes
+
+- Add missing import of **PromptGranularity** in *__init__.py*.
+
 ## 3.1.2
 
 ### Bug fixes
