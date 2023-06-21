@@ -33,6 +33,7 @@ from .explanation import (
     ExplanationResponse,
     ImagePromptItemExplanation,
     ImageScore,
+    PromptGranularity,
     TargetGranularity,
     TargetPromptItemExplanation,
     TargetScore,
