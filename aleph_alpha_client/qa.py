@@ -1,4 +1,4 @@
-from typing import Any, Dict, Mapping, NamedTuple, Sequence
+from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence
 
 from aleph_alpha_client.document import Document
 
@@ -26,7 +26,7 @@ class QaRequest(NamedTuple):
 
     query: str
     documents: Sequence[Document]
-    max_answers: int = None
+    max_answers: Optional[int] = None
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
