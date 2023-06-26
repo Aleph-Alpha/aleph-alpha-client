@@ -14,7 +14,7 @@ class QaRequest(NamedTuple):
         documents (List[Document], required):
             A list of documents. This can be either docx documents or text/image prompts.
 
-        max_answers (int, default 0):
+        max_answers (int, default None):
             The maximum number of answers.
 
         Examples:
@@ -26,13 +26,15 @@ class QaRequest(NamedTuple):
 
     query: str
     documents: Sequence[Document]
-    max_answers: int = 0
+    max_answers: int = None
 
     def to_json(self) -> Dict[str, Any]:
         payload = self._asdict()
         payload["documents"] = [
             document._to_serializable_document() for document in self.documents
         ]
+        if self.max_answers is None:
+            del payload["max_answers"]
         return payload
 
 
