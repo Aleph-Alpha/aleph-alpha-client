@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.1.4
+
+### Bug fixes
+
+- Do not send max_answers for QA by default, use API's default instead.
+
 ## 3.1.3
 
 ### Bug fixes
