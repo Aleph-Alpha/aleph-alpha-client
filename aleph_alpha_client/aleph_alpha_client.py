@@ -31,7 +31,6 @@ from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
 )
-from aleph_alpha_client.search import SearchRequest, SearchResponse
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
@@ -75,7 +74,6 @@ AnyRequest = Union[
     SummarizationRequest,
     ExplanationRequest,
     ExplanationRequest,
-    SearchRequest,
 ]
 
 
@@ -131,7 +129,6 @@ class Client:
         total_retries: int = 8,
         nice: bool = False,
     ) -> None:
-
         if host[-1] != "/":
             host += "/"
         self.host = host
@@ -175,7 +172,6 @@ class Client:
         request: AnyRequest,
         model: Optional[str] = None,
     ) -> Dict[str, Any]:
-
         json_body = self._build_json_body(request, model)
 
         query_params = self._build_query_parameters()
@@ -480,16 +476,6 @@ class Client:
         )
         return ExplanationResponse.from_json(response)
 
-    def _search(
-        self,
-        request: SearchRequest,
-    ) -> SearchResponse:
-        """
-        For details see https://www.aleph-alpha.com/luminous-explore-a-model-for-world-class-semantic-representation
-        """
-        response = self._post_request("search", request, None)
-        return SearchResponse.from_json(response)
-
     def tokenizer(self, model: str) -> Tokenizer:
         """Returns a Tokenizer instance with the settings that were used to train the model.
 
@@ -632,7 +618,6 @@ class AsyncClient:
         request: AnyRequest,
         model: Optional[str] = None,
     ) -> Dict[str, Any]:
-
         json_body = self._build_json_body(request, model)
 
         query_params = self._build_query_parameters()
@@ -930,16 +915,6 @@ class AsyncClient:
             model,
         )
         return ExplanationResponse.from_json(response)
-
-    async def _search(
-        self,
-        request: SearchRequest,
-    ) -> SearchResponse:
-        """
-        For details see https://www.aleph-alpha.com/luminous-explore-a-model-for-world-class-semantic-representation
-        """
-        response = await self._post_request("search", request, None)
-        return SearchResponse.from_json(response)
 
     async def tokenizer(self, model: str) -> Tokenizer:
         """Returns a Tokenizer instance with the settings that were used to train the model.
