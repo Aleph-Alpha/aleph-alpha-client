@@ -43,7 +43,6 @@ from .explanation import (
     TokenScore,
 )
 from .qa import QaRequest, QaResponse
-from .search import SearchRequest, SearchResponse, SearchResult
 from .summarization import SummarizationRequest, SummarizationResponse
 from .tokenization import TokenizationRequest, TokenizationResponse
 from .utils import load_base64_from_file, load_base64_from_url
@@ -77,9 +76,6 @@ __all__ = [
     "QaRequest",
     "QaResponse",
     "QuotaError",
-    "SearchRequest",
-    "SearchResponse",
-    "SearchResult",
     "SemanticEmbeddingRequest",
     "SemanticEmbeddingResponse",
     "SemanticRepresentation",

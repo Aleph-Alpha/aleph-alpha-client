@@ -12,7 +12,6 @@ from tests.common import (
 # AsyncClient
 
 
-@pytest.mark.system_test
 async def test_can_qa_with_async_client(async_client: AsyncClient):
     request = QaRequest(
         query="Who likes pizza?",
@@ -27,7 +26,6 @@ async def test_can_qa_with_async_client(async_client: AsyncClient):
 # Client
 
 
-@pytest.mark.system_test
 def test_qa(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -41,7 +39,6 @@ def test_qa(sync_client: Client):
     assert len(response.answers) == 1
 
 
-@pytest.mark.system_test
 def test_qa_no_answer_found(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -55,7 +52,6 @@ def test_qa_no_answer_found(sync_client: Client):
     assert len(response.answers) == 0
 
 
-@pytest.mark.system_test
 def test_text(sync_client: Client):
     # when posting an illegal request
     request = QaRequest(

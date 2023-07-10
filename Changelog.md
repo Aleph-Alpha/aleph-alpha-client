@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Remove internal search endpoint again (was only accessible for internal users).
+
 ## 3.1.4
 
 ### Bug fixes
