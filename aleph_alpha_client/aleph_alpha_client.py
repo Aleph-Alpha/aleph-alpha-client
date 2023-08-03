@@ -382,7 +382,7 @@ class Client:
         )
         return SemanticEmbeddingResponse.from_json(response)
 
-    def batch_semantic_embed(
+    def _batch_semantic_embed(
         self,
         request: BatchSemanticEmbeddingRequest,
         model: str,

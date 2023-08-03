@@ -116,6 +116,7 @@ def test_embed_semantic(sync_client: Client):
     assert result.embedding
     assert len(result.embedding) == 128
 
+@pytest.mark.skip(reason="Waiting for server side to be implemented")
 @pytest.mark.system_test
 def test_batch_embed_semantic(sync_client: Client):
 
@@ -125,9 +126,4 @@ def test_batch_embed_semantic(sync_client: Client):
         compress_to_size=128,
     )
 
-    # TODO: Enable this test once the server side is implemented
-    with pytest.raises(RuntimeError):
-        result = sync_client.batch_semantic_embed(request=request, model="luminous-base")
-
-    # TODO: complete the test once the server side is implemented
-
+    _result = sync_client._batch_semantic_embed(request=request, model="luminous-base")
