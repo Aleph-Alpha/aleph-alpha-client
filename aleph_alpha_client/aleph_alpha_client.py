@@ -385,7 +385,7 @@ class Client:
     def _batch_semantic_embed(
         self,
         request: BatchSemanticEmbeddingRequest,
-        model: Optional[str],
+        model: Optional[str] = None,
     ) -> BatchSemanticEmbeddingResponse:
         """Embeds a sequence of texts or images and returns vectors in the same order as they were provided
 
@@ -393,7 +393,7 @@ class Client:
             request (BatchSemanticEmbeddingRequest, required):
                 Parameters for the requested semnatic embeddings.
 
-            model (string, required):
+            model (string, optional, default None):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
 
