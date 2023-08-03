@@ -26,6 +26,8 @@ from aleph_alpha_client.detokenization import (
     DetokenizationResponse,
 )
 from aleph_alpha_client.embedding import (
+    BatchSemanticEmbeddingRequest,
+    BatchSemanticEmbeddingResponse,
     EmbeddingRequest,
     EmbeddingResponse,
     SemanticEmbeddingRequest,
@@ -70,6 +72,7 @@ AnyRequest = Union[
     TokenizationRequest,
     DetokenizationRequest,
     SemanticEmbeddingRequest,
+    BatchSemanticEmbeddingRequest,
     QaRequest,
     SummarizationRequest,
     ExplanationRequest,
@@ -338,7 +341,7 @@ class Client:
 
         Parameters:
             request (SemanticEmbeddingRequest, required):
-                Parameters for the requested semnatic embedding.
+                Parameters for the requested semantic embedding.
 
             model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
@@ -378,6 +381,40 @@ class Client:
             model,
         )
         return SemanticEmbeddingResponse.from_json(response)
+
+    def _batch_semantic_embed(
+        self,
+        request: BatchSemanticEmbeddingRequest,
+        model: Optional[str] = None,
+    ) -> BatchSemanticEmbeddingResponse:
+        """Embeds a sequence of texts or images and returns vectors in the same order as they were provided
+
+        Parameters:
+            request (BatchSemanticEmbeddingRequest, required):
+                Parameters for the requested semantic embeddings.
+
+            model (string, optional, default None):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> # function for symmetric embedding
+            >>> def embed_symmetric(texts: Sequence[str]):
+                    # Create an embeddingrequest with the type set to symmetric
+                    request = BatchSemanticEmbeddingRequest(
+                        prompts=[Prompt.from_text(text) for text in texts], 
+                        representation=SemanticRepresentation.Symmetric
+                    )
+                    # create the embedding
+                    result = client.batch_semantic_embed(request, model=model_name)
+                    return result.embedding
+        """
+        response = self._post_request(
+            "batch_semantic_embed",
+            request,
+            model,
+        )
+        return BatchSemanticEmbeddingResponse.from_json(response)
 
     def evaluate(
         self,
@@ -780,7 +817,7 @@ class AsyncClient:
 
         Parameters:
             request (SemanticEmbeddingRequest, required):
-                Parameters for the requested semnatic embedding.
+                Parameters for the requested semantic embedding.
 
             model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).

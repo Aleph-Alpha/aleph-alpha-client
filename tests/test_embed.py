@@ -2,6 +2,7 @@ import pytest
 from aleph_alpha_client import EmbeddingRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.embedding import (
+    BatchSemanticEmbeddingRequest,
     SemanticEmbeddingRequest,
     SemanticRepresentation,
 )
@@ -114,3 +115,15 @@ def test_embed_semantic(sync_client: Client):
     assert result.model_version is not None
     assert result.embedding
     assert len(result.embedding) == 128
+
+@pytest.mark.skip(reason="Waiting for server side to be implemented")
+@pytest.mark.system_test
+def test_batch_embed_semantic(sync_client: Client):
+
+    request = BatchSemanticEmbeddingRequest(
+        prompts=[Prompt.from_text("hello"), Prompt.from_text("world")],
+        representation=SemanticRepresentation.Symmetric,
+        compress_to_size=128,
+    )
+
+    _result = sync_client._batch_semantic_embed(request=request, model="luminous-base")

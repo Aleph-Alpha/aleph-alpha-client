@@ -20,6 +20,8 @@ from .document import Document
 from .embedding import (
     EmbeddingRequest,
     EmbeddingResponse,
+    BatchSemanticEmbeddingRequest,
+    BatchSemanticEmbeddingResponse,
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
     SemanticRepresentation,
