@@ -341,7 +341,7 @@ class Client:
 
         Parameters:
             request (SemanticEmbeddingRequest, required):
-                Parameters for the requested semnatic embedding.
+                Parameters for the requested semantic embedding.
 
             model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
@@ -391,7 +391,7 @@ class Client:
 
         Parameters:
             request (BatchSemanticEmbeddingRequest, required):
-                Parameters for the requested semnatic embeddings.
+                Parameters for the requested semantic embeddings.
 
             model (string, optional, default None):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
