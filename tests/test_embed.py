@@ -46,6 +46,19 @@ async def test_can_semantic_embed_with_async_client(
     assert len(response.embedding) == 128
 
 
+@pytest.mark.skip(reason="Waiting for server side to be implemented")
+@pytest.mark.system_test
+async def test_batch_embed_semantic_with_async_client(async_client: AsyncClient):
+
+    request = BatchSemanticEmbeddingRequest(
+        prompts=[Prompt.from_text("hello"), Prompt.from_text("world")],
+        representation=SemanticRepresentation.Symmetric,
+        compress_to_size=128,
+    )
+
+    _result = await async_client._batch_semantic_embed(request=request, model="luminous-base")
+
+
 # Client
 
 
