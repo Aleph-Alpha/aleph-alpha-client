@@ -5,6 +5,7 @@ from typing import (
     List,
     NamedTuple,
     Optional,
+    Sequence,
     Tuple,
 )
 from aleph_alpha_client.prompt import Prompt
@@ -187,11 +188,96 @@ class SemanticEmbeddingRequest(NamedTuple):
         return payload
 
 
+class BatchSemanticEmbeddingRequest(NamedTuple):
+    """
+    Embeds multiple multi-modal prompts and returns their embeddings in the same order as they were supplied.
+
+    Parameters:
+        prompts
+            A list of texts and/or images to be embedded.
+        representation
+            Semantic representation to embed the prompt with.
+        compress_to_size
+            Options available: 128
+
+            The default behavior is to return the full embedding, but you can optionally request an embedding compressed to a smaller set of dimensions.
+
+            Full embedding sizes for supported models:
+              - luminous-base: 5120
+
+            The 128 size is expected to have a small drop in accuracy performance (4-6%), with the benefit of being much smaller, which makes comparing these embeddings much faster for use cases where speed is critical.
+
+            The 128 size can also perform better if you are embedding really short texts or documents.
+
+        normalize
+            Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
+
+            Note that at the moment this parameter does not yet have any effect. This will change as soon as the
+            corresponding feature is available in the backend
+
+    Examples
+        >>> texts = [
+                "deep learning",
+                "artificial intelligence",
+                "deep diving",
+                "artificial snow",
+            ]
+        >>> # Texts to compare
+        >>> request = BatchSemanticEmbeddingRequest(prompts=[Prompt.from_text(text) for text in texts], representation=SemanticRepresentation.Symmetric)
+            result = model.batch_semantic_embed(request)
+    """
+
+    prompts: Sequence[Prompt]
+    representation: SemanticRepresentation
+    compress_to_size: Optional[int] = None
+    normalize: bool = False
+
+    def to_json(self) -> Dict[str, Any]:
+        payload = self._asdict()
+        payload["representation"] = self.representation.value
+        payload["prompts"] = [prompt.to_json() for prompt in self.prompts]
+        return payload
+
+
+EmbeddingVector = List[float]
+
+
 class SemanticEmbeddingResponse(NamedTuple):
+    """
+    Response of a semantic embedding request
+
+    Parameters:
+        model_version
+            Model name and version (if any) of the used model for inference
+        embedding
+            A list of floats that can be used to compare against other embeddings.
+        message
+            This field is no longer used.
+    """
+
     model_version: str
-    embedding: List[float]
+    embedding: EmbeddingVector
     message: Optional[str] = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "SemanticEmbeddingResponse":
         return SemanticEmbeddingResponse(**json)
+
+
+class BatchSemanticEmbeddingResponse(NamedTuple):
+    """
+    Response of a batch semantic embedding request
+
+    Parameters:
+        model_version
+            Model name and version (if any) of the used model for inference
+        embeddings
+            A list of embeddings.
+    """
+
+    model_version: str
+    embeddings: List[EmbeddingVector]
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "BatchSemanticEmbeddingResponse":
+        return BatchSemanticEmbeddingResponse(**json)
