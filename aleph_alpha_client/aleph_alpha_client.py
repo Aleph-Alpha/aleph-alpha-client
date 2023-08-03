@@ -817,7 +817,7 @@ class AsyncClient:
 
         Parameters:
             request (SemanticEmbeddingRequest, required):
-                Parameters for the requested semnatic embedding.
+                Parameters for the requested semantic embedding.
 
             model (string, required):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
