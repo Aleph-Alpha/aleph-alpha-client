@@ -385,7 +385,7 @@ class Client:
     def _batch_semantic_embed(
         self,
         request: BatchSemanticEmbeddingRequest,
-        model: str,
+        model: Optional[str],
     ) -> BatchSemanticEmbeddingResponse:
         """Embeds a sequence of texts or images and returns vectors in the same order as they were provided
 
