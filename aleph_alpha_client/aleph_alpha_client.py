@@ -1,7 +1,8 @@
 from tokenizers import Tokenizer  # type: ignore
 from types import TracebackType
-from typing import Any, List, Mapping, Optional, Dict, Type, Union
+from typing import Any, List, Mapping, Optional, Dict, Type, Union, Iterator
 import aiohttp
+import asyncio
 from aiohttp_retry import RetryClient, ExponentialRetry
 import requests
 from requests import Response
@@ -415,17 +416,7 @@ class Client:
         model_version = ""
         # The API currently only supports batch semantic embedding requests with up to 100
         # prompts per batch. As a convenience for users, this function chunks larger requests.
-        for batch_index in range(0, len(request.prompts), 100):
-            batch = request.prompts[batch_index : (batch_index + 1) * 100]
-            batch_request = BatchSemanticEmbeddingRequest(
-                prompts=batch,
-                representation=request.representation,
-                compress_to_size=request.compress_to_size,
-                normalize=request.normalize,
-                contextual_control_threshold=request.contextual_control_threshold,
-                control_log_additive=request.control_log_additive,
-            )
-
+        for batch_request in generate_semantic_embedding_batches(request):
             raw_response = self._post_request(
                 "batch_semantic_embed",
                 batch_request,
@@ -884,6 +875,7 @@ class AsyncClient:
         self,
         request: BatchSemanticEmbeddingRequest,
         model: Optional[str] = None,
+        num_concurrent_requests: int = 1,
     ) -> BatchSemanticEmbeddingResponse:
         """Embeds a sequence of texts or images and returns vectors in the same order as they were provided
 
@@ -907,12 +899,30 @@ class AsyncClient:
                     result = client.batch_semantic_embed(request, model=model_name)
                     return result.embedding
         """
-        response = await self._post_request(
-            "batch_semantic_embed",
-            request,
-            model,
+        responses: List[EmbeddingVector] = []
+        model_version = ""
+
+        # The API currently only supports batch semantic embedding requests with up to 100
+        # prompts per batch. As a convenience for users, this function chunks larger requests.
+        results = await gather_with_concurrency(
+            num_concurrent_requests,
+            (
+                self._post_request(
+                    "batch_semantic_embed",
+                    batch_request,
+                    model,
+                )
+                for batch_request in generate_semantic_embedding_batches(request)
+            ),
         )
-        return BatchSemanticEmbeddingResponse.from_json(response)
+        for result in results:
+            resp = BatchSemanticEmbeddingResponse.from_json(result)
+            model_version = resp.model_version
+            responses.extend(resp.embeddings)
+
+        return BatchSemanticEmbeddingResponse._from_model_version_and_embeddings(
+            model_version, responses
+        )
 
     async def evaluate(
         self,
@@ -1019,3 +1029,29 @@ class AsyncClient:
         """
         response = await self._get_request_text(f"models/{model}/tokenizer")
         return Tokenizer.from_str(response)
+
+
+# Based on: https://docs.aleph-alpha.com/changelog/2022/11/14/async-python-client/
+async def gather_with_concurrency(n, tasks):
+    semaphore = asyncio.Semaphore(n)
+
+    async def sem_task(task):
+        async with semaphore:
+            return await task
+
+    return await asyncio.gather(*(sem_task(task) for task in tasks))
+
+
+def generate_semantic_embedding_batches(
+    request: BatchSemanticEmbeddingRequest,
+) -> Iterator[BatchSemanticEmbeddingRequest]:
+    for batch_index in range(0, len(request.prompts), 100):
+        batch = request.prompts[batch_index : (batch_index + 1) * 100]
+        yield BatchSemanticEmbeddingRequest(
+            prompts=batch,
+            representation=request.representation,
+            compress_to_size=request.compress_to_size,
+            normalize=request.normalize,
+            contextual_control_threshold=request.contextual_control_threshold,
+            control_log_additive=request.control_log_additive,
+        )
