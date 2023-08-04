@@ -389,7 +389,9 @@ class Client:
         request: BatchSemanticEmbeddingRequest,
         model: Optional[str] = None,
     ) -> BatchSemanticEmbeddingResponse:
-        """Embeds a sequence of texts or images and returns vectors in the same order as they were provided
+        """Embeds a sequence of texts or images and returns vectors in the same order as they
+        were provided. If more than 100 prompts are provided then this method will chunk them
+        into batches of 100 prompts that will be sent to the API.
 
         Parameters:
             request (BatchSemanticEmbeddingRequest, required):
@@ -877,7 +879,9 @@ class AsyncClient:
         model: Optional[str] = None,
         num_concurrent_requests: int = 1,
     ) -> BatchSemanticEmbeddingResponse:
-        """Embeds a sequence of texts or images and returns vectors in the same order as they were provided
+        """Embeds a sequence of texts or images and returns vectors in the same order as they
+        were provided. If more than 100 prompts are provided then this method will chunk them
+        into batches of 100 prompts that will be sent to the API.
 
         Parameters:
             request (BatchSemanticEmbeddingRequest, required):
@@ -904,6 +908,7 @@ class AsyncClient:
 
         # The API currently only supports batch semantic embedding requests with up to 100
         # prompts per batch. As a convenience for users, this function chunks larger requests.
+        requests = generate_semantic_embedding_batches(request)
         results = await gather_with_concurrency(
             num_concurrent_requests,
             (
@@ -912,7 +917,7 @@ class AsyncClient:
                     batch_request,
                     model,
                 )
-                for batch_request in generate_semantic_embedding_batches(request)
+                for batch_request in requests
             ),
         )
         for result in results:
@@ -1044,14 +1049,18 @@ async def gather_with_concurrency(n, tasks):
 
 def generate_semantic_embedding_batches(
     request: BatchSemanticEmbeddingRequest,
-) -> Iterator[BatchSemanticEmbeddingRequest]:
+) -> List[BatchSemanticEmbeddingRequest]:
+    requests = []
     for batch_index in range(0, len(request.prompts), 100):
-        batch = request.prompts[batch_index : (batch_index + 1) * 100]
-        yield BatchSemanticEmbeddingRequest(
-            prompts=batch,
-            representation=request.representation,
-            compress_to_size=request.compress_to_size,
-            normalize=request.normalize,
-            contextual_control_threshold=request.contextual_control_threshold,
-            control_log_additive=request.control_log_additive,
+        batch = request.prompts[batch_index : batch_index + 100]
+        requests.append(
+            BatchSemanticEmbeddingRequest(
+                prompts=batch,
+                representation=request.representation,
+                compress_to_size=request.compress_to_size,
+                normalize=request.normalize,
+                contextual_control_threshold=request.contextual_control_threshold,
+                control_log_additive=request.control_log_additive,
+            )
         )
+    return requests

@@ -45,16 +45,21 @@ async def test_can_semantic_embed_with_async_client(
     assert response.embedding
     assert len(response.embedding) == 128
 
-@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200])
+
+@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200, 1000])
 @pytest.mark.system_test
-async def test_batch_embed_semantic_with_async_client(async_client: AsyncClient, num_prompts: int):
+async def test_batch_embed_semantic_with_async_client(
+    async_client: AsyncClient, num_prompts: int
+):
     request = BatchSemanticEmbeddingRequest(
-        prompts=[Prompt.from_text("hello") for _ in range(num_prompts)],
+        prompts=[Prompt.from_text(str(i)) for i in range(num_prompts)],
         representation=SemanticRepresentation.Symmetric,
         compress_to_size=128,
     )
 
-    result = await async_client.batch_semantic_embed(request=request, model="luminous-base")
+    result = await async_client.batch_semantic_embed(
+        request=request, model="luminous-base", num_concurrent_requests=10
+    )
     assert len(result.embeddings) == num_prompts
 
 
@@ -127,7 +132,7 @@ def test_embed_semantic(sync_client: Client):
     assert len(result.embedding) == 128
 
 
-@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200])
+@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200, 1000])
 @pytest.mark.system_test
 def test_batch_embed_semantic(sync_client: Client, num_prompts: int):
     request = BatchSemanticEmbeddingRequest(
