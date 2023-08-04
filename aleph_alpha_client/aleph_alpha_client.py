@@ -382,7 +382,7 @@ class Client:
         )
         return SemanticEmbeddingResponse.from_json(response)
 
-    def _batch_semantic_embed(
+    def batch_semantic_embed(
         self,
         request: BatchSemanticEmbeddingRequest,
         model: Optional[str] = None,
@@ -402,7 +402,7 @@ class Client:
             >>> def embed_symmetric(texts: Sequence[str]):
                     # Create an embeddingrequest with the type set to symmetric
                     request = BatchSemanticEmbeddingRequest(
-                        prompts=[Prompt.from_text(text) for text in texts], 
+                        prompts=[Prompt.from_text(text) for text in texts],
                         representation=SemanticRepresentation.Symmetric
                     )
                     # create the embedding
@@ -857,7 +857,7 @@ class AsyncClient:
         )
         return SemanticEmbeddingResponse.from_json(response)
 
-    async def _batch_semantic_embed(
+    async def batch_semantic_embed(
         self,
         request: BatchSemanticEmbeddingRequest,
         model: Optional[str] = None,
@@ -877,7 +877,7 @@ class AsyncClient:
             >>> def embed_symmetric(texts: Sequence[str]):
                     # Create an embeddingrequest with the type set to symmetric
                     request = BatchSemanticEmbeddingRequest(
-                        prompts=[Prompt.from_text(text) for text in texts], 
+                        prompts=[Prompt.from_text(text) for text in texts],
                         representation=SemanticRepresentation.Symmetric
                     )
                     # create the embedding
