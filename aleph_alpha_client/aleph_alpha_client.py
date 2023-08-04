@@ -30,6 +30,7 @@ from aleph_alpha_client.embedding import (
     BatchSemanticEmbeddingResponse,
     EmbeddingRequest,
     EmbeddingResponse,
+    EmbeddingVector,
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
 )
@@ -409,12 +410,34 @@ class Client:
                     result = client.batch_semantic_embed(request, model=model_name)
                     return result.embedding
         """
-        response = self._post_request(
-            "batch_semantic_embed",
-            request,
-            model,
+
+        responses: List[EmbeddingVector] = []
+        model_version = ""
+        # The API currently only supports batch semantic embedding requests with up to 100
+        # prompts per batch. As a convenience for users, this function chunks larger requests.
+        for batch_index in range(0, len(request.prompts), 100):
+            batch = request.prompts[batch_index : (batch_index + 1) * 100]
+            batch_request = BatchSemanticEmbeddingRequest(
+                prompts=batch,
+                representation=request.representation,
+                compress_to_size=request.compress_to_size,
+                normalize=request.normalize,
+                contextual_control_threshold=request.contextual_control_threshold,
+                control_log_additive=request.control_log_additive,
+            )
+
+            raw_response = self._post_request(
+                "batch_semantic_embed",
+                batch_request,
+                model,
+            )
+            response = BatchSemanticEmbeddingResponse.from_json(raw_response)
+            model_version = response.model_version
+            responses.extend(response.embeddings)
+
+        return BatchSemanticEmbeddingResponse._from_model_version_and_embeddings(
+            model_version, responses
         )
-        return BatchSemanticEmbeddingResponse.from_json(response)
 
     def evaluate(
         self,

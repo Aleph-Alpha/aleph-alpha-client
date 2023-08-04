@@ -130,13 +130,14 @@ def test_embed_semantic(sync_client: Client):
     assert len(result.embedding) == 128
 
 
+@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200])
 @pytest.mark.system_test
-def test_batch_embed_semantic(sync_client: Client):
+def test_batch_embed_semantic(sync_client: Client, num_prompts: int):
     request = BatchSemanticEmbeddingRequest(
-        prompts=[Prompt.from_text("hello"), Prompt.from_text("world")],
+        prompts=[Prompt.from_text("hello") for _ in range(num_prompts)],
         representation=SemanticRepresentation.Symmetric,
         compress_to_size=128,
     )
 
     result = sync_client.batch_semantic_embed(request=request, model="luminous-base")
-    assert len(result.embeddings) == 2
+    assert len(result.embeddings) == num_prompts
