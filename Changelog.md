@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.0
+
+- Add batch_semantic_embed method for processing batches of semantic embeddings
+
 ## 3.1.5
 
 - Remove internal search endpoint again (was only accessible for internal users).

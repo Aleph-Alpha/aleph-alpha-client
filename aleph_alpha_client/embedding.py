@@ -290,8 +290,16 @@ class BatchSemanticEmbeddingResponse(NamedTuple):
     """
 
     model_version: str
-    embeddings: List[EmbeddingVector]
+    embeddings: Sequence[EmbeddingVector]
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "BatchSemanticEmbeddingResponse":
         return BatchSemanticEmbeddingResponse(**json)
+
+    @staticmethod
+    def _from_model_version_and_embeddings(
+        model_version: str, embeddings: Sequence[EmbeddingVector]
+    ) -> "BatchSemanticEmbeddingResponse":
+        return BatchSemanticEmbeddingResponse(
+            model_version=model_version, embeddings=embeddings
+        )

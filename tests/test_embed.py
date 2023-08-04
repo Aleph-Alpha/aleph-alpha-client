@@ -46,17 +46,21 @@ async def test_can_semantic_embed_with_async_client(
     assert len(response.embedding) == 128
 
 
-@pytest.mark.skip(reason="Waiting for server side to be implemented")
+@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200, 1000])
 @pytest.mark.system_test
-async def test_batch_embed_semantic_with_async_client(async_client: AsyncClient):
-
+async def test_batch_embed_semantic_with_async_client(
+    async_client: AsyncClient, num_prompts: int
+):
     request = BatchSemanticEmbeddingRequest(
-        prompts=[Prompt.from_text("hello"), Prompt.from_text("world")],
+        prompts=[Prompt.from_text(str(i)) for i in range(num_prompts)],
         representation=SemanticRepresentation.Symmetric,
         compress_to_size=128,
     )
 
-    _result = await async_client._batch_semantic_embed(request=request, model="luminous-base")
+    result = await async_client.batch_semantic_embed(
+        request=request, model="luminous-base", num_concurrent_requests=10
+    )
+    assert len(result.embeddings) == num_prompts
 
 
 # Client
@@ -64,7 +68,6 @@ async def test_batch_embed_semantic_with_async_client(async_client: AsyncClient)
 
 @pytest.mark.system_test
 def test_embed(sync_client: Client, model_name: str):
-
     request = EmbeddingRequest(
         prompt=Prompt.from_text("hello"), layers=[0, -1], pooling=["mean", "max"]
     )
@@ -116,7 +119,6 @@ def test_embed_with_tokens(sync_client: Client, model_name: str):
 
 @pytest.mark.system_test
 def test_embed_semantic(sync_client: Client):
-
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
         representation=SemanticRepresentation.Symmetric,
@@ -129,14 +131,15 @@ def test_embed_semantic(sync_client: Client):
     assert result.embedding
     assert len(result.embedding) == 128
 
-@pytest.mark.skip(reason="Waiting for server side to be implemented")
-@pytest.mark.system_test
-def test_batch_embed_semantic(sync_client: Client):
 
+@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200, 1000])
+@pytest.mark.system_test
+def test_batch_embed_semantic(sync_client: Client, num_prompts: int):
     request = BatchSemanticEmbeddingRequest(
-        prompts=[Prompt.from_text("hello"), Prompt.from_text("world")],
+        prompts=[Prompt.from_text("hello") for _ in range(num_prompts)],
         representation=SemanticRepresentation.Symmetric,
         compress_to_size=128,
     )
 
-    _result = sync_client._batch_semantic_embed(request=request, model="luminous-base")
+    result = sync_client.batch_semantic_embed(request=request, model="luminous-base")
+    assert len(result.embeddings) == num_prompts
