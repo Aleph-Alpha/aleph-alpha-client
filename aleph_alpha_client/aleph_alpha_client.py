@@ -1051,6 +1051,7 @@ class AsyncClient:
                     request,
                 )
 
+        # asyncio.gather preserves order of awaitables in result list
         return await asyncio.gather(*(sem_task(request) for request in requests))
 
 
