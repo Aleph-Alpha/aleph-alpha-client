@@ -1,6 +1,17 @@
 from tokenizers import Tokenizer  # type: ignore
 from types import TracebackType
-from typing import Any, List, Mapping, Optional, Dict, Type, Union, Iterator
+from typing import (
+    Any,
+    List,
+    Mapping,
+    Optional,
+    Dict,
+    Sequence,
+    Tuple,
+    Type,
+    Union,
+    Iterator,
+)
 import aiohttp
 import asyncio
 from aiohttp_retry import RetryClient, ExponentialRetry
@@ -908,19 +919,12 @@ class AsyncClient:
 
         # The API currently only supports batch semantic embedding requests with up to 100
         # prompts per batch. As a convenience for users, this function chunks larger requests.
-        requests = generate_semantic_embedding_batches(request)
-        results = await gather_with_concurrency(
+        results = await self.gather_with_concurrency(
             num_concurrent_requests,
-            (
-                self._post_request(
-                    "batch_semantic_embed",
-                    batch_request,
-                    model,
-                )
-                for batch_request in requests
-            ),
+            generate_semantic_embedding_batches(request),
         )
-        for result in results:
+        results.sort(key=lambda x: x[0])
+        for _idx, result in results:
             resp = BatchSemanticEmbeddingResponse.from_json(result)
             model_version = resp.model_version
             responses.extend(resp.embeddings)
@@ -1035,16 +1039,26 @@ class AsyncClient:
         response = await self._get_request_text(f"models/{model}/tokenizer")
         return Tokenizer.from_str(response)
 
+    # Based on: https://docs.aleph-alpha.com/changelog/2022/11/14/async-python-client/
+    async def gather_with_concurrency(
+        self, n: int, requests: Sequence[BatchSemanticEmbeddingRequest]
+    ) -> List[Tuple[int, Dict[str, Any]]]:
+        semaphore = asyncio.Semaphore(n)
 
-# Based on: https://docs.aleph-alpha.com/changelog/2022/11/14/async-python-client/
-async def gather_with_concurrency(n, tasks):
-    semaphore = asyncio.Semaphore(n)
+        async def post_with_index(idx: int, request: BatchSemanticEmbeddingRequest):
+            response = await self._post_request(
+                "batch_semantic_embed",
+                request,
+            )
+            return idx, response
 
-    async def sem_task(task):
-        async with semaphore:
-            return await task
+        async def sem_task(idx: int, request: BatchSemanticEmbeddingRequest):
+            async with semaphore:
+                return await post_with_index(idx, request)
 
-    return await asyncio.gather(*(sem_task(task) for task in tasks))
+        return await asyncio.gather(
+            *(sem_task(idx, request) for (idx, request) in enumerate(requests))
+        )
 
 
 def generate_semantic_embedding_batches(

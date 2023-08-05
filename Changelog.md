@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.2.1
+
+- Make sure that AsyncClient batch semantic embeddings are sorted in the original order of request
+
 ## 3.2.0
 
 - Add batch_semantic_embed method for processing batches of semantic embeddings
