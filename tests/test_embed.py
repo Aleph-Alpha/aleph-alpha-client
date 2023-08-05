@@ -1,3 +1,6 @@
+import math
+import random
+from typing import Sequence
 import pytest
 from aleph_alpha_client import EmbeddingRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
@@ -49,18 +52,44 @@ async def test_can_semantic_embed_with_async_client(
 @pytest.mark.parametrize("num_prompts", [1, 100, 101, 200, 1000])
 @pytest.mark.system_test
 async def test_batch_embed_semantic_with_async_client(
-    async_client: AsyncClient, num_prompts: int
+    async_client: AsyncClient, sync_client: Client, num_prompts: int
 ):
+    words = ["car", "elephant", "kitchen sink", "rubber", "sun"]
     request = BatchSemanticEmbeddingRequest(
-        prompts=[Prompt.from_text(str(i)) for i in range(num_prompts)],
+        prompts=[
+            Prompt.from_text(words[random.randint(0, 4)]) for i in range(num_prompts)
+        ],
         representation=SemanticRepresentation.Symmetric,
         compress_to_size=128,
     )
 
     result = await async_client.batch_semantic_embed(
-        request=request, model="luminous-base", num_concurrent_requests=10
+        request=request, num_concurrent_requests=10
     )
+
     assert len(result.embeddings) == num_prompts
+    # To make sure that the ordering of responses is preserved,
+    # we compare the returned embeddings with those of the sync_client's
+    # sequential implementation
+    embeddings_approximately_equal(
+        result.embeddings, sync_client.batch_semantic_embed(request=request).embeddings
+    )
+
+
+def cosine_similarity(emb1: Sequence[float], emb2: Sequence[float]) -> float:
+    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+    sumxx, sumxy, sumyy = 0.0, 0.0, 0.0
+    for i in range(len(emb1)):
+        x = emb1[i]
+        y = emb2[i]
+        sumxx += x * x
+        sumyy += y * y
+        sumxy += x * y
+    return sumxy / math.sqrt(sumxx * sumyy)
+
+
+def embeddings_approximately_equal(a, b):
+    assert all([cosine_similarity(v1, v2) > 0.99 for (v1, v2) in zip(a, b)])
 
 
 # Client
