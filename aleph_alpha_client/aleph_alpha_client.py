@@ -20,6 +20,7 @@ from requests import Response
 from requests.adapters import HTTPAdapter
 from requests.structures import CaseInsensitiveDict
 from urllib3.util.retry import Retry
+from tqdm.asyncio import tqdm
 
 import aleph_alpha_client
 from aleph_alpha_client.explanation import (
@@ -890,6 +891,7 @@ class AsyncClient:
         model: Optional[str] = None,
         num_concurrent_requests: int = 1,
         batch_size: int = 100,
+        progress_bar: bool = False,
     ) -> BatchSemanticEmbeddingResponse:
         """Embeds a sequence of texts or images and returns vectors in the same order as they
         were provided. If more than `batch_size` prompts are provided then this method will chunk them
@@ -908,6 +910,9 @@ class AsyncClient:
 
             batch_size (int, optional, default 100):
                 Number of prompts per batch sent to the API. This value must be between 1 and 100 (inclusive).
+
+            progress_bar (bool, optional, default False):
+                Whether to show a progress bar using tqdm.
 
         Examples:
             >>> # function for symmetric embedding
@@ -934,6 +939,7 @@ class AsyncClient:
         results = await self._gather_with_concurrency(
             num_concurrent_requests,
             _generate_semantic_embedding_batches(request, batch_size),
+            progress_bar,
         )
         for result in results:
             resp = BatchSemanticEmbeddingResponse.from_json(result)
@@ -1052,7 +1058,10 @@ class AsyncClient:
 
     # Based on: https://docs.aleph-alpha.com/changelog/2022/11/14/async-python-client/
     async def _gather_with_concurrency(
-        self, n: int, requests: Sequence[BatchSemanticEmbeddingRequest]
+        self,
+        n: int,
+        requests: Sequence[BatchSemanticEmbeddingRequest],
+        progress_bar: bool,
     ) -> List[Dict[str, Any]]:
         semaphore = asyncio.Semaphore(n)
 
@@ -1064,7 +1073,10 @@ class AsyncClient:
                 )
 
         # asyncio.gather preserves order of awaitables in result list
-        return await asyncio.gather(*(sem_task(request) for request in requests))
+        if progress_bar:
+            return await tqdm.gather(*(sem_task(request) for request in requests))
+        else:
+            return await asyncio.gather(*(sem_task(request) for request in requests))
 
 
 def _generate_semantic_embedding_batches(
