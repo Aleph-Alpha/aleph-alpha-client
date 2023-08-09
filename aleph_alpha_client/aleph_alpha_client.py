@@ -937,6 +937,7 @@ class AsyncClient:
         # The API currently only supports batch semantic embedding requests with up to 100
         # prompts per batch. As a convenience for users, this function chunks larger requests.
         results = await self._gather_with_concurrency(
+            "batch_semantic_embed",
             num_concurrent_requests,
             _generate_semantic_embedding_batches(request, batch_size),
             progress_bar,
@@ -1059,6 +1060,7 @@ class AsyncClient:
     # Based on: https://docs.aleph-alpha.com/changelog/2022/11/14/async-python-client/
     async def _gather_with_concurrency(
         self,
+        endpoint: str,
         n: int,
         requests: Sequence[BatchSemanticEmbeddingRequest],
         progress_bar: bool,
@@ -1068,7 +1070,7 @@ class AsyncClient:
         async def sem_task(request: BatchSemanticEmbeddingRequest):
             async with semaphore:
                 return await self._post_request(
-                    "batch_semantic_embed",
+                    endpoint,
                     request,
                 )
 
