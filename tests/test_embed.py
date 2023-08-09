@@ -50,9 +50,10 @@ async def test_can_semantic_embed_with_async_client(
 
 
 @pytest.mark.parametrize("num_prompts", [1, 100, 101, 200, 1000])
+@pytest.mark.parametrize("batch_size", [1, 32, 100])
 @pytest.mark.system_test
 async def test_batch_embed_semantic_with_async_client(
-    async_client: AsyncClient, sync_client: Client, num_prompts: int
+    async_client: AsyncClient, sync_client: Client, num_prompts: int, batch_size: int
 ):
     words = ["car", "elephant", "kitchen sink", "rubber", "sun"]
     request = BatchSemanticEmbeddingRequest(
@@ -64,7 +65,7 @@ async def test_batch_embed_semantic_with_async_client(
     )
 
     result = await async_client.batch_semantic_embed(
-        request=request, num_concurrent_requests=10
+        request=request, num_concurrent_requests=10, batch_size=batch_size
     )
 
     assert len(result.embeddings) == num_prompts
@@ -74,6 +75,20 @@ async def test_batch_embed_semantic_with_async_client(
     embeddings_approximately_equal(
         result.embeddings, sync_client.batch_semantic_embed(request=request).embeddings
     )
+
+
+@pytest.mark.parametrize("batch_size", [-1, 0, 101])
+async def test_batch_embed_semantic_invalid_batch_sizes(
+    async_client: AsyncClient, sync_client: Client, batch_size: int
+):
+    words = ["car", "elephant", "kitchen sink", "rubber", "sun"]
+    request = BatchSemanticEmbeddingRequest(
+        prompts=[Prompt.from_text(word) for word in words],
+        representation=SemanticRepresentation.Symmetric,
+    )
+
+    with pytest.raises(ValueError):
+        await async_client.batch_semantic_embed(request=request, batch_size=batch_size)
 
 
 def cosine_similarity(emb1: Sequence[float], emb2: Sequence[float]) -> float:

@@ -20,6 +20,7 @@ from requests import Response
 from requests.adapters import HTTPAdapter
 from requests.structures import CaseInsensitiveDict
 from urllib3.util.retry import Retry
+from tqdm.asyncio import tqdm
 
 import aleph_alpha_client
 from aleph_alpha_client.explanation import (
@@ -429,7 +430,7 @@ class Client:
         model_version = ""
         # The API currently only supports batch semantic embedding requests with up to 100
         # prompts per batch. As a convenience for users, this function chunks larger requests.
-        for batch_request in generate_semantic_embedding_batches(request):
+        for batch_request in _generate_semantic_embedding_batches(request):
             raw_response = self._post_request(
                 "batch_semantic_embed",
                 batch_request,
@@ -889,10 +890,12 @@ class AsyncClient:
         request: BatchSemanticEmbeddingRequest,
         model: Optional[str] = None,
         num_concurrent_requests: int = 1,
+        batch_size: int = 100,
+        progress_bar: bool = False,
     ) -> BatchSemanticEmbeddingResponse:
         """Embeds a sequence of texts or images and returns vectors in the same order as they
-        were provided. If more than 100 prompts are provided then this method will chunk them
-        into batches of 100 prompts that will be sent to the API.
+        were provided. If more than `batch_size` prompts are provided then this method will chunk them
+        into batches of up to `batch_size` prompts that will be sent to the API.
 
         Parameters:
             request (BatchSemanticEmbeddingRequest, required):
@@ -901,6 +904,15 @@ class AsyncClient:
             model (string, optional, default None):
                 Name of model to use. A model name refers to a model architecture (number of parameters among others).
                 Always the latest version of model is used.
+
+            num_concurrent_requests (int, optional, default 1):
+                Maximum number of concurrent requests to send to the API.
+
+            batch_size (int, optional, default 100):
+                Number of prompts per batch sent to the API. This value must be between 1 and 100 (inclusive).
+
+            progress_bar (bool, optional, default False):
+                Whether to show a progress bar using tqdm.
 
         Examples:
             >>> # function for symmetric embedding
@@ -914,14 +926,21 @@ class AsyncClient:
                     result = client.batch_semantic_embed(request, model=model_name)
                     return result.embedding
         """
+        if batch_size < 1 or batch_size > 100:
+            raise ValueError(
+                "`batch_semantic_embed` must be called with a `batch_size` between 1 and 100 (inclusive)"
+            )
+
         responses: List[EmbeddingVector] = []
         model_version = ""
 
         # The API currently only supports batch semantic embedding requests with up to 100
         # prompts per batch. As a convenience for users, this function chunks larger requests.
-        results = await self.gather_with_concurrency(
+        results = await self._gather_with_concurrency(
+            "batch_semantic_embed",
             num_concurrent_requests,
-            generate_semantic_embedding_batches(request),
+            _generate_semantic_embedding_batches(request, batch_size),
+            progress_bar,
         )
         for result in results:
             resp = BatchSemanticEmbeddingResponse.from_json(result)
@@ -1039,28 +1058,35 @@ class AsyncClient:
         return Tokenizer.from_str(response)
 
     # Based on: https://docs.aleph-alpha.com/changelog/2022/11/14/async-python-client/
-    async def gather_with_concurrency(
-        self, n: int, requests: Sequence[BatchSemanticEmbeddingRequest]
+    async def _gather_with_concurrency(
+        self,
+        endpoint: str,
+        n: int,
+        requests: Sequence[BatchSemanticEmbeddingRequest],
+        progress_bar: bool,
     ) -> List[Dict[str, Any]]:
         semaphore = asyncio.Semaphore(n)
 
         async def sem_task(request: BatchSemanticEmbeddingRequest):
             async with semaphore:
                 return await self._post_request(
-                    "batch_semantic_embed",
+                    endpoint,
                     request,
                 )
 
         # asyncio.gather preserves order of awaitables in result list
-        return await asyncio.gather(*(sem_task(request) for request in requests))
+        if progress_bar:
+            return await tqdm.gather(*(sem_task(request) for request in requests))
+        else:
+            return await asyncio.gather(*(sem_task(request) for request in requests))
 
 
-def generate_semantic_embedding_batches(
-    request: BatchSemanticEmbeddingRequest,
+def _generate_semantic_embedding_batches(
+    request: BatchSemanticEmbeddingRequest, batch_size: int = 100
 ) -> List[BatchSemanticEmbeddingRequest]:
     requests = []
-    for batch_index in range(0, len(request.prompts), 100):
-        batch = request.prompts[batch_index : batch_index + 100]
+    for batch_index in range(0, len(request.prompts), batch_size):
+        batch = request.prompts[batch_index : batch_index + batch_size]
         requests.append(
             BatchSemanticEmbeddingRequest(
                 prompts=batch,

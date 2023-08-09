@@ -52,6 +52,8 @@ from .version import __version__
 
 __all__ = [
     "AsyncClient",
+    "BatchSemanticEmbeddingRequest",
+    "BatchSemanticEmbeddingResponse",
     "Client",
     "CompletionRequest",
     "CompletionResponse",

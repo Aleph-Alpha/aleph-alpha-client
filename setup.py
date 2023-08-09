@@ -19,7 +19,7 @@ tests_require = [
     "pytest-aiohttp",
 ]
 
-types_require = ["mypy", "types-requests", "types-Pillow"]
+types_require = ["mypy", "types-requests", "types-Pillow", "types-tqdm"]
 
 dev_require = (
     tests_require
@@ -49,6 +49,7 @@ setup(
         "tokenizers >= 0.13.2",
         "typing_extensions >= 4.5.0",
         "Pillow >= 9.2.0",
+        "tqdm >= v4.62.0",
     ],
     tests_require=tests_require,
     extras_require={
