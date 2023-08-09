@@ -1,7 +1,10 @@
+import json
 import math
 import random
 from typing import Sequence
 import pytest
+from pytest_httpserver import HTTPServer
+
 from aleph_alpha_client import EmbeddingRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.embedding import (
@@ -107,6 +110,21 @@ def embeddings_approximately_equal(a, b):
     assert all([cosine_similarity(v1, v2) > 0.99 for (v1, v2) in zip(a, b)])
 
 
+async def test_modelname_gets_passed_along_for_async_client(httpserver: HTTPServer):
+    request = BatchSemanticEmbeddingRequest(
+        prompts=[Prompt.from_text("hello")],
+        representation=SemanticRepresentation.Symmetric,
+    )
+    model_name = "test_model"
+    expected_body = request.to_json()
+    expected_body["model"] = model_name
+    httpserver.expect_ordered_request(
+        "/batch_semantic_embed", method="POST", data=json.dumps(expected_body)
+    ).respond_with_json({"model_version": "1", "embeddings": []})
+    async_client = AsyncClient(token="", host=httpserver.url_for(""), total_retries=1)
+    _resp = await async_client.batch_semantic_embed(request, model=model_name)
+
+
 # Client
 
 
@@ -187,3 +205,18 @@ def test_batch_embed_semantic(sync_client: Client, num_prompts: int):
 
     result = sync_client.batch_semantic_embed(request=request, model="luminous-base")
     assert len(result.embeddings) == num_prompts
+
+
+def test_modelname_gets_passed_along_for_sync_client(httpserver: HTTPServer):
+    request = BatchSemanticEmbeddingRequest(
+        prompts=[Prompt.from_text("hello")],
+        representation=SemanticRepresentation.Symmetric,
+    )
+    model_name = "test_model"
+    expected_body = request.to_json()
+    expected_body["model"] = model_name
+    httpserver.expect_ordered_request(
+        "/batch_semantic_embed", method="POST", data=json.dumps(expected_body)
+    ).respond_with_json({"model_version": "1", "embeddings": []})
+    sync_client = Client(token="", host=httpserver.url_for(""), total_retries=1)
+    _resp = sync_client.batch_semantic_embed(request, model=model_name)
