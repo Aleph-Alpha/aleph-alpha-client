@@ -1,5 +1,9 @@
 # Changelog
 
+# 3.2.2
+
+- Re-relase 3.2.1 again because of deployment issue
+
 # 3.2.1
 
 - Add progress_bar option to batch semantic embedding API
