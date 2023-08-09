@@ -938,6 +938,7 @@ class AsyncClient:
         # prompts per batch. As a convenience for users, this function chunks larger requests.
         results = await self._gather_with_concurrency(
             "batch_semantic_embed",
+            model,
             num_concurrent_requests,
             _generate_semantic_embedding_batches(request, batch_size),
             progress_bar,
@@ -1061,6 +1062,7 @@ class AsyncClient:
     async def _gather_with_concurrency(
         self,
         endpoint: str,
+        model: Optional[str],
         n: int,
         requests: Sequence[BatchSemanticEmbeddingRequest],
         progress_bar: bool,
@@ -1069,10 +1071,7 @@ class AsyncClient:
 
         async def sem_task(request: BatchSemanticEmbeddingRequest):
             async with semaphore:
-                return await self._post_request(
-                    endpoint,
-                    request,
-                )
+                return await self._post_request(endpoint, request, model)
 
         # asyncio.gather preserves order of awaitables in result list
         if progress_bar:

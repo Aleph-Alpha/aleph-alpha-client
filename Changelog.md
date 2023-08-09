@@ -1,5 +1,9 @@
 # Changelog
 
+# 3.2.3
+
+- Make sure model name gets passed along for async batch semnatic embed
+
 # 3.2.2
 
 - Re-relase 3.2.1 again because of deployment issue
