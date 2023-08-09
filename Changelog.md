@@ -1,5 +1,10 @@
 # Changelog
 
+# 3.2.1
+
+- Add progress_bar option to batch semantic embedding API
+- Add batch_size option to batch semantic embedding API
+
 ## 3.2.0
 
 - Add batch_semantic_embed method for processing batches of semantic embeddings
