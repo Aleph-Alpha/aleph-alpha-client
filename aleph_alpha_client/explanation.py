@@ -170,7 +170,9 @@ class ExplanationRequest(NamedTuple):
     control_factor: Optional[float] = None
     control_token_overlap: Optional[ControlTokenOverlap] = None
     control_log_additive: Optional[bool] = None
-    prompt_granularity: Optional[Union[PromptGranularity, str, CustomGranularity]] = None
+    prompt_granularity: Optional[
+        Union[PromptGranularity, str, CustomGranularity]
+    ] = None
     target_granularity: Optional[TargetGranularity] = None
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None
@@ -198,6 +200,8 @@ class ExplanationRequest(NamedTuple):
             payload["postprocessing"] = self.postprocessing.to_json()
         if self.normalize is not None:
             payload["normalize"] = self.normalize
+        if self.control_factor is not None:
+            payload["control_factor"] = self.control_factor
 
         return payload
 
