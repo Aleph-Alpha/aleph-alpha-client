@@ -1,6 +1,7 @@
+import uuid
 from liquid import Template
 
-from aleph_alpha_client.prompt import Prompt
+from aleph_alpha_client.prompt import Image, Prompt
 
 
 class PromptTemplate:
@@ -30,4 +31,21 @@ class PromptTemplate:
 
         Provided parameters are passed to `liquid.Template.render`.
         """
-        return Prompt.from_text(self.template.render(**kwargs))
+        images = []
+        placeholders = []
+        for _, value in kwargs.items():
+            if isinstance(value, Image):
+                images.append(value)
+                value = uuid()
+                placeholders.append(value)
+
+        liquid_prompt: str = self.template.render(**kwargs)
+
+        split_prompt = []
+        for placeholder in placeholders:
+            # split string on regex
+            split_prompt = liquid_prompt.(placeholder, 1)
+
+        # turn split_prompt into AA prompt 
+
+        Prompt.from_text(self.template.render(**kwargs))
