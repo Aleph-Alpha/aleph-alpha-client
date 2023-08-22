@@ -43,8 +43,11 @@ def test_to_prompt_with_single_image():
 More Text
 """
     )
-    prompt = template.to_prompt(whatever=image)
 
+    prompt = template.to_prompt(whatever=template.image(image))
+
+
+    
     expected = Prompt(
         [
             Text.from_text("Some Text.\n"),
