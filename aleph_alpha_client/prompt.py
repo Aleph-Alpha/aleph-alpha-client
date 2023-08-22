@@ -357,7 +357,7 @@ class Image:
         return cls.from_bytes(bytes, cropping=cropping, controls=controls or [])
 
     @classmethod
-    def from_file(cls, path: str, controls: Optional[Sequence[ImageControl]] = None):
+    def from_file(cls, path: Union[str, Path], controls: Optional[Sequence[ImageControl]] = None):
         """
         Load an image from disk and prepare it to be used in a prompt
         If they are not provided then the image will be [center cropped](https://pytorch.org/vision/stable/transforms.html#torchvision.transforms.CenterCrop)
