@@ -43,7 +43,7 @@ More Text
 """
     )
 
-    prompt = template.to_prompt(whatever=template.image(prompt_image))
+    prompt = template.to_prompt(whatever=template.placeholder(prompt_image))
 
     expected = Prompt(
         [
@@ -65,7 +65,7 @@ def test_to_prompt_with_image_sequence(prompt_image: Image):
     )
 
     prompt = template.to_prompt(
-        images=[template.image(prompt_image), template.image(prompt_image)]
+        images=[template.placeholder(prompt_image), template.placeholder(prompt_image)]
     )
 
     expected = Prompt([prompt_image, prompt_image])
@@ -75,7 +75,9 @@ def test_to_prompt_with_image_sequence(prompt_image: Image):
 def test_to_prompt_with_mixed_modality_variables(prompt_image: Image):
     template = PromptTemplate("""{{image}}{{name}}{{image}}""")
 
-    prompt = template.to_prompt(image=template.image(prompt_image), name="whatever")
+    prompt = template.to_prompt(
+        image=template.placeholder(prompt_image), name="whatever"
+    )
 
     expected = Prompt([prompt_image, Text.from_text("whatever"), prompt_image])
     assert prompt == expected
@@ -84,7 +86,7 @@ def test_to_prompt_with_mixed_modality_variables(prompt_image: Image):
 def test_to_prompt_with_unused_image(prompt_image: Image):
     template = PromptTemplate("cool")
 
-    prompt = template.to_prompt(images=template.image(prompt_image))
+    prompt = template.to_prompt(images=template.placeholder(prompt_image))
 
     assert prompt == Prompt.from_text("cool")
 
@@ -96,7 +98,8 @@ def test_to_prompt_with_multiple_different_images(prompt_image: Image):
     template = PromptTemplate("""{{image_1}}{{image_2}}""")
 
     prompt = template.to_prompt(
-        image_1=template.image(prompt_image), image_2=second_image
+        image_1=template.placeholder(prompt_image),
+        image_2=template.placeholder(second_image),
     )
 
     assert prompt == Prompt([prompt_image, second_image])
