@@ -1,7 +1,9 @@
-import uuid
+from re import finditer
+from typing import Iterable, Mapping, Sequence, Tuple
+from uuid import UUID, uuid4
 from liquid import Template
 
-from aleph_alpha_client.prompt import Image, Prompt
+from aleph_alpha_client.prompt import Image, Prompt, PromptItem, Text
 
 
 class PromptTemplate:
@@ -31,21 +33,43 @@ class PromptTemplate:
 
         Provided parameters are passed to `liquid.Template.render`.
         """
-        images = []
-        placeholders = []
-        for _, value in kwargs.items():
+        image_by_placeholder = {}
+        updated_args = dict(**kwargs)
+        for arg, value in kwargs.items():
             if isinstance(value, Image):
-                images.append(value)
-                value = uuid()
-                placeholders.append(value)
+                placeholder = str(uuid4())
+                image_by_placeholder[placeholder] = value
+                updated_args[arg] = placeholder
 
-        liquid_prompt: str = self.template.render(**kwargs)
+        liquid_prompt: str = self.template.render(**updated_args)
 
-        split_prompt = []
-        for placeholder in placeholders:
-            # split string on regex
-            split_prompt = liquid_prompt.(placeholder, 1)
+        placeholder_indices = compute_indices(
+            image_by_placeholder.keys(), liquid_prompt
+        )
+        modalities = modalities_from(
+            placeholder_indices, image_by_placeholder, liquid_prompt
+        )
 
-        # turn split_prompt into AA prompt 
+        return Prompt(list(modalities))
 
-        Prompt.from_text(self.template.render(**kwargs))
+
+def compute_indices(
+    placeholders: Iterable[str], template: str
+) -> Iterable[Tuple[int, int]]:
+    pattern = f"({'|'.join(placeholders)})"
+    return ((match.start(), match.end()) for match in finditer(pattern, template))
+
+
+def modalities_from(
+    placeholder_indices: Iterable[Tuple[int, int]],
+    image_by_placeholder: Mapping[str, Image],
+    template: str,
+) -> Iterable[PromptItem]:
+    last_to = 0
+    for placeholder_from, placeholder_to in placeholder_indices:
+        if last_to < placeholder_from:
+            yield Text.from_text(template[last_to:placeholder_from])
+        yield image_by_placeholder[template[placeholder_from:placeholder_to]]
+        last_to = placeholder_to + 1
+    if last_to < len(template):
+        yield Text.from_text(template[last_to:])

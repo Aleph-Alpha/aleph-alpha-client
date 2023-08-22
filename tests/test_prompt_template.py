@@ -33,7 +33,8 @@ Hello {{name}}!
     with raises(LiquidTypeError):
         template.to_prompt(names=7)
 
-def test_to_prompt_with_image():
+
+def test_to_prompt_with_single_image():
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     image = Image.from_file(image_source_path)
     template = PromptTemplate(
@@ -42,14 +43,13 @@ def test_to_prompt_with_image():
 More Text
 """
     )
-
     prompt = template.to_prompt(whatever=image)
 
-    expected = Prompt([
-        Text.from_text("Some Text.\n"),
-        image,
-        Text.from_text("More Text\n"),
-    ]) 
-    assert prompt == expected 
-
-
+    expected = Prompt(
+        [
+            Text.from_text("Some Text.\n"),
+            image,
+            Text.from_text("More Text\n"),
+        ]
+    )
+    assert prompt == expected
