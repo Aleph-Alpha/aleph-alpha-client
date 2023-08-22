@@ -40,21 +40,21 @@ class PromptTemplate:
         Provided parameters are passed to `liquid.Template.render`.
         """
         liquid_prompt: str = self.template.render(**kwargs)
-
-        placeholder_indices = compute_indices(self.images.keys(), liquid_prompt)
-        modalities = modalities_from(placeholder_indices, self.images, liquid_prompt)
+        placeholder_indices = self._compute_indices(self.images.keys(), liquid_prompt)
+        modalities = _modalities_from(placeholder_indices, self.images, liquid_prompt)
 
         return Prompt(list(modalities))
 
+    def _compute_indices(
+        self, placeholders: Iterable[UUID], template: str
+    ) -> Iterable[Tuple[int, int]]:
+        if not self.images:
+            return []
+        pattern = f"({'|'.join(str(placeholder) for placeholder in placeholders)})"
+        return ((match.start(), match.end()) for match in finditer(pattern, template))
 
-def compute_indices(
-    placeholders: Iterable[UUID], template: str
-) -> Iterable[Tuple[int, int]]:
-    pattern = f"({'|'.join(str(placeholder) for placeholder in placeholders)})"
-    return ((match.start(), match.end()) for match in finditer(pattern, template))
 
-
-def modalities_from(
+def _modalities_from(
     placeholder_indices: Iterable[Tuple[int, int]],
     image_by_placeholder: Mapping[UUID, Image],
     template: str,
@@ -64,6 +64,6 @@ def modalities_from(
         if last_to < placeholder_from:
             yield Text.from_text(template[last_to:placeholder_from])
         yield image_by_placeholder[UUID(template[placeholder_from:placeholder_to])]
-        last_to = placeholder_to + 1
+        last_to = placeholder_to
     if last_to < len(template):
         yield Text.from_text(template[last_to:])
