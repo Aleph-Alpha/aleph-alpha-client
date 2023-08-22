@@ -8,6 +8,7 @@ from .prompt import (
     TokenControl,
     Tokens,
 )
+from .prompt_template import PromptTemplate
 from .aleph_alpha_client import (
     POOLING_OPTIONS,
     AsyncClient,
@@ -76,6 +77,7 @@ __all__ = [
     "ImageScore",
     "POOLING_OPTIONS",
     "Prompt",
+    "PromptTemplate",
     "PromptGranularity",
     "QaRequest",
     "QaResponse",

@@ -50,6 +50,7 @@ setup(
         "typing_extensions >= 4.5.0",
         "Pillow >= 9.2.0",
         "tqdm >= v4.62.0",
+        "python-liquid >= 1.9.4",
     ],
     tests_require=tests_require,
     extras_require={
