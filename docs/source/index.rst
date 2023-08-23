@@ -25,6 +25,23 @@ Synchronous client.
 
       print(result.completions[0].completion)
 
+Synchronous client with prompt containing an image.
+
+.. code:: python
+
+      from aleph_alpha_client import Client, CompletionRequest, PromptTemplate, Image
+      import os
+
+      client = Client(token=os.getenv("AA_TOKEN"))
+      image = Image.from_file("path-to-an-image")
+      prompt_template = PromptTemplate("{{image}}This picture shows ")
+      prompt = prompt_template.to_prompt(image=prompt_template.placeholder(image))
+      request = CompletionRequest(prompt=prompt, maximum_tokens=20)
+      result = client.complete(request, model="luminous-extended")
+
+      print(result.completions[0].completion)
+
+
 Asynchronous client.
 
 .. code:: python
