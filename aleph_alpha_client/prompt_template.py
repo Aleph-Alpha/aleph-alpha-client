@@ -1,5 +1,5 @@
 from re import finditer
-from typing import Dict, Iterable, Mapping, NewType, Tuple
+from typing import Dict, Iterable, Mapping, NewType, Sequence, Tuple, Union
 from uuid import UUID, uuid4
 from liquid import Template
 
@@ -45,6 +45,14 @@ class PromptTemplate:
         id = Placeholder(uuid4())
         self.images[id] = image
         return id
+
+    def prompt(self, items: Sequence[Union[Image, Text]]) -> str:
+        return "".join(
+            (
+                str(self.placeholder(item)) if isinstance(item, Image) else item.text
+                for item in items
+            ),
+        )
 
     def to_prompt(self, **kwargs) -> Prompt:
         """Creates a `Prompt` from the template string and the given parameters.
