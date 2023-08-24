@@ -95,6 +95,7 @@ def test_complete_with_optimized_prompt(
 
     response = sync_client.complete(request, model=model_name)
 
+    assert response.optimized_prompt
     assert response.optimized_prompt.items[0] == Text.from_text(prompt_text.strip())
     assert response.optimized_prompt.items[2] == prompt_tokens
     assert isinstance(response.optimized_prompt.items[1], Image)

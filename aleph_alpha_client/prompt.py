@@ -473,7 +473,13 @@ class Prompt:
 
     @staticmethod
     def from_json(items_json: Sequence[Mapping[str, Any]]) -> "Prompt":
-        return Prompt([_prompt_item_from_json(item) for item in items_json])
+        return Prompt(
+            [
+                item
+                for item in (_prompt_item_from_json(item) for item in items_json)
+                if item
+            ]
+        )
 
 
 def _prompt_item_from_json(item: Mapping[str, Any]) -> Optional[PromptItem]:
