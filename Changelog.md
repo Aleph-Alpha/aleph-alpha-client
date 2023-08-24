@@ -1,18 +1,28 @@
 # Changelog
 
-# 3.2.4
+## next release
+
+### Features
+
+- Add `PromptTemplate` to support easy creation of multi-modal prompts
+
+### Bugs
+
+- Fix parsing of optimized prompt returned in a `CompletionResponse`
+
+## 3.2.4
 
 - Make sure `control_factor` gets passed along with `ExplanationRequest`
 
-# 3.2.3
+## 3.2.3
 
 - Make sure model name gets passed along for async batch semnatic embed
 
-# 3.2.2
+## 3.2.2
 
 - Re-relase 3.2.1 again because of deployment issue
 
-# 3.2.1
+## 3.2.1
 
 - Add progress_bar option to batch semantic embedding API
 - Add batch_size option to batch semantic embedding API
@@ -35,7 +45,7 @@
 
 ### Bug fixes
 
-- Add missing import of **PromptGranularity** in *__init__.py*.
+- Add missing import of **PromptGranularity** in _**init**.py_.
 
 ## 3.1.2
 

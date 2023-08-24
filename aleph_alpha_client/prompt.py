@@ -100,6 +100,10 @@ class Tokens(NamedTuple):
         }
 
     @staticmethod
+    def from_json(json: Mapping[str, Any]) -> "Tokens":
+        return Tokens(tokens=json["data"], controls=[])
+
+    @staticmethod
     def from_token_ids(token_ids: Sequence[int]) -> "Tokens":
         return Tokens(token_ids, [])
 
@@ -174,19 +178,22 @@ class Text(NamedTuple):
         }
 
     @staticmethod
+    def from_json(json: Mapping[str, Any]) -> "Text":
+        return Text.from_text(json["data"])
+
+    @staticmethod
     def from_text(text: str) -> "Text":
         return Text(text, [])
 
 
-class Cropping:
+class Cropping(NamedTuple):
     """
     Describes a quadratic crop of the file.
     """
 
-    def __init__(self, upper_left_x: int, upper_left_y: int, size: int):
-        self.upper_left_x = upper_left_x
-        self.upper_left_y = upper_left_y
-        self.size = size
+    upper_left_x: int
+    upper_left_y: int
+    size: int
 
 
 class ImageControl(NamedTuple):
@@ -254,7 +261,7 @@ class ImageControl(NamedTuple):
         return payload
 
 
-class Image:
+class Image(NamedTuple):
     """
     An image send as part of a prompt to a model. The image is represented as
     base64.
@@ -272,17 +279,11 @@ class Image:
         >>> image = Image.from_url(url)
     """
 
-    def __init__(
-        self,
-        base_64: str,
-        cropping: Optional[Cropping],
-        controls: Sequence[ImageControl],
-    ):
-        # We use a base_64 reperesentation, because we want to embed the image
-        # into a prompt send in JSON.
-        self.base_64 = base_64
-        self.cropping = cropping
-        self.controls: Sequence[ImageControl] = controls
+    # We use a base_64 reperesentation, because we want to embed the image
+    # into a prompt send in JSON.
+    base_64: str
+    cropping: Optional[Cropping]
+    controls: Sequence[ImageControl]
 
     @classmethod
     def from_image_source(
@@ -357,7 +358,9 @@ class Image:
         return cls.from_bytes(bytes, cropping=cropping, controls=controls or [])
 
     @classmethod
-    def from_file(cls, path: Union[str, Path], controls: Optional[Sequence[ImageControl]] = None):
+    def from_file(
+        cls, path: Union[str, Path], controls: Optional[Sequence[ImageControl]] = None
+    ):
         """
         Load an image from disk and prepare it to be used in a prompt
         If they are not provided then the image will be [center cropped](https://pytorch.org/vision/stable/transforms.html#torchvision.transforms.CenterCrop)
@@ -412,6 +415,10 @@ class Image:
                 "controls": [control.to_json() for control in self.controls],
             }
 
+    @staticmethod
+    def from_json(json: Mapping[str, Any]) -> "Image":
+        return Image(base_64=json["data"], cropping=None, controls=[])
+
     def to_image(self) -> PILImage:
         return PIL.Image.open(io.BytesIO(base64.b64decode(self.base_64)))
 
@@ -463,6 +470,29 @@ class Prompt:
 
     def to_json(self) -> Sequence[Mapping[str, Any]]:
         return [_to_json(item) for item in self.items]
+
+    @staticmethod
+    def from_json(items_json: Sequence[Mapping[str, Any]]) -> "Prompt":
+        return Prompt(
+            [
+                item
+                for item in (_prompt_item_from_json(item) for item in items_json)
+                if item
+            ]
+        )
+
+
+def _prompt_item_from_json(item: Mapping[str, Any]) -> Optional[PromptItem]:
+    item_type = item.get("type")
+    if item_type == "text":
+        return Text.from_json(item)
+    if item_type == "image":
+        return Image.from_json(item)
+    if item_type == "token_ids":
+        return Tokens.from_json(item)
+    # Skip item instead of raising an error to prevent failures of old clients
+    # when item types are extended
+    return None
 
 
 def _to_json(item: PromptItem) -> Mapping[str, Any]:
