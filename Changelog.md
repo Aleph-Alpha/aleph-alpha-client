@@ -1,6 +1,6 @@
 # Changelog
 
-## next release
+## 3.3.0
 
 ### Features
 
