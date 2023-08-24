@@ -1,12 +1,20 @@
 import pytest
 from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.completion import CompletionRequest
-from aleph_alpha_client.prompt import ControlTokenOverlap, Prompt, Text, TextControl
+from aleph_alpha_client.prompt import (
+    ControlTokenOverlap,
+    Image,
+    Prompt,
+    Text,
+    TextControl,
+    Tokens,
+)
 
 from tests.common import (
     sync_client,
     async_client,
     model_name,
+    prompt_image,
 )
 
 
@@ -72,3 +80,21 @@ def test_complete_with_token_ids(sync_client: Client, model_name: str):
 
     assert len(response.completions) == 1
     assert response.model_version is not None
+
+
+@pytest.mark.system_test
+def test_complete_with_optimized_prompt(
+    sync_client: Client, model_name: str, prompt_image: Image
+):
+    prompt_text = " Hello World! "
+    prompt_tokens = Tokens.from_token_ids([1, 2])
+    request = CompletionRequest(
+        prompt=Prompt([Text.from_text(prompt_text), prompt_image, prompt_tokens]),
+        maximum_tokens=5,
+    )
+
+    response = sync_client.complete(request, model=model_name)
+
+    assert response.optimized_prompt.items[0] == Text.from_text(prompt_text.strip())
+    assert response.optimized_prompt.items[2] == prompt_tokens
+    assert isinstance(response.optimized_prompt.items[1], Image)

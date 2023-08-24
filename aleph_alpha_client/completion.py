@@ -239,16 +239,19 @@ class CompletionResult(NamedTuple):
 class CompletionResponse(NamedTuple):
     model_version: str
     completions: Sequence[CompletionResult]
-    optimized_prompt: Optional[Sequence[str]] = None
+    optimized_prompt: Optional[Prompt] = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "CompletionResponse":
+        optimized_prompt_json = json.get("optimized_prompt")
         return CompletionResponse(
             model_version=json["model_version"],
             completions=[
                 CompletionResult.from_json(item) for item in json["completions"]
             ],
-            optimized_prompt=json.get("optimized_prompt"),
+            optimized_prompt=Prompt.from_json(optimized_prompt_json)
+            if optimized_prompt_json
+            else None,
         )
 
     def to_json(self) -> Mapping[str, Any]:
