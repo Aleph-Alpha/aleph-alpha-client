@@ -1,8 +1,12 @@
 # Changelog
 
-## 3.3.1
+## 3.3.2
 
 - `PromptTemplate` now supports embedding full prompts and tokens
+
+## 3.3.1
+
+- Mismatched tag for release
 
 ## 3.3.0
 
