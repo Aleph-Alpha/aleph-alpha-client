@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.3.2
+## 3.4.0
 
 - `PromptTemplate` now supports embedding full prompts and tokens
 
