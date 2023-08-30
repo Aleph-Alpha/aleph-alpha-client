@@ -1,6 +1,6 @@
 from pathlib import Path
 from pytest import raises
-from aleph_alpha_client.prompt import Prompt, Image, Text
+from aleph_alpha_client.prompt import Prompt, Image, Text, Tokens
 from aleph_alpha_client.prompt_template import PromptTemplate
 from liquid.exceptions import LiquidTypeError
 from .common import prompt_image
@@ -103,3 +103,63 @@ def test_to_prompt_with_multiple_different_images(prompt_image: Image):
     )
 
     assert prompt == Prompt([prompt_image, second_image])
+
+
+def test_to_prompt_with_embedded_prompt(prompt_image: Image):
+    user_prompt = Prompt([Text.from_text("Cool"), prompt_image])
+
+    template = PromptTemplate("""{{user_prompt}}""")
+
+    prompt = template.to_prompt(user_prompt=template.embed_prompt(user_prompt))
+
+    assert prompt == user_prompt
+
+
+def test_to_prompt_does_not_add_whitespace_after_image(prompt_image: Image):
+    user_prompt = Prompt([prompt_image, Text.from_text("Cool"), prompt_image])
+
+    template = PromptTemplate("{{user_prompt}}")
+
+    prompt = template.to_prompt(user_prompt=template.embed_prompt(user_prompt))
+
+    assert prompt == user_prompt
+
+
+def test_to_prompt_skips_empty_strings():
+    user_prompt = Prompt(
+        [Text.from_text("Cool"), Text.from_text(""), Text.from_text("Also cool")]
+    )
+
+    template = PromptTemplate("{{user_prompt}}")
+
+    prompt = template.to_prompt(user_prompt=template.embed_prompt(user_prompt))
+
+    assert prompt == Prompt([Text.from_text("Cool Also cool")])
+
+
+def test_to_prompt_adds_whitespaces():
+    user_prompt = Prompt(
+        [Text.from_text("start "), Text.from_text("middle"), Text.from_text(" end")]
+    )
+
+    template = PromptTemplate("{{user_prompt}}")
+
+    prompt = template.to_prompt(user_prompt=template.embed_prompt(user_prompt))
+
+    assert prompt == Prompt([Text.from_text("start middle end")])
+
+
+def test_to_prompt_works_with_tokens():
+    user_prompt = Prompt(
+        [
+            Tokens.from_token_ids([1, 2, 3]),
+            Text.from_text("cool"),
+            Tokens.from_token_ids([4, 5, 6]),
+        ]
+    )
+
+    template = PromptTemplate("{{user_prompt}}")
+
+    prompt = template.to_prompt(user_prompt=template.embed_prompt(user_prompt))
+
+    assert prompt == user_prompt

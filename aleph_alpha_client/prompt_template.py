@@ -1,9 +1,10 @@
 from re import finditer
-from typing import Dict, Iterable, Mapping, NewType, Tuple
+import re
+from typing import Dict, Iterable, Mapping, NewType, Sequence, Tuple, Union
 from uuid import UUID, uuid4
 from liquid import Template
 
-from aleph_alpha_client.prompt import Image, Prompt, PromptItem, Text
+from aleph_alpha_client.prompt import Image, Prompt, PromptItem, Text, Tokens
 
 Placeholder = NewType("Placeholder", UUID)
 
@@ -11,8 +12,8 @@ Placeholder = NewType("Placeholder", UUID)
 class PromptTemplate:
     """Allows to build a `Prompt` using the `liquid template language <https://shopify.github.io/liquid/>`_.
 
-    To add images to the prompt first you have to save it to the template with the `template.placeholder()` function.
-    To embed the image in the template, pass the placeholder in the place(s) where you would like the image.
+    To add non-text prompt items first you have to save it to the template with the `template.placeholder()` function.
+    To embed the items in the template, pass the placeholder in the place(s) where you would like the items.
 
     Example:
         >>> image = Image.from_file(Path("path-to-image"))
@@ -35,16 +36,62 @@ class PromptTemplate:
             template_str: the liquid template string
         """
         self.template = Template(template_str)
-        self.images: Dict[Placeholder, Image] = {}
+        self.non_text_items: Dict[Placeholder, Union[Image, Tokens]] = {}
 
-    def placeholder(self, image: Image) -> Placeholder:
-        """Saves an image to the template and returns a placeholder
+    def placeholder(self, prompt_item: Union[Image, Tokens]) -> Placeholder:
+        """Saves a non-text prompt item to the template and returns a placeholder
 
-        The placeholder is used to embed the image in the template
+        The placeholder is used to embed the prompt item in the template
         """
         id = Placeholder(uuid4())
-        self.images[id] = image
+        self.non_text_items[id] = prompt_item
         return id
+
+    def _join_character(
+        self, first_item: Union[Text, Image, Tokens, None], second_item: Text
+    ) -> str:
+        if (
+            isinstance(first_item, Text)
+            and not first_item.text[-1].isspace()
+            and not second_item.text[0].isspace()
+        ):
+            return " "
+        else:
+            return ""
+
+    def embed_prompt(self, prompt: Prompt) -> str:
+        """Embeds a prompt in a prompt template
+
+        Adds whitespace between text items if there is no whitespace between them.
+        In case of non-text prompt items, this embeds them into the end result.
+
+        Example:
+            >>> user_prompt = Prompt(
+                    [
+                        Tokens.from_token_ids([1, 2, 3]),
+                        Text.from_text("cool"),
+                        Image.from_file(Path("path-to-image")),
+                    ]
+                )
+            >>> template = PromptTemplate("Question: {{user_prompt}}\\n Answer: ")
+            >>> prompt = template.to_prompt(user_prompt=template.embed_prompt(user_prompt))
+
+        Parameters:
+            prompt: prompt to embed in the template
+        """
+        prompt_text = ""
+        last_item = None
+        for item in prompt.items:
+            if isinstance(item, Text):
+                if len(item.text) == 0:
+                    continue
+                prompt_text = str.join(
+                    self._join_character(last_item, item), [prompt_text, item.text]
+                )
+            else:
+                prompt_text = str.join("", [prompt_text, str(self.placeholder(item))])
+            last_item = item
+        return prompt_text
 
     def to_prompt(self, **kwargs) -> Prompt:
         """Creates a `Prompt` from the template string and the given parameters.
@@ -52,15 +99,19 @@ class PromptTemplate:
         Provided parameters are passed to `liquid.Template.render`.
         """
         liquid_prompt: str = self.template.render(**kwargs)
-        placeholder_indices = self._compute_indices(self.images.keys(), liquid_prompt)
-        modalities = _modalities_from(placeholder_indices, self.images, liquid_prompt)
+        placeholder_indices = self._compute_indices(
+            self.non_text_items.keys(), liquid_prompt
+        )
+        modalities = _modalities_from(
+            placeholder_indices, self.non_text_items, liquid_prompt
+        )
 
         return Prompt(list(modalities))
 
     def _compute_indices(
         self, placeholders: Iterable[Placeholder], template: str
     ) -> Iterable[Tuple[int, int]]:
-        if not self.images:
+        if not self.non_text_items:
             return []
         pattern = f"({'|'.join(str(placeholder) for placeholder in placeholders)})"
         return ((match.start(), match.end()) for match in finditer(pattern, template))
@@ -68,14 +119,14 @@ class PromptTemplate:
 
 def _modalities_from(
     placeholder_indices: Iterable[Tuple[int, int]],
-    image_by_placeholder: Mapping[Placeholder, Image],
+    prompt_items_by_placeholder: Mapping[Placeholder, Union[Image, Tokens]],
     template: str,
 ) -> Iterable[PromptItem]:
     last_to = 0
     for placeholder_from, placeholder_to in placeholder_indices:
         if last_to < placeholder_from:
             yield Text.from_text(template[last_to:placeholder_from])
-        yield image_by_placeholder[
+        yield prompt_items_by_placeholder[
             Placeholder(UUID(template[placeholder_from:placeholder_to]))
         ]
         last_to = placeholder_to
