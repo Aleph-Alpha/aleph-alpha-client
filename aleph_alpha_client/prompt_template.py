@@ -106,6 +106,7 @@ class PromptTemplate:
             placeholder_indices, self.non_text_items, liquid_prompt
         )
 
+        self.non_text_items = {}
         return Prompt(list(modalities))
 
     def _compute_indices(
