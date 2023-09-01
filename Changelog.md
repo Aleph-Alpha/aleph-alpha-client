@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.4.1
+
+- `PromptTemplate` now resets cached non-text items after generating prompt
+
 ## 3.4.0
 
 - `PromptTemplate` now supports embedding full prompts and tokens
