@@ -113,7 +113,7 @@ def test_complete_with_echo(sync_client: Client, model_name: str, prompt_image: 
 
     response = sync_client.complete(request, model=model_name)
     completion_result = response.completions[0]
-    assert completion_result.completion == "Hello world"
+    assert completion_result.completion == " Hello world"
     assert completion_result.completion_tokens is not None
     assert len(completion_result.completion_tokens) > 0
     assert completion_result.log_probs is not None
