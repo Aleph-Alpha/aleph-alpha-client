@@ -99,3 +99,22 @@ def test_complete_with_optimized_prompt(
     assert response.optimized_prompt.items[0] == Text.from_text(prompt_text.strip())
     assert response.optimized_prompt.items[2] == prompt_tokens
     assert isinstance(response.optimized_prompt.items[1], Image)
+
+
+@pytest.mark.system_test
+def test_complete_with_echo(sync_client: Client, model_name: str, prompt_image: Image):
+    request = CompletionRequest(
+        prompt=Prompt.from_text("Hello world"),
+        maximum_tokens=0,
+        tokens=True,
+        echo=True,
+        log_probs=0,
+    )
+
+    response = sync_client.complete(request, model=model_name)
+    completion_result = response.completions[0]
+    assert completion_result.completion == "Hello world"
+    assert completion_result.completion_tokens is not None
+    assert len(completion_result.completion_tokens) > 0
+    assert completion_result.log_probs is not None
+    assert len(completion_result.log_probs) > 0
