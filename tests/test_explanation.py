@@ -57,8 +57,32 @@ async def test_can_explain_with_async_client(
 
 # Client
 
+
 @pytest.mark.system_test
-def test_explanation(sync_client: Client, model_name: str):
+def test_explanation_with_text_only(sync_client: Client, model_name: str):
+    request = ExplanationRequest(
+        prompt=Prompt.from_text("I am a programmer and French. My favourite food is"),
+        target=" pizza with cheese",
+        target_granularity=TargetGranularity.Token,
+        normalize=True,
+    )
+
+    explanation = sync_client.explain(request, model=model_name)
+
+    assert len(explanation.explanations) == 3
+    assert all([len(exp.items) == 2 for exp in explanation.explanations])
+    # At least one of the following options must be set in the request
+    # to make all scores positive (or zero):
+    # postprocessing=ExplanationPostProcessing.Absolute
+    # postprocessing=ExplanationPostProcessing.Square
+    # normalize=true
+    for exp in explanation.explanations:
+        for prompt_item in exp.items:
+            assert all([score.score >= 0.0 for score in prompt_item.scores])
+
+
+@pytest.mark.system_test
+def test_explanation_with_multimodal_prompt(sync_client: Client, model_name: str):
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     img = Image.from_image_source(image_source=str(image_source_path))
 
