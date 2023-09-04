@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.4.2
+
+- Full release for exporting type hints
+
 ## 3.4.2a1
 
 - Alpha release for exporting type hints
