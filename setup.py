@@ -38,7 +38,8 @@ setup(
     url="https://github.com/Aleph-Alpha/aleph-alpha-client",
     author="Aleph Alpha",
     author_email="support@aleph-alpha.com",
-    packages=["aleph_alpha_client"],
+    packages=["aleph_alpha_client", "aleph_alpha_client/py.typed"],
+    package_data={"aleph_alpha_client": ["py.typed"]},
     # urllib is used directly for retries
     install_requires=[
         "requests >= 2.28",
