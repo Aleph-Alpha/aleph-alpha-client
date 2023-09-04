@@ -163,3 +163,12 @@ def test_to_prompt_works_with_tokens():
     prompt = template.to_prompt(user_prompt=template.embed_prompt(user_prompt))
 
     assert prompt == user_prompt
+
+def test_to_prompt_resets_cache(prompt_image: Image):
+    user_prompt = Prompt([prompt_image, Text.from_text("Cool"), prompt_image])
+    
+    template = PromptTemplate("{{user_prompt}}")
+
+    template.to_prompt(user_prompt=template.embed_prompt(user_prompt))
+
+    assert template.non_text_items == {} 
