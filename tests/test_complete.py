@@ -82,7 +82,8 @@ def test_complete_with_token_ids(sync_client: Client, model_name: str):
     assert response.model_version is not None
 
 
-@pytest.mark.system_test
+# Re-add as system test and adjust once new behavior is in production
+# @pytest.mark.system_test
 def test_complete_with_optimized_prompt(
     sync_client: Client, model_name: str, prompt_image: Image
 ):
