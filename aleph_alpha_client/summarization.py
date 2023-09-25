@@ -4,7 +4,9 @@ from aleph_alpha_client.document import Document
 
 
 class SummarizationRequest(NamedTuple):
-    """
+    """DEPRECATED: `SummarizationRequest` is deprecated and will be removed in the next major release. New
+    methods of processing Summarization tasks will be provided before this is removed.
+
     Summarizes a document.
 
     Parameters:
@@ -40,6 +42,10 @@ class SummarizationRequest(NamedTuple):
 
 
 class SummarizationResponse(NamedTuple):
+    """DEPRECATED: `SummarizationResponse` is deprecated and will be removed in the next major release. New
+    methods of processing Summarization tasks will be provided before this is removed.
+    """
+
     summary: str
 
     @classmethod

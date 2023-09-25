@@ -4,7 +4,9 @@ from aleph_alpha_client.document import Document
 
 
 class QaRequest(NamedTuple):
-    """
+    """DEPRECATED: `QaRequest` is deprecated and will be removed in the next major release. New
+    methods of processing Q&A tasks will be provided before this is removed.
+
     Answers a question about a prompt.
 
     Parameters:
@@ -39,12 +41,20 @@ class QaRequest(NamedTuple):
 
 
 class QaAnswer(NamedTuple):
+    """DEPRECATED: `QaAnswer` is deprecated and will be removed in the next major release. New
+    methods of processing Q&A tasks will be provided before this is removed.
+    """
+
     answer: str
     score: float
     evidence: str
 
 
 class QaResponse(NamedTuple):
+    """DEPRECATED: `QaResponse` is deprecated and will be removed in the next major release. New
+    methods of processing Q&A tasks will be provided before this is removed.
+    """
+
     answers: Sequence[QaAnswer]
 
     @staticmethod
