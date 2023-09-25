@@ -1,3 +1,4 @@
+import warnings
 from tokenizers import Tokenizer  # type: ignore
 from types import TracebackType
 from typing import (
@@ -473,7 +474,10 @@ class Client:
         return EvaluationResponse.from_json(response)
 
     def qa(self, request: QaRequest) -> QaResponse:
-        """Answers a question about documents.
+        """DEPRECATED: `qa` is deprecated and will be removed in the next major release. New
+        methods of processing Q&A tasks will be provided before this is removed.
+
+        Answers a question about documents.
 
         Parameters:
             request (QaRequest, required):
@@ -486,6 +490,11 @@ class Client:
                 )
             >>> response = client.qa(request)
         """
+        warnings.warn(
+            "qa is deprecated and will be removed in the next major release. New methods of processing Q&A tasks will be provided before this is removed.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         response = self._post_request("qa", request)
         return QaResponse.from_json(response)
 
@@ -493,7 +502,10 @@ class Client:
         self,
         request: SummarizationRequest,
     ) -> SummarizationResponse:
-        """Summarizes a document.
+        """DEPRECATED: `summarize` is deprecated and will be removed in the next major release. New
+        methods of processing Summarization tasks will be provided before this is removed.
+
+        Summarizes a document.
 
         Parameters:
             request (SummarizationRequest, required):
@@ -505,6 +517,11 @@ class Client:
                 )
             >>> response = client.summarize(request, model="luminous-extended")
         """
+        warnings.warn(
+            "summarize is deprecated and will be removed in the next major release. New methods of processing Q&A tasks will be provided before this is removed.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         response = self._post_request(
             "summarize",
             request,
@@ -981,7 +998,10 @@ class AsyncClient:
         return EvaluationResponse.from_json(response)
 
     async def qa(self, request: QaRequest) -> QaResponse:
-        """Answers a question about documents.
+        """DEPRECATED: `qa` is deprecated and will be removed in the next major release. New
+        methods of processing Q&A tasks will be provided before this is removed.
+
+        Answers a question about documents.
 
         Parameters:
             request (QaRequest, required):
@@ -994,6 +1014,11 @@ class AsyncClient:
                 )
             >>> response = await client.qa(request, model="luminous-extended")
         """
+        warnings.warn(
+            "qa is deprecated and will be removed in the next major release. New methods of processing Q&A tasks will be provided before this is removed.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         response = await self._post_request("qa", request)
         return QaResponse.from_json(response)
 
@@ -1001,7 +1026,10 @@ class AsyncClient:
         self,
         request: SummarizationRequest,
     ) -> SummarizationResponse:
-        """Summarizes a document.
+        """DEPRECATED: `summarize` is deprecated and will be removed in the next major release. New
+        methods of processing Summarization tasks will be provided before this is removed.
+
+        Summarizes a document.
 
         Parameters:
             request (SummarizationRequest, required):
@@ -1012,6 +1040,11 @@ class AsyncClient:
                 )
             >>> response = await client.summarize(request, model="luminous-extended")
         """
+        warnings.warn(
+            "summarize is deprecated and will be removed in the next major release. New methods of processing Q&A tasks will be provided before this is removed.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
         response = await self._post_request(
             "summarize",
             request,
