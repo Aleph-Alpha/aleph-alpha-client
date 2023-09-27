@@ -2,7 +2,8 @@
 
 ## 3.5.1
 
-- Fix failing serialization of Prompt-base Documents in QA requests
+- Fix failing serialization of Prompt-based Documents in QA requests.
+  Documents should also be constructible from actual Prompts and not only from sequences
 
 ## 3.5.0
 

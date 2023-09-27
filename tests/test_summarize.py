@@ -1,7 +1,6 @@
 import pytest
 from aleph_alpha_client import Document, SummarizationRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
-from aleph_alpha_client.prompt import Prompt
 
 from tests.common import (
     sync_client,
