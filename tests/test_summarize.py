@@ -29,7 +29,7 @@ async def test_can_summarize_with_async_client(async_client: AsyncClient):
 def test_summarize(sync_client: Client):
     # when posting a Summarization request
     request = SummarizationRequest(
-        document=Document.from_prompt(Prompt.from_text("Andreas likes pizza.")),
+        document=Document.from_prompt(["Andreas likes pizza."]),
     )
 
     response = sync_client.summarize(request)
