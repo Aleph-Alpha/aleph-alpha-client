@@ -1,7 +1,7 @@
 import base64
 from typing import Any, Dict, Optional, Sequence, Union
 
-from aleph_alpha_client.prompt import Image, PromptItem, Text, _to_json
+from aleph_alpha_client.prompt import Image, Prompt, PromptItem, Text, Tokens, _to_json
 
 
 class Document:
@@ -12,7 +12,7 @@ class Document:
     def __init__(
         self,
         docx: Optional[str] = None,
-        prompt: Optional[Sequence[Union[str, Image]]] = None,
+        prompt: Optional[Sequence[Union[str, Text, Image, Tokens]]] = None,
         text: Optional[str] = None,
     ):
         # We use a base_64 representation for docx documents, because we want to embed the file
@@ -43,11 +43,14 @@ class Document:
         return cls.from_docx_bytes(docx_bytes)
 
     @classmethod
-    def from_prompt(cls, prompt: Sequence[Union[str, Image]]):
+    def from_prompt(cls, prompt: Union[Prompt, Sequence[Union[str, Image]]]):
         """
         Pass a prompt that can contain multiple strings and Image prompts and prepare it to be used as a document
         """
-        return cls(prompt=prompt)
+        if isinstance(prompt, Prompt):
+            return cls(prompt=prompt.items)
+        else:
+            return cls(prompt=prompt)
 
     @classmethod
     def from_text(cls, text: str):
@@ -65,7 +68,7 @@ class Document:
         A dict if serialized to JSON is suitable as a document element
         """
 
-        def to_prompt_item(item: Union[str, Image]) -> PromptItem:
+        def to_prompt_item(item: Union[str, Image, Text, Tokens]) -> PromptItem:
             # document still uses a plain piece of text for text-prompts
             # -> convert to Text-instance
             return Text.from_text(item) if isinstance(item, str) else item
