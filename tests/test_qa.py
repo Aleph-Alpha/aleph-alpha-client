@@ -27,11 +27,11 @@ async def test_can_qa_with_async_client(async_client: AsyncClient):
 # Client
 
 
-def test_qa(sync_client: Client):
+def test_qa_from_text(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
         query="Who likes pizza?",
-        documents=[Document.from_prompt(["Andreas likes pizza."])],
+        documents=[Document.from_text("Andreas likes pizza.")],
     )
 
     response = sync_client.qa(request)
