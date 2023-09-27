@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.1
+
+- Fix failing serialization of Prompt-base Documents in QA requests
+
 ## 3.5.0
 
 - Deprecation of `qa` and `summarization` methods on `Client` and `AsyncClient`. New methods of processing these tasks will be released before they are removed in the next major version.
