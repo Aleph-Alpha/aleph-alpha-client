@@ -1,6 +1,7 @@
 import pytest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.document import Document
+from aleph_alpha_client.prompt import Prompt
 from aleph_alpha_client.qa import QaRequest
 
 from tests.common import (
@@ -37,6 +38,7 @@ def test_qa(sync_client: Client):
 
     # the response should exist and be in the form of a named tuple class
     assert len(response.answers) == 1
+    assert response.answers[0].score > 0.5
 
 
 def test_qa_no_answer_found(sync_client: Client):
@@ -52,16 +54,19 @@ def test_qa_no_answer_found(sync_client: Client):
     assert len(response.answers) == 0
 
 
-def test_text(sync_client: Client):
+def test_prompt(sync_client: Client):
     # when posting an illegal request
     request = QaRequest(
         query="Who likes pizza?",
-        documents=[Document.from_text("Andreas likes pizza.")],
+        documents=[
+            Document.from_prompt(Prompt.from_text("Andreas likes pizza."))
+            for _ in range(20)
+        ],
     )
 
     # then we expect an exception tue to a bad request response from the API
     response = sync_client.qa(request)
 
     # The response should exist in the form of a json dict
-    assert len(response.answers) == 1
+    assert len(response.answers) == 20
     assert response.answers[0].score > 0.5

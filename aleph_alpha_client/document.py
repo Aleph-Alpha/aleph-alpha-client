@@ -78,7 +78,7 @@ class Document:
         elif self.prompt is not None:
             # Serialize prompt to Document JSON format
             prompt_data = [
-                _to_json(to_prompt_item(prompt_item)) for prompt_item in self.prompt
+                _to_json(to_prompt_item(prompt_item)) for prompt_item in self.prompt.items
             ]
             return {"prompt": prompt_data}
         elif self.text is not None:
