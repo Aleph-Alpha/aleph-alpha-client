@@ -54,7 +54,6 @@ async def test_can_semantic_embed_with_async_client(
 
 @pytest.mark.parametrize("num_prompts", [1, 100, 101])
 @pytest.mark.parametrize("batch_size", [1, 32, 100])
-@pytest.mark.system_test
 async def test_batch_embed_semantic_with_async_client(
     async_client: AsyncClient, sync_client: Client, num_prompts: int, batch_size: int
 ):
