@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.0
+
+- Turned all NamedTuples into Dataclasses. Even if this is technically a breaking change
+  probably not much source code is actually affected as constructing instances still behaves
+  the same.
+
 ## 3.5.1
 
 - Fix failing serialization of Prompt-based Documents in QA requests.
