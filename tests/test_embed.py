@@ -115,13 +115,15 @@ async def test_modelname_gets_passed_along_for_async_client(httpserver: HTTPServ
         representation=SemanticRepresentation.Symmetric,
     )
     model_name = "test_model"
-    expected_body = request.to_json()
-    expected_body["model"] = model_name
+    expected_body = {
+        **request.to_json(),
+        "model": model_name,
+    }
     httpserver.expect_ordered_request(
         "/batch_semantic_embed", method="POST", data=json.dumps(expected_body)
     ).respond_with_json({"model_version": "1", "embeddings": []})
     async_client = AsyncClient(token="", host=httpserver.url_for(""), total_retries=1)
-    _resp = await async_client.batch_semantic_embed(request, model=model_name)
+    await async_client.batch_semantic_embed(request, model=model_name)
 
 
 # Client
@@ -212,10 +214,9 @@ def test_modelname_gets_passed_along_for_sync_client(httpserver: HTTPServer):
         representation=SemanticRepresentation.Symmetric,
     )
     model_name = "test_model"
-    expected_body = request.to_json()
-    expected_body["model"] = model_name
+    expected_body = {**request.to_json(), "model": model_name}
     httpserver.expect_ordered_request(
         "/batch_semantic_embed", method="POST", data=json.dumps(expected_body)
     ).respond_with_json({"model_version": "1", "embeddings": []})
     sync_client = Client(token="", host=httpserver.url_for(""), total_retries=1)
-    _resp = sync_client.batch_semantic_embed(request, model=model_name)
+    sync_client.batch_semantic_embed(request, model=model_name)

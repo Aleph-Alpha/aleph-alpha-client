@@ -8,7 +8,6 @@ from typing import (
     Dict,
     List,
     Mapping,
-    NamedTuple,
     Optional,
     Sequence,
     Tuple,
@@ -42,7 +41,8 @@ class ControlTokenOverlap(Enum):
         return self.value
 
 
-class TokenControl(NamedTuple):
+@dataclass(frozen=True)
+class TokenControl:
     """
     Used for Attention Manipulation, for a given token index, you can supply
     the factor you want to adjust the attention by.
@@ -69,7 +69,8 @@ class TokenControl(NamedTuple):
         return {"index": self.pos, "factor": self.factor}
 
 
-class Tokens(NamedTuple):
+@dataclass(frozen=True)
+class Tokens:
     """
     A list of token ids to be sent as part of a prompt.
 
@@ -108,7 +109,8 @@ class Tokens(NamedTuple):
         return Tokens(token_ids, [])
 
 
-class TextControl(NamedTuple):
+@dataclass(frozen=True)
+class TextControl:
     """
     Attention manipulation for a Text PromptItem.
 
@@ -141,7 +143,7 @@ class TextControl(NamedTuple):
     factor: float
     token_overlap: Optional[ControlTokenOverlap] = None
 
-    def to_json(self) -> Dict[str, Any]:
+    def to_json(self) -> Mapping[str, Any]:
         payload: Dict[str, Any] = {
             "start": self.start,
             "length": self.length,
@@ -152,7 +154,8 @@ class TextControl(NamedTuple):
         return payload
 
 
-class Text(NamedTuple):
+@dataclass(frozen=True)
+class Text:
     """
     A Text-prompt including optional controls for attention manipulation.
 
@@ -186,7 +189,8 @@ class Text(NamedTuple):
         return Text(text, [])
 
 
-class Cropping(NamedTuple):
+@dataclass(frozen=True)
+class Cropping:
     """
     Describes a quadratic crop of the file.
     """
@@ -196,7 +200,8 @@ class Cropping(NamedTuple):
     size: int
 
 
-class ImageControl(NamedTuple):
+@dataclass(frozen=True)
+class ImageControl:
     """
     Attention manipulation for an Image PromptItem.
 
@@ -261,7 +266,8 @@ class ImageControl(NamedTuple):
         return payload
 
 
-class Image(NamedTuple):
+@dataclass(frozen=True)
+class Image:
     """
     An image send as part of a prompt to a model. The image is represented as
     base64.
@@ -395,7 +401,7 @@ class Image(NamedTuple):
         response.raise_for_status()
         return response.content
 
-    def to_json(self) -> Dict[str, Any]:
+    def to_json(self) -> Mapping[str, Any]:
         """
         A dict if serialized to JSON is suitable as a prompt element
         """

@@ -1,9 +1,11 @@
-from typing import Any, Dict, List, Mapping, NamedTuple, Optional, Sequence
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 from aleph_alpha_client.prompt import Prompt
 
 
-class CompletionRequest(NamedTuple):
+@dataclass(frozen=True)
+class CompletionRequest:
     """
     Describes a completion request
 
@@ -212,13 +214,17 @@ class CompletionRequest(NamedTuple):
     repetition_penalties_include_completion: bool = True
     raw_completion: bool = False
 
-    def to_json(self) -> Dict[str, Any]:
+    def to_json(self) -> Mapping[str, Any]:
         payload = {k: v for k, v in self._asdict().items() if v is not None}
         payload["prompt"] = self.prompt.to_json()
         return payload
 
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
-class CompletionResult(NamedTuple):
+
+@dataclass(frozen=True)
+class CompletionResult:
     log_probs: Optional[Sequence[Mapping[str, Optional[float]]]] = None
     completion: Optional[str] = None
     completion_tokens: Optional[Sequence[str]] = None
@@ -235,8 +241,12 @@ class CompletionResult(NamedTuple):
             raw_completion=json.get("raw_completion"),
         )
 
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
-class CompletionResponse(NamedTuple):
+
+@dataclass(frozen=True)
+class CompletionResponse:
     model_version: str
     completions: Sequence[CompletionResult]
     optimized_prompt: Optional[Prompt] = None
@@ -259,3 +269,6 @@ class CompletionResponse(NamedTuple):
             **self._asdict(),
             "completions": [completion._asdict() for completion in self.completions],
         }
+
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)

@@ -1,10 +1,12 @@
-from typing import Any, Dict, Mapping, NamedTuple, Sequence
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, Mapping, Sequence
 
 from aleph_alpha_client.document import Document
 
 
-class SummarizationRequest(NamedTuple):
-    """DEPRECATED: `SummarizationRequest` is deprecated and will be removed in the next major release. New
+@dataclass(frozen=True)
+class SummarizationRequest:
+    """DEPRECATED: `SummarizationRequest` is deprecated and will be removed in the future. New
     methods of processing Summarization tasks will be provided before this is removed.
 
     Summarizes a document.
@@ -35,14 +37,16 @@ class SummarizationRequest(NamedTuple):
     document: Document
     disable_optimizations: bool = False
 
-    def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
-        payload["document"] = self.document._to_serializable_document()
-        return payload
+    def to_json(self) -> Mapping[str, Any]:
+        return {**self._asdict(), "document": self.document._to_serializable_document()}
+
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
 
-class SummarizationResponse(NamedTuple):
-    """DEPRECATED: `SummarizationResponse` is deprecated and will be removed in the next major release. New
+@dataclass(frozen=True)
+class SummarizationResponse:
+    """DEPRECATED: `SummarizationResponse` is deprecated and will be removed in the future. New
     methods of processing Summarization tasks will be provided before this is removed.
     """
 

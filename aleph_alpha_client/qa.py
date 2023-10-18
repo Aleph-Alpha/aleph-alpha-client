@@ -1,10 +1,12 @@
-from typing import Any, Dict, Mapping, NamedTuple, Optional, Sequence
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, Mapping, Optional, Sequence
 
 from aleph_alpha_client.document import Document
 
 
-class QaRequest(NamedTuple):
-    """DEPRECATED: `QaRequest` is deprecated and will be removed in the next major release. New
+@dataclass(frozen=True)
+class QaRequest:
+    """DEPRECATED: `QaRequest` is deprecated and will be removed in the future. New
     methods of processing Q&A tasks will be provided before this is removed.
 
     Answers a question about a prompt.
@@ -30,18 +32,24 @@ class QaRequest(NamedTuple):
     documents: Sequence[Document]
     max_answers: Optional[int] = None
 
-    def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
-        payload["documents"] = [
-            document._to_serializable_document() for document in self.documents
-        ]
+    def to_json(self) -> Mapping[str, Any]:
+        payload = {
+            **self._asdict(),
+            "documents": [
+                document._to_serializable_document() for document in self.documents
+            ],
+        }
         if self.max_answers is None:
             del payload["max_answers"]
         return payload
 
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
-class QaAnswer(NamedTuple):
-    """DEPRECATED: `QaAnswer` is deprecated and will be removed in the next major release. New
+
+@dataclass(frozen=True)
+class QaAnswer:
+    """DEPRECATED: `QaAnswer` is deprecated and will be removed in the future. New
     methods of processing Q&A tasks will be provided before this is removed.
     """
 
@@ -50,8 +58,9 @@ class QaAnswer(NamedTuple):
     evidence: str
 
 
-class QaResponse(NamedTuple):
-    """DEPRECATED: `QaResponse` is deprecated and will be removed in the next major release. New
+@dataclass(frozen=True)
+class QaResponse:
+    """DEPRECATED: `QaResponse` is deprecated and will be removed in the future. New
     methods of processing Q&A tasks will be provided before this is removed.
     """
 
