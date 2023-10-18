@@ -1,9 +1,10 @@
+from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import (
     Any,
     Dict,
     List,
-    NamedTuple,
+    Mapping,
     Optional,
     Sequence,
     Tuple,
@@ -11,7 +12,8 @@ from typing import (
 from aleph_alpha_client.prompt import Prompt
 
 
-class EmbeddingRequest(NamedTuple):
+@dataclass(frozen=True)
+class EmbeddingRequest:
     """
     Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -73,13 +75,18 @@ class EmbeddingRequest(NamedTuple):
     contextual_control_threshold: Optional[float] = None
     control_log_additive: Optional[bool] = True
 
-    def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
-        payload["prompt"] = self.prompt.to_json()
-        return payload
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            **self._asdict(),
+            "prompt": self.prompt.to_json(),
+        }
+
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
 
-class EmbeddingResponse(NamedTuple):
+@dataclass(frozen=True)
+class EmbeddingResponse:
     model_version: str
     embeddings: Optional[Dict[Tuple[str, str], List[float]]]
     tokens: Optional[List[str]]
@@ -120,7 +127,8 @@ class SemanticRepresentation(Enum):
     Query = "query"
 
 
-class SemanticEmbeddingRequest(NamedTuple):
+@dataclass(frozen=True)
+class SemanticEmbeddingRequest:
     """
     Embeds a text and returns vectors that can be used for downstream tasks (e.g. semantic similarity) and models (e.g. classifiers).
 
@@ -181,14 +189,19 @@ class SemanticEmbeddingRequest(NamedTuple):
     contextual_control_threshold: Optional[float] = None
     control_log_additive: Optional[bool] = True
 
-    def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
-        payload["representation"] = self.representation.value
-        payload["prompt"] = self.prompt.to_json()
-        return payload
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            **self._asdict(),
+            "representation": self.representation.value,
+            "prompt": self.prompt.to_json(),
+        }
+
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
 
-class BatchSemanticEmbeddingRequest(NamedTuple):
+@dataclass(frozen=True)
+class BatchSemanticEmbeddingRequest:
     """
     Embeds multiple multi-modal prompts and returns their embeddings in the same order as they were supplied.
 
@@ -246,17 +259,22 @@ class BatchSemanticEmbeddingRequest(NamedTuple):
     contextual_control_threshold: Optional[float] = None
     control_log_additive: Optional[bool] = True
 
-    def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
-        payload["representation"] = self.representation.value
-        payload["prompts"] = [prompt.to_json() for prompt in self.prompts]
-        return payload
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            **self._asdict(),
+            "representation": self.representation.value,
+            "prompts": [prompt.to_json() for prompt in self.prompts],
+        }
+
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
 
 EmbeddingVector = List[float]
 
 
-class SemanticEmbeddingResponse(NamedTuple):
+@dataclass(frozen=True)
+class SemanticEmbeddingResponse:
     """
     Response of a semantic embedding request
 
@@ -275,10 +293,15 @@ class SemanticEmbeddingResponse(NamedTuple):
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "SemanticEmbeddingResponse":
-        return SemanticEmbeddingResponse(**json)
+        return SemanticEmbeddingResponse(
+            model_version=json["model_version"],
+            embedding=json["embedding"],
+            message=json.get("message"),
+        )
 
 
-class BatchSemanticEmbeddingResponse(NamedTuple):
+@dataclass(frozen=True)
+class BatchSemanticEmbeddingResponse:
     """
     Response of a batch semantic embedding request
 
@@ -294,7 +317,9 @@ class BatchSemanticEmbeddingResponse(NamedTuple):
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "BatchSemanticEmbeddingResponse":
-        return BatchSemanticEmbeddingResponse(**json)
+        return BatchSemanticEmbeddingResponse(
+            model_version=json["model_version"], embeddings=json["embeddings"]
+        )
 
     @staticmethod
     def _from_model_version_and_embeddings(

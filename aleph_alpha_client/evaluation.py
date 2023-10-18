@@ -1,13 +1,15 @@
+from dataclasses import dataclass, asdict
 from typing import (
     Any,
     Dict,
-    NamedTuple,
+    Mapping,
     Optional,
 )
 from aleph_alpha_client.prompt import Prompt
 
 
-class EvaluationRequest(NamedTuple):
+@dataclass(frozen=True)
+class EvaluationRequest:
     """
     Evaluates the model's likelihood to produce a completion given a prompt.
 
@@ -39,13 +41,15 @@ class EvaluationRequest(NamedTuple):
     contextual_control_threshold: Optional[float] = None
     control_log_additive: Optional[bool] = True
 
-    def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
-        payload["prompt"] = self.prompt.to_json()
-        return payload
+    def to_json(self) -> Mapping[str, Any]:
+        return {**self._asdict(), "prompt": self.prompt.to_json()}
+
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
 
-class EvaluationResponse(NamedTuple):
+@dataclass(frozen=True)
+class EvaluationResponse:
     model_version: str
     message: Optional[str]
     result: Dict[str, Any]

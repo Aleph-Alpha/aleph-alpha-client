@@ -1,7 +1,9 @@
-from typing import Any, Dict, List, NamedTuple, Optional, Sequence
+from dataclasses import dataclass, asdict
+from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 
-class DetokenizationRequest(NamedTuple):
+@dataclass(frozen=True)
+class DetokenizationRequest:
     """Describes a detokenization request.
 
     Parameters
@@ -14,12 +16,16 @@ class DetokenizationRequest(NamedTuple):
 
     token_ids: Sequence[int]
 
-    def to_json(self) -> Dict[str, Any]:
+    def to_json(self) -> Mapping[str, Any]:
         payload = self._asdict()
         return payload
 
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
-class DetokenizationResponse(NamedTuple):
+
+@dataclass(frozen=True)
+class DetokenizationResponse:
     result: str
 
     @staticmethod

@@ -1,7 +1,9 @@
-from typing import Any, Dict, NamedTuple, Optional, Sequence
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, Mapping, Optional, Sequence
 
 
-class TokenizationRequest(NamedTuple):
+@dataclass(frozen=True)
+class TokenizationRequest:
     """Describes a tokenization request.
 
     Parameters
@@ -25,15 +27,20 @@ class TokenizationRequest(NamedTuple):
     tokens: bool
     token_ids: bool
 
-    def to_json(self) -> Dict[str, Any]:
-        payload = self._asdict()
-        return payload
+    def to_json(self) -> Mapping[str, Any]:
+        return self._asdict()
+
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
 
 
-class TokenizationResponse(NamedTuple):
+@dataclass(frozen=True)
+class TokenizationResponse:
     tokens: Optional[Sequence[str]] = None
     token_ids: Optional[Sequence[int]] = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "TokenizationResponse":
-        return TokenizationResponse(**json)
+        return TokenizationResponse(
+            tokens=json.get("tokens"), token_ids=json.get("token_ids")
+        )

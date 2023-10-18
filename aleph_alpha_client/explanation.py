@@ -1,10 +1,10 @@
+from dataclasses import dataclass
 from enum import Enum
 from typing import (
     Any,
     List,
     Dict,
     Mapping,
-    NamedTuple,
     Optional,
     Union,
 )
@@ -34,7 +34,8 @@ class ExplanationPostprocessing(Enum):
         return self.value
 
 
-class CustomGranularity(NamedTuple):
+@dataclass(frozen=True)
+class CustomGranularity:
     """
     Allows for passing a custom delimiter to determine the granularity to
     to explain the prompt by. The text of the prompt will be split by the
@@ -58,7 +59,7 @@ class PromptGranularity(Enum):
     Sentence = "sentence"
     Paragraph = "paragraph"
 
-    def to_json(self):
+    def to_json(self) -> Mapping[str, Any]:
         return {"type": self.value}
 
 
@@ -90,7 +91,8 @@ class TargetGranularity(Enum):
         return self.value
 
 
-class ExplanationRequest(NamedTuple):
+@dataclass(frozen=True)
+class ExplanationRequest:
     """
     Describes an Explanation request you want to make agains the API.
 
@@ -177,7 +179,7 @@ class ExplanationRequest(NamedTuple):
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None
 
-    def to_json(self) -> Dict[str, Any]:
+    def to_json(self) -> Mapping[str, Any]:
         payload: Dict[str, Any] = {
             "prompt": self.prompt.to_json(),
             "target": self.target,
@@ -206,7 +208,8 @@ class ExplanationRequest(NamedTuple):
         return payload
 
 
-class TextScore(NamedTuple):
+@dataclass(frozen=True)
+class TextScore:
     start: int
     length: int
     score: float
@@ -220,7 +223,8 @@ class TextScore(NamedTuple):
         )
 
 
-class TextScoreWithRaw(NamedTuple):
+@dataclass(frozen=True)
+class TextScoreWithRaw:
     start: int
     length: int
     score: float
@@ -236,7 +240,8 @@ class TextScoreWithRaw(NamedTuple):
         )
 
 
-class ImageScore(NamedTuple):
+@dataclass(frozen=True)
+class ImageScore:
     left: float
     top: float
     width: float
@@ -254,7 +259,8 @@ class ImageScore(NamedTuple):
         )
 
 
-class TargetScore(NamedTuple):
+@dataclass(frozen=True)
+class TargetScore:
     start: int
     length: int
     score: float
@@ -268,7 +274,8 @@ class TargetScore(NamedTuple):
         )
 
 
-class TargetScoreWithRaw(NamedTuple):
+@dataclass(frozen=True)
+class TargetScoreWithRaw:
     start: int
     length: int
     score: float
@@ -284,7 +291,8 @@ class TargetScoreWithRaw(NamedTuple):
         )
 
 
-class TokenScore(NamedTuple):
+@dataclass(frozen=True)
+class TokenScore:
     score: float
 
     @staticmethod
@@ -294,7 +302,8 @@ class TokenScore(NamedTuple):
         )
 
 
-class ImagePromptItemExplanation(NamedTuple):
+@dataclass(frozen=True)
+class ImagePromptItemExplanation:
     """
     Explains the importance of an image prompt item.
     The amount of items in the "scores" array depends on the granularity setting.
@@ -328,7 +337,8 @@ class ImagePromptItemExplanation(NamedTuple):
         )
 
 
-class TextPromptItemExplanation(NamedTuple):
+@dataclass(frozen=True)
+class TextPromptItemExplanation:
     """
     Explains the importance of a text prompt item.
     The amount of items in the "scores" array depends on the granularity setting.
@@ -355,7 +365,8 @@ class TextPromptItemExplanation(NamedTuple):
         )
 
 
-class TargetPromptItemExplanation(NamedTuple):
+@dataclass(frozen=True)
+class TargetPromptItemExplanation:
     """
     Explains the importance of text in the target string that came before the currently
     to-be-explained target token. The amount of items in the "scores" array depends on the
@@ -383,7 +394,8 @@ class TargetPromptItemExplanation(NamedTuple):
         )
 
 
-class TokenPromptItemExplanation(NamedTuple):
+@dataclass(frozen=True)
+class TokenPromptItemExplanation:
     """Explains the importance of a request prompt item of type "token_ids".
     Will contain one floating point importance value for each token in the same order as in the original prompt.
     """
@@ -397,7 +409,8 @@ class TokenPromptItemExplanation(NamedTuple):
         )
 
 
-class Explanation(NamedTuple):
+@dataclass(frozen=True)
+class Explanation:
     """
     Explanations for a given portion of the target.
 
@@ -482,7 +495,8 @@ class Explanation(NamedTuple):
         )
 
 
-class ExplanationResponse(NamedTuple):
+@dataclass(frozen=True)
+class ExplanationResponse:
     """
     The top-level response data structure that will be returned from an explanation request.
 

@@ -214,7 +214,7 @@ class Client:
     def _build_json_body(
         self, request: AnyRequest, model: Optional[str]
     ) -> Mapping[str, Any]:
-        json_body = request.to_json()
+        json_body = dict(request.to_json())
 
         if model is not None:
             json_body["model"] = model
@@ -721,7 +721,7 @@ class AsyncClient:
     def _build_json_body(
         self, request: AnyRequest, model: Optional[str]
     ) -> Mapping[str, Any]:
-        json_body = request.to_json()
+        json_body = dict(request.to_json())
 
         if model is not None:
             json_body["model"] = model
