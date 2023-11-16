@@ -130,6 +130,9 @@ class Client:
             Setting this to True, will signal to the API that you intend to be nice to other users
             by de-prioritizing your request below concurrent ones.
 
+        verify_ssl(bool, optional, default True)
+            Setting this to False will disable checking for SSL when doing requests.
+
     Example usage:
         >>> request = CompletionRequest(
                 prompt=Prompt.from_text(f"Request"), maximum_tokens=64
@@ -604,6 +607,9 @@ class AsyncClient:
         nice(bool, required, default False):
             Setting this to True, will signal to the API that you intend to be nice to other users
             by de-prioritizing your request below concurrent ones.
+
+        verify_ssl(bool, optional, default True)
+            Setting this to False will disable checking for SSL when doing requests.
 
     Example usage:
         >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
