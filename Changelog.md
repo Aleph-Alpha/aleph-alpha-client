@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.1.0
+
+- Added `verify_ssl` flag so you can disable SSL checking for your sessions.
+
 ## 4.0.0
 
 - Turned all NamedTuples into Dataclasses. Even if this is technically a breaking change
