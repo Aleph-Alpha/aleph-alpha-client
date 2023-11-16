@@ -146,6 +146,7 @@ class Client:
         request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT,
         total_retries: int = 8,
         nice: bool = False,
+        verify_ssl = True,
     ) -> None:
         if host[-1] != "/":
             host += "/"
@@ -164,6 +165,7 @@ class Client:
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self.session = requests.Session()
+        self.session.verify = verify_ssl
         self.session.headers = CaseInsensitiveDict(
             {
                 "Authorization": "Bearer " + self.token,
@@ -617,6 +619,7 @@ class AsyncClient:
         request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT,
         total_retries: int = 8,
         nice: bool = False,
+        verify_ssl = True,
     ) -> None:
         if host[-1] != "/":
             host += "/"
@@ -632,6 +635,7 @@ class AsyncClient:
             start_timeout=0.25,
             statuses=set(RETRY_STATUS_CODES),
         )
+        connector = aiohttp.TCPConnector(ssl=verify_ssl)
         self.session = RetryClient(
             trust_env=True,  # same behaviour as requests/(Sync)Client wrt. http_proxy
             raise_for_status=False,
@@ -642,6 +646,7 @@ class AsyncClient:
                 "User-Agent": "Aleph-Alpha-Python-Client-"
                 + aleph_alpha_client.__version__,
             },
+            connector=connector
         )
 
     async def close(self):
