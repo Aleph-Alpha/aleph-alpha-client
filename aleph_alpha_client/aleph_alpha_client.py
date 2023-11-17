@@ -641,7 +641,7 @@ class AsyncClient:
             start_timeout=0.25,
             statuses=set(RETRY_STATUS_CODES),
         )
-        connector = aiohttp.TCPConnector(ssl=verify_ssl)
+        connector = aiohttp.TCPConnector(verify_ssl=verify_ssl)
         self.session = RetryClient(
             trust_env=True,  # same behaviour as requests/(Sync)Client wrt. http_proxy
             raise_for_status=False,
