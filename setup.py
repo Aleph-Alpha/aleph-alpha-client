@@ -44,7 +44,7 @@ setup(
     install_requires=[
         "requests >= 2.28",
         "urllib3 >= 1.26",
-        "aiohttp >= 3.8.3",
+        "aiohttp >= 3.8.6",
         "aiodns >= 3.0.0",
         "aiohttp-retry >= 2.8.3",
         "tokenizers >= 0.13.2",
