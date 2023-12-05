@@ -177,6 +177,7 @@ def test_num_tokens_generated_with_best_of(sync_client: Client, model_name: str)
 
     response = sync_client.complete(request, model=model_name)
     completion_result = response.completions[0]
+    assert completion_result.completion_tokens is not None
     number_tokens_completion = len(completion_result.completion_tokens)
 
     assert response.num_tokens_generated == best_of * number_tokens_completion
