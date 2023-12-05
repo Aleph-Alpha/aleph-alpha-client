@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.0.0
+
+- Added `num_tokens_prompt_total` and `num_tokens_generated` to `CompletionResponse`. This is a
+  breaking change as these were introduced as mandatory parameters rather than optional ones.
+  HTTP API version 1.14.0 or higher is required.
+
 ## 4.1.0
 
 - Added `verify_ssl` flag so you can disable SSL checking for your sessions.
