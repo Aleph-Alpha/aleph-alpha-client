@@ -277,7 +277,6 @@ class CompletionResponse:
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "CompletionResponse":
         optimized_prompt_json = json.get("optimized_prompt")
-        print(json)
         return CompletionResponse(
             model_version=json["model_version"],
             completions=[
