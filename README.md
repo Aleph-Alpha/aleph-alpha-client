@@ -40,7 +40,7 @@ async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
         prompt=Prompt.from_text("Provide a short description of AI:"),
         maximum_tokens=64,
     )
-    response = await client.complete(request, model="luminous-base") 
+    response = await client.complete(request, model="luminous-base")
     print(response.completions[0].completion)
 ```
 
@@ -65,6 +65,27 @@ pip install aleph-alpha-client
 ```
 
 Get started using the client by first [creating an account](https://app.aleph-alpha.com/signup). Afterwards head over to [your profile](https://app.aleph-alpha.com/profile) to create an API token. Read more about how you can manage your API tokens [here](https://docs.aleph-alpha.com/docs/account).
+
+## Development
+
+For local development, start by creating a Python virtual environment as follows:
+
+```
+python3 -m venv venv
+. ./venv/bin/activate
+```
+
+Next, install the `test` and `dev` dependencies:
+
+```
+pip install -e ".[test,dev]"
+```
+
+Now you should be able to ...
+
+* run all the tests using `pytest` or, `pytest -k <test_name>` to run a specific test
+* typecheck the code and tests using `mypy aleph_alpha_client` resp. `mypy tests`
+* format the code using `black .`
 
 ## Links
 

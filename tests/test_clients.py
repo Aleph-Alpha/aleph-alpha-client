@@ -33,7 +33,12 @@ def test_nice_flag_on_client(httpserver: HTTPServer):
     ).respond_with_json(
         CompletionResponse(
             "model_version",
-            [CompletionResult(log_probs=[], completion="foo", )],
+            [
+                CompletionResult(
+                    log_probs=[],
+                    completion="foo",
+                )
+            ],
             num_tokens_prompt_total=2,
             num_tokens_generated=1,
         ).to_json()
