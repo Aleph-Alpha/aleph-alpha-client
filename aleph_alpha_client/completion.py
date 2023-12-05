@@ -255,6 +255,14 @@ class CompletionResponse:
             Model name and version (if any) of the used model for inference.
         completions:
             List of completions; may contain only one entry if no more are requested (see parameter n).
+        num_tokens_prompt_total:
+            Number of tokens combined across all completion tasks.
+            In particular, if you set best_of or n to a number larger than 1 then we report the
+            combined prompt token count for all best_of or n tasks.
+        num_tokens_generated:
+            Number of tokens combined across all completion tasks.
+            If multiple completions are returned or best_of is set to a value greater than 1 then
+            this value contains the combined generated token count.
         optimized_prompt:
             Describes prompt after optimizations. This field is only returned if the flag
             `disable_optimizations` flag is not set and the prompt has actually changed.
@@ -263,6 +271,7 @@ class CompletionResponse:
     model_version: str
     completions: Sequence[CompletionResult]
     num_tokens_prompt_total: int
+    num_tokens_generated: int
     optimized_prompt: Optional[Prompt] = None
 
     @staticmethod
@@ -274,10 +283,11 @@ class CompletionResponse:
             completions=[
                 CompletionResult.from_json(item) for item in json["completions"]
             ],
+            num_tokens_prompt_total=json["num_tokens_prompt_total"],
+            num_tokens_generated=json["num_tokens_generated"],
             optimized_prompt=Prompt.from_json(optimized_prompt_json)
             if optimized_prompt_json
             else None,
-            num_tokens_prompt_total=json["num_tokens_prompt_total"],
         )
 
     def to_json(self) -> Mapping[str, Any]:
