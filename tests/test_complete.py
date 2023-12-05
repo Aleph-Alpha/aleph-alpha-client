@@ -127,3 +127,16 @@ def test_complete_with_echo(sync_client: Client, model_name: str, prompt_image: 
     assert len(completion_result.completion_tokens) > 0
     assert completion_result.log_probs is not None
     assert len(completion_result.log_probs) > 0
+
+@pytest.mark.system_test
+def test_num_tokes_prompt_total_with_best_of(sync_client: Client, model_name: str):
+    tokens = [49222, 2998] # Hello world
+    best_of = 2
+    request = CompletionRequest(
+        prompt = Prompt.from_tokens(tokens),
+        best_of = best_of,
+        maximum_tokens = 1,
+    )
+
+    response = sync_client.complete(request, model=model_name)
+    assert response.num_tokens_prompt_total == len(tokens) * best_of

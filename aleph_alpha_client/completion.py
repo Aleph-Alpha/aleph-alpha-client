@@ -262,11 +262,13 @@ class CompletionResponse:
 
     model_version: str
     completions: Sequence[CompletionResult]
+    num_tokens_prompt_total: int
     optimized_prompt: Optional[Prompt] = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "CompletionResponse":
         optimized_prompt_json = json.get("optimized_prompt")
+        print(json)
         return CompletionResponse(
             model_version=json["model_version"],
             completions=[
@@ -275,6 +277,7 @@ class CompletionResponse:
             optimized_prompt=Prompt.from_json(optimized_prompt_json)
             if optimized_prompt_json
             else None,
+            num_tokens_prompt_total=json["num_tokens_prompt_total"],
         )
 
     def to_json(self) -> Mapping[str, Any]:
