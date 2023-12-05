@@ -149,7 +149,7 @@ class Client:
         request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT,
         total_retries: int = 8,
         nice: bool = False,
-        verify_ssl = True,
+        verify_ssl=True,
     ) -> None:
         if host[-1] != "/":
             host += "/"
@@ -625,7 +625,7 @@ class AsyncClient:
         request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT,
         total_retries: int = 8,
         nice: bool = False,
-        verify_ssl = True,
+        verify_ssl=True,
     ) -> None:
         if host[-1] != "/":
             host += "/"
@@ -652,7 +652,7 @@ class AsyncClient:
                 "User-Agent": "Aleph-Alpha-Python-Client-"
                 + aleph_alpha_client.__version__,
             },
-            connector=connector
+            connector=connector,
         )
 
     async def close(self):

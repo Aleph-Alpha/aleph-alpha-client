@@ -111,7 +111,13 @@ def expect_retryable_error(
 
 def expect_valid_completion(httpserver: HTTPServer) -> None:
     httpserver.expect_ordered_request("/complete").respond_with_json(
-        {"model_version": "1", "completions": [], "num_tokens_prompt_total": 0, "num_tokens_generated": 0})
+        {
+            "model_version": "1",
+            "completions": [],
+            "num_tokens_prompt_total": 0,
+            "num_tokens_generated": 0,
+        }
+    )
 
 
 def expect_valid_version(httpserver: HTTPServer) -> None:

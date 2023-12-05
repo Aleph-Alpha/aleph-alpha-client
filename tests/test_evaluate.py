@@ -30,7 +30,6 @@ async def test_can_evaluate_with_async_client(
 
 @pytest.mark.system_test
 def test_evaluate(sync_client: Client, model_name: str):
-
     request = EvaluationRequest(
         prompt=Prompt.from_text("hello"), completion_expected="world"
     )
