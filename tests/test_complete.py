@@ -141,29 +141,6 @@ def test_num_tokens_prompt_total_with_best_of(sync_client: Client, model_name: s
     response = sync_client.complete(request, model=model_name)
     assert response.num_tokens_prompt_total == len(tokens) * best_of
 
-"""
-curl https://api.aleph-alpha.com/complete -X POST -H "Authorization: Bearer $AA_API_TOKEN" -H "Content-Type: application/json"
-    -d '{ "model": "luminous-base", "prompt": [{ "type": "text", "data": "Hello world"}], "maximum_tokens": 1, "n": 2, "tokens": true }'
-{"completions":
-    [
-      {
-            "completion":"!",
-            "raw_completion":"!",
-            "completion_tokens":["!"],
-            "finish_reason":"maximum_tokens"
-        },
-        {
-            "completion":"!",
-            "raw_completion":"!",
-            "completion_tokens":["!"],
-            "finish_reason":"maximum_tokens"
-        }
-    ],
-    "model_version":"2022-04",
-    "num_tokens_prompt_total":4,
-    "num_tokens_generated":2}
-"""
-
 @pytest.mark.system_test
 def test_num_tokens_generated_with_best_of(sync_client: Client, model_name: str):
     hello_world = [49222, 2998] # Hello world
