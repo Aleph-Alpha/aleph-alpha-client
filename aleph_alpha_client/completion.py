@@ -247,6 +247,19 @@ class CompletionResult:
 
 @dataclass(frozen=True)
 class CompletionResponse:
+    """
+    Describes a completion response
+
+    Parameters:
+        model_version:
+            Model name and version (if any) of the used model for inference.
+        completions:
+            List of completions; may contain only one entry if no more are requested (see parameter n).
+        optimized_prompt:
+            Describes prompt after optimizations. This field is only returned if the flag
+            `disable_optimizations` flag is not set and the prompt has actually changed.
+    """
+
     model_version: str
     completions: Sequence[CompletionResult]
     optimized_prompt: Optional[Prompt] = None
