@@ -16,6 +16,7 @@ from aleph_alpha_client import (
     Text,
     CustomGranularity,
     TargetGranularity,
+    PromptGranularity,
     ExplanationPostprocessing,
     ImageScore,
 )
@@ -202,3 +203,31 @@ def test_explanation_with_text_from_request(sync_client: Client, model_name: str
             for raw_text_score in explanation.explanations[1].items[2].scores
         ]
     )
+
+
+# Regression test for out-of-memory errors that could be triggered on the workers with the explanation job shown below
+@pytest.mark.system_test
+def test_explanation_with_token_granularities_oom_regression(sync_client: Client):
+    prompt_text = """### Instruction:
+Answer the question using the Source. If there's no answer, say "NO_ANSWER_IN_TEXT".
+
+### Input:
+Source: The Battle of Waterloo was fought on Sunday 18 June 1815, near Waterloo (at that time in the United Kingdom of the Netherlands, now in Belgium). A French army under the command of Napoleon was defeated by two of the armies of the Seventh Coalition. One of these was a British-led coalition consisting of units from the United Kingdom, the Netherlands, Hanover, Brunswick, and Nassau, under the command of the Duke of Wellington (referred to by many authors as the Anglo-allied army or Wellington's army). The other was composed of three corps of the Prussian army under the command of Field Marshal von Blücher (the fourth corps of this army fought at the Battle of Wavre on the same day). The battle marked the end of the Napoleonic Wars. The battle was contemporaneously known as the Battle of Mont Saint-Jean (France) or La Belle Alliance ("the Beautiful Alliance" – Prussia).
+Question: Did India win or lost the Battle of Waterloo?
+
+### Response:"""
+    target_text = " India won the Battle of Waterloo."
+    model_name = "luminous-base-control"
+    request = ExplanationRequest(
+        prompt=Prompt([Text(prompt_text, controls=[])]),
+        target=target_text,
+        prompt_granularity=PromptGranularity.Token,
+        target_granularity=TargetGranularity.Token,
+        control_factor=0.1,
+        control_log_additive=True,
+        postprocessing=None,
+        control_token_overlap=ControlTokenOverlap.Partial,
+        contextual_control_threshold=None,
+    )
+    explanation = sync_client.explain(request, model=model_name)
+    assert len(explanation.explanations) == 7
