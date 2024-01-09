@@ -88,6 +88,7 @@ class EmbeddingRequest:
 @dataclass(frozen=True)
 class EmbeddingResponse:
     model_version: str
+    num_tokens_prompt_total: int
     embeddings: Optional[Dict[Tuple[str, str], List[float]]]
     tokens: Optional[List[str]]
     message: Optional[str] = None
@@ -103,6 +104,7 @@ class EmbeddingResponse:
             },
             tokens=json.get("tokens"),
             message=json.get("message"),
+            num_tokens_prompt_total=json["num_tokens_prompt_total"],
         )
 
 
@@ -289,6 +291,7 @@ class SemanticEmbeddingResponse:
 
     model_version: str
     embedding: EmbeddingVector
+    num_tokens_prompt_total: int
     message: Optional[str] = None
 
     @staticmethod
@@ -297,6 +300,7 @@ class SemanticEmbeddingResponse:
             model_version=json["model_version"],
             embedding=json["embedding"],
             message=json.get("message"),
+            num_tokens_prompt_total=json["num_tokens_prompt_total"],
         )
 
 
@@ -314,17 +318,20 @@ class BatchSemanticEmbeddingResponse:
 
     model_version: str
     embeddings: Sequence[EmbeddingVector]
+    num_tokens_prompt_total: int
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "BatchSemanticEmbeddingResponse":
         return BatchSemanticEmbeddingResponse(
-            model_version=json["model_version"], embeddings=json["embeddings"]
+            model_version=json["model_version"],
+            embeddings=json["embeddings"],
+            num_tokens_prompt_total=json["num_tokens_prompt_total"],
         )
 
     @staticmethod
     def _from_model_version_and_embeddings(
-        model_version: str, embeddings: Sequence[EmbeddingVector]
+        model_version: str, embeddings: Sequence[EmbeddingVector], num_tokens_prompt_total: int
     ) -> "BatchSemanticEmbeddingResponse":
         return BatchSemanticEmbeddingResponse(
-            model_version=model_version, embeddings=embeddings
+            model_version=model_version, embeddings=embeddings, num_tokens_prompt_total=num_tokens_prompt_total
         )
