@@ -434,6 +434,7 @@ class Client:
 
         responses: List[EmbeddingVector] = []
         model_version = ""
+        num_tokens_prompt_total = 0
         # The API currently only supports batch semantic embedding requests with up to 100
         # prompts per batch. As a convenience for users, this function chunks larger requests.
         for batch_request in _generate_semantic_embedding_batches(request):
@@ -445,9 +446,10 @@ class Client:
             response = BatchSemanticEmbeddingResponse.from_json(raw_response)
             model_version = response.model_version
             responses.extend(response.embeddings)
+            num_tokens_prompt_total += response.num_tokens_prompt_total
 
-        return BatchSemanticEmbeddingResponse._from_model_version_and_embeddings(
-            model_version, responses
+        return BatchSemanticEmbeddingResponse(
+            model_version=model_version, embeddings=responses, num_tokens_prompt_total=num_tokens_prompt_total
         )
 
     def evaluate(
@@ -971,13 +973,15 @@ class AsyncClient:
             _generate_semantic_embedding_batches(request, batch_size),
             progress_bar,
         )
+        num_tokens_prompt_total = 0
         for result in results:
             resp = BatchSemanticEmbeddingResponse.from_json(result)
             model_version = resp.model_version
             responses.extend(resp.embeddings)
+            num_tokens_prompt_total += resp.num_tokens_prompt_total
 
-        return BatchSemanticEmbeddingResponse._from_model_version_and_embeddings(
-            model_version, responses
+        return BatchSemanticEmbeddingResponse(
+            model_version=model_version, embeddings=responses, num_tokens_prompt_total=num_tokens_prompt_total
         )
 
     async def evaluate(
