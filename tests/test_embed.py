@@ -24,7 +24,7 @@ from tests.common import (
 
 @pytest.mark.system_test
 async def test_can_embed_with_async_client(async_client: AsyncClient, model_name: str):
-    request = request = EmbeddingRequest(
+    request = EmbeddingRequest(
         prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
     )
 
