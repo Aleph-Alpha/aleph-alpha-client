@@ -449,7 +449,9 @@ class Client:
             num_tokens_prompt_total += response.num_tokens_prompt_total
 
         return BatchSemanticEmbeddingResponse(
-            model_version=model_version, embeddings=responses, num_tokens_prompt_total=num_tokens_prompt_total
+            model_version=model_version,
+            embeddings=responses,
+            num_tokens_prompt_total=num_tokens_prompt_total,
         )
 
     def evaluate(
@@ -981,7 +983,9 @@ class AsyncClient:
             num_tokens_prompt_total += resp.num_tokens_prompt_total
 
         return BatchSemanticEmbeddingResponse(
-            model_version=model_version, embeddings=responses, num_tokens_prompt_total=num_tokens_prompt_total
+            model_version=model_version,
+            embeddings=responses,
+            num_tokens_prompt_total=num_tokens_prompt_total,
         )
 
     async def evaluate(
