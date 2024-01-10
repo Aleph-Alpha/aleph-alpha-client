@@ -330,8 +330,12 @@ class BatchSemanticEmbeddingResponse:
 
     @staticmethod
     def _from_model_version_and_embeddings(
-        model_version: str, embeddings: Sequence[EmbeddingVector], num_tokens_prompt_total: int
+        model_version: str,
+        embeddings: Sequence[EmbeddingVector],
+        num_tokens_prompt_total: int,
     ) -> "BatchSemanticEmbeddingResponse":
         return BatchSemanticEmbeddingResponse(
-            model_version=model_version, embeddings=embeddings, num_tokens_prompt_total=num_tokens_prompt_total
+            model_version=model_version,
+            embeddings=embeddings,
+            num_tokens_prompt_total=num_tokens_prompt_total,
         )

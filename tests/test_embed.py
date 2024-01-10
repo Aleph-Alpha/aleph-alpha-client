@@ -34,7 +34,7 @@ async def test_can_embed_with_async_client(async_client: AsyncClient, model_name
         request.pooling
     ) * len(request.layers)
     assert response.tokens is not None
-    assert response.num_tokens_prompt_total == 2
+    assert response.num_tokens_prompt_total >= 1
 
 
 @pytest.mark.system_test
@@ -51,7 +51,7 @@ async def test_can_semantic_embed_with_async_client(
     assert response.model_version is not None
     assert response.embedding
     assert len(response.embedding) == 128
-    assert response.num_tokens_prompt_total == 1
+    assert response.num_tokens_prompt_total >= 1
 
 
 @pytest.mark.parametrize("num_prompts", [1, 100, 101])
@@ -60,21 +60,21 @@ async def test_batch_embed_semantic_with_async_client(
     async_client: AsyncClient, sync_client: Client, num_prompts: int, batch_size: int
 ):
     words = ["car", "elephant", "kitchen sink", "rubber", "sun"]
-    r = random.Random(42)
+    r = random.Random(4082)
     prompts = list([Prompt.from_text(words[r.randint(0, 4)]) for i in range(num_prompts)])
-    tokens = [async_client.tokenize(TokenizationRequest(prompt=p.items[0].text, tokens=True, token_ids=False), "luminous-base") for p in prompts]
 
     request = BatchSemanticEmbeddingRequest(
         prompts=prompts,
         representation=SemanticRepresentation.Symmetric,
         compress_to_size=128,
     )
-
     result = await async_client.batch_semantic_embed(
-        request=request, num_concurrent_requests=10, batch_size=batch_size
+        request=request, num_concurrent_requests=10, batch_size=batch_size, model="luminous-base"
     )
-    num_tokens = sum([len((await t).tokens) for t in tokens])
-    assert result.num_tokens_prompt_total == num_tokens
+
+    # We have no control over the exact tokenizer used in the backend, so we cannot know the exact
+    # number of tokens. We do know, however, that there must be at least one token per prompt.
+    assert result.num_tokens_prompt_total >= num_prompts
 
     assert len(result.embeddings) == num_prompts
     # To make sure that the ordering of responses is preserved,
@@ -148,7 +148,7 @@ def test_embed(sync_client: Client, model_name: str):
         request.layers
     )
     assert result.tokens is None
-    assert result.num_tokens_prompt_total == 1
+    assert result.num_tokens_prompt_total >= 1
 
 
 @pytest.mark.system_test
@@ -185,7 +185,7 @@ def test_embed_with_tokens(sync_client: Client, model_name: str):
         request.layers
     )
     assert result.tokens is not None
-    assert result.num_tokens_prompt_total == 2
+    assert result.num_tokens_prompt_total >= 1
 
 
 @pytest.mark.system_test
@@ -201,7 +201,7 @@ def test_embed_semantic(sync_client: Client):
     assert result.model_version is not None
     assert result.embedding
     assert len(result.embedding) == 128
-    assert result.num_tokens_prompt_total == 1
+    assert result.num_tokens_prompt_total >= 1
 
 
 @pytest.mark.parametrize("num_prompts", [1, 100, 101, 200, 1000])
