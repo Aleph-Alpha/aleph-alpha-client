@@ -60,7 +60,8 @@ async def test_batch_embed_semantic_with_async_client(
     async_client: AsyncClient, sync_client: Client, num_prompts: int, batch_size: int
 ):
     words = ["car", "elephant", "kitchen sink", "rubber", "sun"]
-    prompts = [Prompt.from_text(words[random.randint(0, 4)]) for i in range(num_prompts)]
+    r = random.Random(42)
+    prompts = list([Prompt.from_text(words[r.randint(0, 4)]) for i in range(num_prompts)])
     tokens = [async_client.tokenize(TokenizationRequest(prompt=p.items[0].text, tokens=True, token_ids=False), "luminous-base") for p in prompts]
 
     request = BatchSemanticEmbeddingRequest(
