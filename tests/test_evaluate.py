@@ -23,6 +23,7 @@ async def test_can_evaluate_with_async_client(
     response = await async_client.evaluate(request, model=model_name)
     assert response.model_version is not None
     assert response.result is not None
+    assert response.num_tokens_prompt_total >= 1
 
 
 # Client
@@ -38,3 +39,4 @@ def test_evaluate(sync_client: Client, model_name: str):
 
     assert result.model_version is not None
     assert result.result is not None
+    assert result.num_tokens_prompt_total >= 1
