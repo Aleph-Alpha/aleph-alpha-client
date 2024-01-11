@@ -9,7 +9,7 @@ from aleph_alpha_client.aleph_alpha_client import (
     Client,
     _raise_for_status,
 )
-from aleph_alpha_client.completion import CompletionRequest
+from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
 from aleph_alpha_client.prompt import Prompt
 import pytest
 from pytest_httpserver import HTTPServer
@@ -111,12 +111,7 @@ def expect_retryable_error(
 
 def expect_valid_completion(httpserver: HTTPServer) -> None:
     httpserver.expect_ordered_request("/complete").respond_with_json(
-        {
-            "model_version": "1",
-            "completions": [],
-            "num_tokens_prompt_total": 0,
-            "num_tokens_generated": 0,
-        }
+        CompletionResponse(model_version="1", completions=[], num_tokens_prompt_total=0, num_tokens_generated=0).to_json()
     )
 
 

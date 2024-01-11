@@ -5,12 +5,12 @@ from typing import Sequence
 import pytest
 from pytest_httpserver import HTTPServer
 
-from aleph_alpha_client import EmbeddingRequest, TokenizationRequest
+from aleph_alpha_client import EmbeddingRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.embedding import (
     BatchSemanticEmbeddingRequest,
     SemanticEmbeddingRequest,
-    SemanticRepresentation,
+    SemanticRepresentation, BatchSemanticEmbeddingResponse,
 )
 from aleph_alpha_client.prompt import Prompt
 from tests.common import (
@@ -127,7 +127,7 @@ async def test_modelname_gets_passed_along_for_async_client(httpserver: HTTPServ
     }
     httpserver.expect_ordered_request(
         "/batch_semantic_embed", method="POST", data=json.dumps(expected_body)
-    ).respond_with_json({"model_version": "1", "embeddings": []})
+    ).respond_with_json(BatchSemanticEmbeddingResponse(model_version="1", embeddings=[], num_tokens_prompt_total=1).to_json())
     async_client = AsyncClient(token="", host=httpserver.url_for(""), total_retries=1)
     await async_client.batch_semantic_embed(request, model=model_name)
 
@@ -226,6 +226,6 @@ def test_modelname_gets_passed_along_for_sync_client(httpserver: HTTPServer):
     expected_body = {**request.to_json(), "model": model_name}
     httpserver.expect_ordered_request(
         "/batch_semantic_embed", method="POST", data=json.dumps(expected_body)
-    ).respond_with_json({"model_version": "1", "embeddings": []})
+    ).respond_with_json(BatchSemanticEmbeddingResponse(model_version="1", embeddings=[], num_tokens_prompt_total=1).to_json())
     sync_client = Client(token="", host=httpserver.url_for(""), total_retries=1)
     sync_client.batch_semantic_embed(request, model=model_name)

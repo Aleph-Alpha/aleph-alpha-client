@@ -328,6 +328,12 @@ class BatchSemanticEmbeddingResponse:
             num_tokens_prompt_total=json["num_tokens_prompt_total"],
         )
 
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            **asdict(self),
+            "embeddings": [embedding for embedding in self.embeddings],
+        }
+
     @staticmethod
     def _from_model_version_and_embeddings(
         model_version: str,
