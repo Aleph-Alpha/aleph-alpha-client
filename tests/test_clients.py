@@ -1,6 +1,8 @@
 from pytest_httpserver import HTTPServer
 import os
 import pytest
+
+from aleph_alpha_client.version import MIN_API_VERSION
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.completion import (
     CompletionRequest,
@@ -9,6 +11,32 @@ from aleph_alpha_client.completion import (
 )
 from aleph_alpha_client.prompt import Prompt
 from tests.common import model_name, sync_client, async_client
+
+
+def test_api_version_mismatch_client(httpserver: HTTPServer):
+    httpserver.expect_request("/version").respond_with_data("0.0.0")
+
+    with pytest.raises(RuntimeError):
+        Client(host=httpserver.url_for(""), token="AA_TOKEN").validate_version()
+
+
+async def test_api_version_mismatch_async_client(httpserver: HTTPServer):
+    httpserver.expect_request("/version").respond_with_data("0.0.0")
+
+    with pytest.raises(RuntimeError):
+        async with AsyncClient(host=httpserver.url_for(""), token="AA_TOKEN") as client:
+            await client.validate_version()
+
+
+def test_api_version_correct_client(httpserver: HTTPServer):
+    httpserver.expect_request("/version").respond_with_data(MIN_API_VERSION)
+    Client(host=httpserver.url_for(""), token="AA_TOKEN").validate_version()
+
+
+async def test_api_version_correct_async_client(httpserver: HTTPServer):
+    httpserver.expect_request("/version").respond_with_data(MIN_API_VERSION)
+    async with AsyncClient(host=httpserver.url_for(""), token="AA_TOKEN") as client:
+        await client.validate_version()
 
 
 @pytest.mark.system_test
