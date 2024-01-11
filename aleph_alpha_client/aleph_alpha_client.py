@@ -1,4 +1,6 @@
 import warnings
+
+from packaging import version
 from tokenizers import Tokenizer  # type: ignore
 from types import TracebackType
 from typing import (
@@ -48,6 +50,7 @@ from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
 )
+from aleph_alpha_client.version import MIN_API_VERSION
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
@@ -78,6 +81,16 @@ def _raise_for_status(status_code: int, text: str):
             raise BusyError(status_code, text)
         else:
             raise RuntimeError(status_code, text)
+
+
+def _check_api_version(version_str: str):
+    api_ver = version.parse(MIN_API_VERSION)
+    ver = version.parse(version_str)
+    valid = api_ver.major == ver.major and api_ver <= ver
+    if not valid:
+        raise RuntimeError(
+            f"The aleph alpha client requires at least api version {api_ver}, found version {ver}"
+        )
 
 
 AnyRequest = Union[
@@ -178,6 +191,10 @@ class Client:
         )
         self.session.mount("https://", adapter)
         self.session.mount("http://", adapter)
+
+    def validate_version(self) -> None:
+        """Gets version of the AlephAlpha HTTP API."""
+        _check_api_version(self.get_version())
 
     def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""
@@ -686,6 +703,9 @@ class AsyncClient:
         exc_tb: Optional[TracebackType],
     ):
         await self.session.__aexit__(exc_type=exc_type, exc_val=exc_val, exc_tb=exc_tb)
+
+    async def validate_version(self) -> None:
+        _check_api_version(await self.get_version())
 
     async def get_version(self) -> str:
         """Gets version of the AlephAlpha HTTP API."""

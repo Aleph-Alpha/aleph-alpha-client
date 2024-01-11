@@ -52,6 +52,7 @@ setup(
         "Pillow >= 9.2.0",
         "tqdm >= v4.62.0",
         "python-liquid >= 1.9.4",
+        "packaging >= 23.2"
     ],
     tests_require=tests_require,
     extras_require={
