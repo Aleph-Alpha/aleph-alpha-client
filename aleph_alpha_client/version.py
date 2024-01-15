@@ -1,2 +1,2 @@
-__version__ = "6.0.0"
-MIN_API_VERSION = "1.15.0"
+__version__ = "7.0.0"
+MIN_API_VERSION = "1.16.0"
