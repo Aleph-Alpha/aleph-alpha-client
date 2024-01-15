@@ -53,11 +53,13 @@ class EvaluationResponse:
     model_version: str
     message: Optional[str]
     result: Dict[str, Any]
+    num_tokens_prompt_total: int
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "EvaluationResponse":
         return EvaluationResponse(
             model_version=json["model_version"],
             result=json["result"],
+            num_tokens_prompt_total=json["num_tokens_prompt_total"],
             message=json.get("message"),
         )

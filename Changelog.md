@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.0.0
+
+- Added  `num_tokens_prompt_total` to `EvaluationResponse`
+- HTTP API version 1.16.0 or higher is required.
+
 ## 6.0.0
 
 - Added `num_tokens_prompt_total` to the types below. 
