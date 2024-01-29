@@ -10,7 +10,8 @@ from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.embedding import (
     BatchSemanticEmbeddingRequest,
     SemanticEmbeddingRequest,
-    SemanticRepresentation, BatchSemanticEmbeddingResponse,
+    SemanticRepresentation,
+    BatchSemanticEmbeddingResponse,
 )
 from aleph_alpha_client.prompt import Prompt
 from tests.common import (
@@ -61,7 +62,9 @@ async def test_batch_embed_semantic_with_async_client(
 ):
     words = ["car", "elephant", "kitchen sink", "rubber", "sun"]
     r = random.Random(4082)
-    prompts = list([Prompt.from_text(words[r.randint(0, 4)]) for i in range(num_prompts)])
+    prompts = list(
+        [Prompt.from_text(words[r.randint(0, 4)]) for i in range(num_prompts)]
+    )
 
     request = BatchSemanticEmbeddingRequest(
         prompts=prompts,
@@ -69,7 +72,10 @@ async def test_batch_embed_semantic_with_async_client(
         compress_to_size=128,
     )
     result = await async_client.batch_semantic_embed(
-        request=request, num_concurrent_requests=10, batch_size=batch_size, model="luminous-base"
+        request=request,
+        num_concurrent_requests=10,
+        batch_size=batch_size,
+        model="luminous-base",
     )
 
     # We have no control over the exact tokenizer used in the backend, so we cannot know the exact
@@ -127,7 +133,11 @@ async def test_modelname_gets_passed_along_for_async_client(httpserver: HTTPServ
     }
     httpserver.expect_ordered_request(
         "/batch_semantic_embed", method="POST", data=json.dumps(expected_body)
-    ).respond_with_json(BatchSemanticEmbeddingResponse(model_version="1", embeddings=[], num_tokens_prompt_total=1).to_json())
+    ).respond_with_json(
+        BatchSemanticEmbeddingResponse(
+            model_version="1", embeddings=[], num_tokens_prompt_total=1
+        ).to_json()
+    )
     async_client = AsyncClient(token="", host=httpserver.url_for(""), total_retries=1)
     await async_client.batch_semantic_embed(request, model=model_name)
 
@@ -226,6 +236,10 @@ def test_modelname_gets_passed_along_for_sync_client(httpserver: HTTPServer):
     expected_body = {**request.to_json(), "model": model_name}
     httpserver.expect_ordered_request(
         "/batch_semantic_embed", method="POST", data=json.dumps(expected_body)
-    ).respond_with_json(BatchSemanticEmbeddingResponse(model_version="1", embeddings=[], num_tokens_prompt_total=1).to_json())
+    ).respond_with_json(
+        BatchSemanticEmbeddingResponse(
+            model_version="1", embeddings=[], num_tokens_prompt_total=1
+        ).to_json()
+    )
     sync_client = Client(token="", host=httpserver.url_for(""), total_retries=1)
     sync_client.batch_semantic_embed(request, model=model_name)
