@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.1
+
+- Fixed a bug in pydoc for Prompt and Token
+
 ## 7.0.0
 
 - Added  `num_tokens_prompt_total` to `EvaluationResponse`
