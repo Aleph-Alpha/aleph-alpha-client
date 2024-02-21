@@ -83,7 +83,7 @@ class Tokens:
             attention for given token ids.
 
     Examples:
-        >>> token_ids = Tokens([1, 2, 3])
+        >>> token_ids = Tokens([1, 2, 3], controls=[])
         >>> prompt = Prompt([token_ids])
     """
 
@@ -470,7 +470,7 @@ class Prompt:
     ) -> "Prompt":
         """
         Examples:
-            >>> prompt = Prompt.from_tokens(Tokens([1, 2, 3]))
+            >>> prompt = Prompt.from_tokens([1, 2, 3])
         """
         return Prompt([Tokens(tokens, controls or [])])
 
