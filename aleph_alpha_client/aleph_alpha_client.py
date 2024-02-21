@@ -146,6 +146,9 @@ class Client:
         verify_ssl(bool, optional, default True)
             Setting this to False will disable checking for SSL when doing requests.
 
+        tags(Optional[Sequence[str]], optional, default None)
+            Internal feature.
+
     Example usage:
         >>> request = CompletionRequest(
                 prompt=Prompt.from_text(f"Request"), maximum_tokens=64
@@ -163,6 +166,7 @@ class Client:
         total_retries: int = 8,
         nice: bool = False,
         verify_ssl=True,
+        tags: Optional[Sequence[str]] = None,
     ) -> None:
         if host[-1] != "/":
             host += "/"
@@ -171,6 +175,7 @@ class Client:
         self.request_timeout_seconds = request_timeout_seconds
         self.token = token
         self.nice = nice
+        self.tags = tags
 
         retry_strategy = Retry(
             total=total_retries,
@@ -242,6 +247,8 @@ class Client:
             json_body["model"] = model
         if self.hosting is not None:
             json_body["hosting"] = self.hosting
+        if self.tags is not None:
+            json_body["tags"] = self.tags
         return json_body
 
     def models(self) -> List[Mapping[str, Any]]:
@@ -632,6 +639,9 @@ class AsyncClient:
         verify_ssl(bool, optional, default True)
             Setting this to False will disable checking for SSL when doing requests.
 
+        tags(Optional[Sequence[str]], optional, default None)
+            Internal feature.
+
     Example usage:
         >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
         >>> async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
@@ -647,6 +657,7 @@ class AsyncClient:
         total_retries: int = 8,
         nice: bool = False,
         verify_ssl=True,
+        tags: Optional[Sequence[str]] = None,
     ) -> None:
         if host[-1] != "/":
             host += "/"
@@ -655,6 +666,7 @@ class AsyncClient:
         self.request_timeout_seconds = request_timeout_seconds
         self.token = token
         self.nice = nice
+        self.tags = tags
 
         retry_options = ExponentialRetry(
             attempts=total_retries + 1,
@@ -762,6 +774,8 @@ class AsyncClient:
             json_body["model"] = model
         if self.hosting is not None:
             json_body["hosting"] = self.hosting
+        if self.tags is not None:
+            json_body["tags"] = self.tags
         return json_body
 
     async def models(self) -> List[Mapping[str, Any]]:
