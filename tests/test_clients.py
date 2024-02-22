@@ -54,7 +54,7 @@ async def test_can_use_async_client_without_context_manager(model_name: str):
 
 
 def test_nice_flag_on_client(httpserver: HTTPServer):
-    httpserver.expect_request("/version").respond_with_data("OK")
+    httpserver.expect_request("/version").respond_with_data(MIN_API_VERSION)
 
     httpserver.expect_request(
         "/complete", query_string={"nice": "true"}
@@ -79,7 +79,7 @@ def test_nice_flag_on_client(httpserver: HTTPServer):
 
 
 async def test_nice_flag_on_async_client(httpserver: HTTPServer):
-    httpserver.expect_request("/version").respond_with_data("OK")
+    httpserver.expect_request("/version").respond_with_data(MIN_API_VERSION)
 
     httpserver.expect_request(
         "/complete",
@@ -96,7 +96,63 @@ async def test_nice_flag_on_async_client(httpserver: HTTPServer):
     request = CompletionRequest(prompt=Prompt.from_text("Hello world"))
 
     async with AsyncClient(
-        host=httpserver.url_for(""), token="AA_TOKEN", nice=True
+        host=httpserver.url_for(""),
+        token="AA_TOKEN",
+        nice=True,
+        request_timeout_seconds=1,
+    ) as client:
+        await client.complete(request, model="luminous")
+
+
+def test_tags_on_client(httpserver: HTTPServer):
+    httpserver.expect_request("/version").respond_with_data(MIN_API_VERSION)
+
+    request = CompletionRequest(prompt=Prompt.from_text("Hello world"))
+    body = {k: v for k, v in request.to_json().items() if v is not None}
+    body["tags"] = ["tim-tagger"]
+    body["model"] = "luminous"
+    httpserver.expect_request("/complete", json=body).respond_with_json(
+        CompletionResponse(
+            "model_version",
+            [
+                CompletionResult(
+                    log_probs=[],
+                    completion="foo",
+                )
+            ],
+            num_tokens_prompt_total=2,
+            num_tokens_generated=1,
+        ).to_json()
+    )
+
+    client = Client(
+        host=httpserver.url_for(""),
+        request_timeout_seconds=1,
+        token="AA_TOKEN",
+        tags=["tim-tagger"],
+    )
+
+    client.complete(request, model="luminous")
+
+
+async def test_tags_on_async_client(httpserver: HTTPServer):
+    httpserver.expect_request("/version").respond_with_data(MIN_API_VERSION)
+
+    request = CompletionRequest(prompt=Prompt.from_text("Hello world"))
+    body = {k: v for k, v in request.to_json().items() if v is not None}
+    body["tags"] = ["tim-tagger"]
+    body["model"] = "luminous"
+    httpserver.expect_request("/complete", json=body).respond_with_json(
+        CompletionResponse(
+            "model_version",
+            [CompletionResult(log_probs=[], completion="foo")],
+            num_tokens_prompt_total=2,
+            num_tokens_generated=1,
+        ).to_json()
+    )
+
+    async with AsyncClient(
+        host=httpserver.url_for(""), token="AA_TOKEN", tags=["tim-tagger"]
     ) as client:
         await client.complete(request, model="luminous")
 
