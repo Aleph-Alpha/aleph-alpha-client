@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.1.0
+
+- Introduce support for internal feature 'tags'
+- Export BusyError
+
 ## 7.0.1
 
 - Fixed a bug in pydoc for Prompt and Token
