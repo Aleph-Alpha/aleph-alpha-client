@@ -12,6 +12,7 @@ from .prompt_template import PromptTemplate
 from .aleph_alpha_client import (
     POOLING_OPTIONS,
     AsyncClient,
+    BusyError,
     Client,
     QuotaError,
 )
@@ -55,6 +56,7 @@ __all__ = [
     "AsyncClient",
     "BatchSemanticEmbeddingRequest",
     "BatchSemanticEmbeddingResponse",
+    "BusyError",
     "Client",
     "CompletionRequest",
     "CompletionResponse",
