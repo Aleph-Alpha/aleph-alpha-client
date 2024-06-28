@@ -167,6 +167,7 @@ class Client:
         nice: bool = False,
         verify_ssl=True,
         tags: Optional[Sequence[str]] = None,
+        pool_size: int = 10,
     ) -> None:
         if host[-1] != "/":
             host += "/"
@@ -184,7 +185,11 @@ class Client:
             allowed_methods=["POST", "GET"],
             raise_on_status=False,
         )
-        adapter = HTTPAdapter(max_retries=retry_strategy)
+        adapter = HTTPAdapter(
+            max_retries=retry_strategy,
+            pool_connections=pool_size,
+            pool_maxsize=pool_size,
+        )
         self.session = requests.Session()
         self.session.verify = verify_ssl
         self.session.headers = CaseInsensitiveDict(
