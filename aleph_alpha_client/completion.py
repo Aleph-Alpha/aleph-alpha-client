@@ -284,9 +284,11 @@ class CompletionResponse:
             ],
             num_tokens_prompt_total=json["num_tokens_prompt_total"],
             num_tokens_generated=json["num_tokens_generated"],
-            optimized_prompt=Prompt.from_json(optimized_prompt_json)
-            if optimized_prompt_json
-            else None,
+            optimized_prompt=(
+                Prompt.from_json(optimized_prompt_json)
+                if optimized_prompt_json
+                else None
+            ),
         )
 
     def to_json(self) -> Mapping[str, Any]:

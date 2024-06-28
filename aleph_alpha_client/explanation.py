@@ -172,9 +172,9 @@ class ExplanationRequest:
     control_factor: Optional[float] = None
     control_token_overlap: Optional[ControlTokenOverlap] = None
     control_log_additive: Optional[bool] = None
-    prompt_granularity: Optional[
-        Union[PromptGranularity, str, CustomGranularity]
-    ] = None
+    prompt_granularity: Optional[Union[PromptGranularity, str, CustomGranularity]] = (
+        None
+    )
     target_granularity: Optional[TargetGranularity] = None
     postprocessing: Optional[ExplanationPostprocessing] = None
     normalize: Optional[bool] = None
@@ -357,9 +357,11 @@ class TextPromptItemExplanation:
     def with_text(self, prompt: Text) -> "TextPromptItemExplanation":
         return TextPromptItemExplanation(
             scores=[
-                TextScoreWithRaw.from_text_score(score, prompt)
-                if isinstance(score, TextScore)
-                else score
+                (
+                    TextScoreWithRaw.from_text_score(score, prompt)
+                    if isinstance(score, TextScore)
+                    else score
+                )
                 for score in self.scores
             ]
         )
@@ -386,9 +388,11 @@ class TargetPromptItemExplanation:
     def with_text(self, prompt: str) -> "TargetPromptItemExplanation":
         return TargetPromptItemExplanation(
             scores=[
-                TargetScoreWithRaw.from_target_score(score, prompt)
-                if isinstance(score, TargetScore)
-                else score
+                (
+                    TargetScoreWithRaw.from_target_score(score, prompt)
+                    if isinstance(score, TargetScore)
+                    else score
+                )
                 for score in self.scores
             ]
         )
@@ -461,9 +465,11 @@ class Explanation:
         return Explanation(
             target=self.target,
             items=[
-                item.in_pixels(prompt.items[item_index])
-                if isinstance(item, ImagePromptItemExplanation)
-                else item
+                (
+                    item.in_pixels(prompt.items[item_index])
+                    if isinstance(item, ImagePromptItemExplanation)
+                    else item
+                )
                 for item_index, item in enumerate(self.items)
             ],
         )
