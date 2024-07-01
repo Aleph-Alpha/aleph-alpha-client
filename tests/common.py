@@ -11,7 +11,8 @@ def sync_client() -> Client:
     return Client(
         token=get_env_var("TEST_TOKEN"),
         host=get_env_var("TEST_API_URL"),
-        total_retries=4,
+        # This will retry after [0.0, 0.5, 1.0, 2.0, 4.0] seconds
+        total_retries=5,
     )
 
 
@@ -20,7 +21,8 @@ async def async_client() -> AsyncIterable[AsyncClient]:
     async with AsyncClient(
         token=get_env_var("TEST_TOKEN"),
         host=get_env_var("TEST_API_URL"),
-        total_retries=4,
+        # This will retry after [0.0, 0.5, 1.0, 2.0, 4.0] seconds
+        total_retries=5,
     ) as client:
         yield client
 
