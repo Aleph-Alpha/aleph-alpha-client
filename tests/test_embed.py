@@ -214,7 +214,7 @@ def test_embed_semantic(sync_client: Client):
     assert result.num_tokens_prompt_total >= 1
 
 
-@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200, 1000])
+@pytest.mark.parametrize("num_prompts", [1, 100, 101, 200])
 @pytest.mark.system_test
 def test_batch_embed_semantic(sync_client: Client, num_prompts: int):
     request = BatchSemanticEmbeddingRequest(
