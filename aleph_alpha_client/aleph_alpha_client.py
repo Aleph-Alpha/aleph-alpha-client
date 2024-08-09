@@ -10,10 +10,8 @@ from typing import (
     Optional,
     Dict,
     Sequence,
-    Tuple,
     Type,
     Union,
-    Iterator,
 )
 import aiohttp
 import asyncio
@@ -27,8 +25,6 @@ from tqdm.asyncio import tqdm
 
 import aleph_alpha_client
 from aleph_alpha_client.explanation import (
-    ExplanationRequest,
-    ExplanationResponse,
     ExplanationRequest,
     ExplanationResponse,
 )
@@ -150,9 +146,7 @@ class Client:
             Internal feature.
 
     Example usage:
-        >>> request = CompletionRequest(
-                prompt=Prompt.from_text(f"Request"), maximum_tokens=64
-            )
+        >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"))
         >>> client = Client(token=os.environ["AA_TOKEN"])
         >>> response: CompletionResponse = client.complete(request, "luminous-base")
     """

@@ -18,9 +18,6 @@ from tests.common import (
 )
 
 
-# AsyncClient
-
-
 @pytest.mark.system_test
 async def test_can_complete_with_async_client(
     async_client: AsyncClient, model_name: str
@@ -35,7 +32,15 @@ async def test_can_complete_with_async_client(
     assert response.model_version is not None
 
 
-# Client
+@pytest.mark.system_test
+def test_complete_maximum_tokens_none(sync_client: Client, model_name: str):
+    request = CompletionRequest(
+        prompt=Prompt.from_text("Hello, World!"),
+        maximum_tokens=None,
+    )
+
+    response = sync_client.complete(request, model=model_name)
+    assert len(response.completions) == 1
 
 
 @pytest.mark.system_test

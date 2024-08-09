@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Mapping, Optional, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
 from aleph_alpha_client.document import Document
 
