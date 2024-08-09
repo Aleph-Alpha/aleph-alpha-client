@@ -15,12 +15,14 @@ class CompletionRequest:
             Unconditional completion can be started with an empty string (default).
             The prompt may contain a zero shot or few shot task.
 
-        maximum_tokens (int, optional, default 64):
+        maximum_tokens (int, optional, default None):
             The maximum number of tokens to be generated.
             Completion will terminate after the maximum number of tokens is reached. Increase this value to generate longer texts.
             A text is split into tokens. Usually there are more tokens than words.
             The maximum supported number of tokens depends on the model (for luminous-base, it may not exceed 2048 tokens).
-            The prompt's tokens plus the maximum_tokens request must not exceed this number.
+            The prompt's tokens plus the maximum_tokens request must not exceed this number. If set to None, the model will stop
+            generating tokens either if it outputs a sequence specified in `stop_sequences` or if it reaches its technical limit.
+            For most models, this means that the sum of input and output tokens is equal to its context window.
 
         temperature (float, optional, default 0.0)
             A higher sampling temperature encourages the model to produce less probable outputs ("be more creative"). Values are expected in a range from 0.0 to 1.0. Try high values (e.g. 0.9) for a more "creative" response and the default 0.0 for a well defined and repeatable answer.
@@ -181,7 +183,7 @@ class CompletionRequest:
     """
 
     prompt: Prompt
-    maximum_tokens: int = 64
+    maximum_tokens: Optional[int] = None
     temperature: float = 0.0
     top_k: int = 0
     top_p: float = 0.0
