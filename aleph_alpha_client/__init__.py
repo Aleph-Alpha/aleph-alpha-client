@@ -77,6 +77,8 @@ __all__ = [
     "ImageControl",
     "ImagePromptItemExplanation",
     "ImageScore",
+    "load_base64_from_file",
+    "load_base64_from_url",
     "POOLING_OPTIONS",
     "Prompt",
     "PromptTemplate",
@@ -102,4 +104,5 @@ __all__ = [
     "TokenPromptItemExplanation",
     "Tokens",
     "TokenScore",
+    "__version__",
 ]
