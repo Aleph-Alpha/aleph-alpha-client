@@ -20,7 +20,7 @@ Synchronous client.
 
       client = Client(token=os.getenv("AA_TOKEN"))
       prompt = Prompt.from_text("Provide a short description of AI:")
-      request = CompletionRequest(prompt=prompt, maximum_tokens=20)
+      request = CompletionRequest(prompt=prompt)
       result = client.complete(request, model="luminous-extended")
 
       print(result.completions[0].completion)
@@ -36,7 +36,7 @@ Synchronous client with prompt containing an image.
       image = Image.from_file("path-to-an-image")
       prompt_template = PromptTemplate("{{image}}This picture shows ")
       prompt = prompt_template.to_prompt(image=prompt_template.placeholder(image))
-      request = CompletionRequest(prompt=prompt, maximum_tokens=20)
+      request = CompletionRequest(prompt=prompt)
       result = client.complete(request, model="luminous-extended")
 
       print(result.completions[0].completion)
@@ -51,10 +51,7 @@ Asynchronous client.
 
    # Can enter context manager within an async function
    async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
-      request = CompletionRequest(
-         prompt=Prompt.from_text("Request"),
-         maximum_tokens=64,
-      )
+      request = CompletionRequest(prompt=Prompt.from_text("Request"))
       response = await client.complete(request, model="luminous-base")
 
 .. toctree::

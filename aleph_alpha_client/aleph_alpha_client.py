@@ -146,9 +146,7 @@ class Client:
             Internal feature.
 
     Example usage:
-        >>> request = CompletionRequest(
-                prompt=Prompt.from_text(f"Request"), maximum_tokens=64
-            )
+        >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"))
         >>> client = Client(token=os.environ["AA_TOKEN"])
         >>> response: CompletionResponse = client.complete(request, "luminous-base")
     """

@@ -179,7 +179,7 @@ class CompletionRequest:
 
     Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
-        >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
+        >>> request = CompletionRequest(prompt=prompt)
     """
 
     prompt: Prompt
