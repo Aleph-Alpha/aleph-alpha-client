@@ -1,6 +1,5 @@
 from re import finditer
-import re
-from typing import Dict, Iterable, Mapping, NewType, Sequence, Tuple, Union
+from typing import Dict, Iterable, Mapping, NewType, Tuple, Union
 from uuid import UUID, uuid4
 from liquid import Template
 

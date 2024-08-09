@@ -9,9 +9,6 @@ from typing import (
     Union,
 )
 
-# Import Literal with Python 3.7 fallback
-from typing_extensions import Literal
-
 from aleph_alpha_client import Text
 
 from aleph_alpha_client.prompt import ControlTokenOverlap, Image, Prompt, PromptItem
