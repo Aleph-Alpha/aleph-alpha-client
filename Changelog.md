@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.3.0
+
+- Maximum token attribute of `CompletionRequest` defaults to None
+
 ## 7.2.0
 
 ### Python support
