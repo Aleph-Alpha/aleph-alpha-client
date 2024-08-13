@@ -10,10 +10,8 @@ from typing import (
     Optional,
     Dict,
     Sequence,
-    Tuple,
     Type,
     Union,
-    Iterator,
 )
 import aiohttp
 import asyncio
@@ -27,8 +25,6 @@ from tqdm.asyncio import tqdm
 
 import aleph_alpha_client
 from aleph_alpha_client.explanation import (
-    ExplanationRequest,
-    ExplanationResponse,
     ExplanationRequest,
     ExplanationResponse,
 )

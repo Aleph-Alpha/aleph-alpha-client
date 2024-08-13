@@ -7,10 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # We currently only support up to python 3.11 
-        # because aiohttp does not support 3.12 as of yet.
-        # 3.7 because Google Colab uses 3.7 by default.
-        python-version: [3.7, 3.11]
+        python-version: [3.8, 3.12]
 
     steps:
       - uses: actions/checkout@v4

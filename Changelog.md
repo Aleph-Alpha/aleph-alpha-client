@@ -1,5 +1,16 @@
 # Changelog
 
+## 7.3.0
+
+- Maximum token attribute of `CompletionRequest` defaults to None
+
+## 7.2.0
+
+### Python support
+
+- Minimal supported Python version is now 3.8
+- Dependency `aiohttp` is specified to be at least of version `3.10`.
+  
 ## 7.1.0
 
 - Introduce support for internal feature 'tags'
