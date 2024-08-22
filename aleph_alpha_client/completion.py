@@ -56,11 +56,11 @@ class CompletionRequest:
         penalty_bias (string, optional)
             If set, all tokens in this text will be used in addition to the already penalized tokens for repetition penalties.
             These consist of the already generated completion tokens if ``repetition_penalties_include_completion`` is set to ``true``
-            and the prompt tokens, if ``repetition_penalties_include_prompt`` is set to ``true``\,
+            and the prompt tokens, if ``repetition_penalties_include_prompt`` is set to ``true``,
 
             *Potential use case for a chatbot-based completion:*
 
-            Instead of using ``repetition_penalties_include_prompt``\, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. ``\\nChatbot:``\), and all user messages.
+            Instead of using ``repetition_penalties_include_prompt``, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. ``\\nChatbot:``), and all user messages.
 
             With this bias, if you turn up the repetition penalties, you can avoid having your chatbot repeat itself, but not penalize the chatbot from mirroring language provided by the user.
 
@@ -80,10 +80,10 @@ class CompletionRequest:
 
             You could set ``penalty_exceptions`` to ``["\\n-"]`` to not penalize the generation of a new list item, but still increase other penalty settings to encourage the generation of new list items without repeating itself.
 
-            By default, we will also include any ``stop_sequences`` you have set, since completion performance can be degraded if expected stop sequences are penalized. You can disable this behavior by settings ``penalty_exceptions_include_stop_sequences`` to ``false``\.
+            By default, we will also include any ``stop_sequences`` you have set, since completion performance can be degraded if expected stop sequences are penalized. You can disable this behavior by settings ``penalty_exceptions_include_stop_sequences`` to ``false``.
 
         penalty_exceptions_include_stop_sequences (bool, optional, default true)
-            By default, we include any ``stop_sequences`` in ``penalty_exceptions``\, to not penalize the presence of stop sequences that are present in few-shot prompts to provide structure to your completions.
+            By default, we include any ``stop_sequences`` in ``penalty_exceptions``, to not penalize the presence of stop sequences that are present in few-shot prompts to provide structure to your completions.
 
             You can set this to ``false`` if you do not want this behavior.
 
