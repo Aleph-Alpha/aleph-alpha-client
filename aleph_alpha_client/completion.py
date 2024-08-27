@@ -60,7 +60,7 @@ class CompletionRequest:
 
             *Potential use case for a chatbot-based completion:*
 
-            Instead of using ``repetition_penalties_include_prompt``, construct a new string with only the chatbot's reponses included. You would leave out any tokens you use for stop sequences (i.e. ``\\nChatbot:``), and all user messages.
+            Instead of using ``repetition_penalties_include_prompt``, construct a new string with only the chatbot's responses included. You would leave out any tokens you use for stop sequences (i.e. ``\\nChatbot:``), and all user messages.
 
             With this bias, if you turn up the repetition penalties, you can avoid having your chatbot repeat itself, but not penalize the chatbot from mirroring language provided by the user.
 
