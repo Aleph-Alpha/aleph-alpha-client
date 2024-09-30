@@ -40,8 +40,9 @@ async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
         prompt=Prompt.from_text("Provide a short description of AI:"),
         maximum_tokens=64,
     )
-    response = await client.complete(request, model="luminous-base")
-    print(response.completions[0].completion)
+    response = client.complete_with_streaming(request, model="luminous-base")
+    async for stream_item in response:
+        print(stream_item)
 ```
 
 ### Interactive Examples
