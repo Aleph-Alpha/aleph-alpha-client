@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Mapping, Optional, Sequence
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
 
 from aleph_alpha_client.prompt import Prompt
 
@@ -301,3 +301,126 @@ class CompletionResponse:
 
     def _asdict(self) -> Mapping[str, Any]:
         return asdict(self)
+
+
+CompletionResponseStreamItem = Union[
+    "StreamChunk", "StreamSummary", "CompletionSummary"
+]
+
+
+def stream_item_from_json(json: Dict[str, Any]) -> CompletionResponseStreamItem:
+    if json["type"] == "stream_chunk":
+        return StreamChunk.from_json(json)
+    elif json["type"] == "stream_summary":
+        return StreamSummary.from_json(json)
+    elif json["type"] == "completion_summary":
+        return CompletionSummary.from_json(json)
+    else:
+        raise ValueError(f"Unknown stream item type: {json['type']}")
+
+
+@dataclass(frozen=True)
+class StreamChunk:
+    """
+    Describes a chunk of a completion stream
+
+    Parameters:
+        index:
+            The index of the stream that this chunk belongs to.
+            This is relevant if multiple completion streams are requested (see parameter n).
+        log_probs:
+            The log probabilities of the generated tokens.
+        completion:
+            The generated tokens formatted as single a string.
+        raw_completion:
+            The generated tokens including special tokens formatted as single a string.
+        completion_tokens:
+            The generated tokens as a list of strings.
+    """
+
+    index: int
+    log_probs: Optional[Sequence[Mapping[str, Optional[float]]]]
+    completion: str
+    raw_completion: Optional[str]
+    completion_tokens: Optional[Sequence[str]]
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "StreamChunk":
+        return StreamChunk(
+            index=json["index"],
+            log_probs=json.get("log_probs"),
+            completion=json["completion"],
+            raw_completion=json.get("raw_completion"),
+            completion_tokens=json.get("completion_tokens"),
+        )
+
+    def to_json(self) -> Mapping[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class StreamSummary:
+    """
+    Denotes the end of a completion stream
+
+    Parameters:
+        index:
+            The index of the stream that is being terminated.
+            This is relevant if multiple completion streams are requested (see parameter n).
+        model_version:
+            Model name and version (if any) of the used model for inference.
+        finish_reason:
+            The reason why the model stopped generating new tokens.
+    """
+
+    index: int
+    model_version: str
+    finish_reason: str
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "StreamSummary":
+        return StreamSummary(
+            index=json["index"],
+            model_version=json["model_version"],
+            finish_reason=json["finish_reason"],
+        )
+
+    def to_json(self) -> Mapping[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class CompletionSummary:
+    """
+    Denotes the end of all completion streams
+
+    Parameters:
+        optimized_prompt:
+            Describes prompt after optimizations. This field is only returned if the flag
+            `disable_optimizations` flag is not set and the prompt has actually changed.
+        num_tokens_prompt_total:
+            Number of tokens combined across all completion tasks.
+            In particular, if you set best_of or n to a number larger than 1 then we report the
+            combined prompt token count for all best_of or n tasks.
+        num_tokens_generated:
+            Number of tokens combined across all completion tasks.
+            If multiple completions are returned or best_of is set to a value greater than 1 then
+            this value contains the combined generated token count.
+    """
+
+    optimized_prompt: Optional[Prompt]
+    num_tokens_prompt_total: int
+    num_tokens_generated: int
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "CompletionSummary":
+        optimized_prompt_json = json.get("optimized_prompt")
+        return CompletionSummary(
+            optimized_prompt=(
+                Prompt.from_json(optimized_prompt_json)
+                if optimized_prompt_json
+                else None
+            ),
+            num_tokens_prompt_total=json["num_tokens_prompt_total"],
+            num_tokens_generated=json["num_tokens_generated"],
+        )

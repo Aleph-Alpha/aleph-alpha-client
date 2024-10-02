@@ -1,3 +1,4 @@
+import json
 import warnings
 
 from packaging import version
@@ -5,6 +6,7 @@ from tokenizers import Tokenizer  # type: ignore
 from types import TracebackType
 from typing import (
     Any,
+    AsyncGenerator,
     List,
     Mapping,
     Optional,
@@ -30,7 +32,13 @@ from aleph_alpha_client.explanation import (
 )
 from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
 from aleph_alpha_client.qa import QaRequest, QaResponse
-from aleph_alpha_client.completion import CompletionRequest, CompletionResponse
+from aleph_alpha_client.completion import (
+    CompletionRequest,
+    CompletionResponse,
+    CompletionResponseStreamItem,
+    StreamChunk,
+    stream_item_from_json,
+)
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
 from aleph_alpha_client.detokenization import (
@@ -759,6 +767,38 @@ class AsyncClient:
                 _raise_for_status(response.status, await response.text())
             return await response.json()
 
+    SSE_DATA_PREFIX = "data: "
+
+    async def _post_request_with_streaming(
+        self,
+        endpoint: str,
+        request: AnyRequest,
+        model: Optional[str] = None,
+    ) -> AsyncGenerator[Dict[str, Any], None]:
+        json_body = self._build_json_body(request, model)
+        json_body["stream"] = True
+
+        query_params = self._build_query_parameters()
+
+        async with self.session.post(
+            self.host + endpoint, json=json_body, params=query_params
+        ) as response:
+            if not response.ok:
+                _raise_for_status(response.status, await response.text())
+
+            async for stream_item in response.content:
+                stream_item_as_str = stream_item.decode().strip()
+
+                if not stream_item_as_str:
+                    continue
+
+                if not stream_item_as_str.startswith(self.SSE_DATA_PREFIX):
+                    raise ValueError(
+                        f"Stream item did not start with `{self.SSE_DATA_PREFIX}`. Was `{stream_item_as_str}"
+                    )
+
+                yield json.loads(stream_item_as_str[len(self.SSE_DATA_PREFIX) :])
+
     def _build_query_parameters(self) -> Mapping[str, str]:
         return {
             # cannot use str() here because we want lowercase true/false in query string
@@ -768,7 +808,7 @@ class AsyncClient:
 
     def _build_json_body(
         self, request: AnyRequest, model: Optional[str]
-    ) -> Mapping[str, Any]:
+    ) -> Dict[str, Any]:
         json_body = dict(request.to_json())
 
         if model is not None:
@@ -823,6 +863,47 @@ class AsyncClient:
             model,
         )
         return CompletionResponse.from_json(response)
+
+    async def complete_with_streaming(
+        self,
+        request: CompletionRequest,
+        model: str,
+    ) -> AsyncGenerator[CompletionResponseStreamItem, None]:
+        """Generates streamed completions given a prompt.
+
+        Parameters:
+            request (CompletionRequest, required):
+                Parameters for the requested completion.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> # create a prompt
+            >>> prompt = Prompt.from_text("An apple a day, ")
+            >>>
+            >>> # create a completion request
+            >>> request = CompletionRequest(
+                    prompt=prompt,
+                    maximum_tokens=32,
+                    stop_sequences=["###","\\n"],
+                    temperature=0.12
+                )
+            >>>
+            >>> # complete the prompt
+            >>> result = await client.complete_with_streaming(request, model=model_name)
+            >>>
+            >>> # consume the completion stream
+            >>> async for stream_item in result:
+            >>>     do_something_with(stream_item)
+        """
+        async for stream_item_json in self._post_request_with_streaming(
+            "complete",
+            request,
+            model,
+        ):
+            yield stream_item_from_json(stream_item_json)
 
     async def tokenize(
         self,

@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.4.0
+
+- Add `complete_with_streaming` to `AsyncClient` to support completion endpoint with streaming
+
 ## 7.3.0
 
 - Maximum token attribute of `CompletionRequest` defaults to None
@@ -10,7 +14,7 @@
 
 - Minimal supported Python version is now 3.8
 - Dependency `aiohttp` is specified to be at least of version `3.10`.
-  
+
 ## 7.1.0
 
 - Introduce support for internal feature 'tags'
@@ -27,12 +31,12 @@
 
 ## 6.0.0
 
-- Added `num_tokens_prompt_total` to the types below. 
+- Added `num_tokens_prompt_total` to the types below.
   This is a breaking change since `num_tokens_prompt_total` is mandatory.
   - `EmbeddingResponse`
   - `SemanticEmbeddingResponse`
   - `BatchSemanticEmbeddingResponse`
-- HTTP API version 1.15.0 or higher is required. 
+- HTTP API version 1.15.0 or higher is required.
 
 ## 5.0.0
 

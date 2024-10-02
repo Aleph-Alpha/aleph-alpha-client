@@ -1,6 +1,11 @@
 import pytest
 from aleph_alpha_client import AsyncClient, Client
-from aleph_alpha_client.completion import CompletionRequest
+from aleph_alpha_client.completion import (
+    CompletionRequest,
+    CompletionSummary,
+    StreamChunk,
+    StreamSummary,
+)
 from aleph_alpha_client.prompt import (
     ControlTokenOverlap,
     Image,
@@ -30,6 +35,28 @@ async def test_can_complete_with_async_client(
     response = await async_client.complete(request, model=model_name)
     assert len(response.completions) == 1
     assert response.model_version is not None
+
+
+@pytest.mark.system_test
+async def test_can_use_streaming_support_with_async_client(
+    async_client: AsyncClient, model_name: str
+):
+    request = CompletionRequest(
+        prompt=Prompt.from_text(""),
+        maximum_tokens=7,
+    )
+
+    stream_items = [
+        stream_item
+        async for stream_item in async_client.complete_with_streaming(
+            request, model=model_name
+        )
+    ]
+
+    assert len(stream_items) >= 3
+    assert isinstance(stream_items[-3], StreamChunk)
+    assert isinstance(stream_items[-2], StreamSummary)
+    assert isinstance(stream_items[-1], CompletionSummary)
 
 
 @pytest.mark.system_test
