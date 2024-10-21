@@ -1,2 +1,5 @@
-__version__ = "7.4.0"
+import importlib.metadata
+
+__version__ = importlib.metadata.version("aleph-alpha-client")
+
 MIN_API_VERSION = "1.19.0"
