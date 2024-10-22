@@ -36,9 +36,9 @@ from aleph_alpha_client.completion import (
     CompletionRequest,
     CompletionResponse,
     CompletionResponseStreamItem,
-    StreamChunk,
     stream_item_from_json,
 )
+from aleph_alpha_client.chat import ChatRequest, ChatResponse, ChatStreamChunk, ChatStreamChunk
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
 from aleph_alpha_client.detokenization import (
@@ -99,6 +99,7 @@ def _check_api_version(version_str: str):
 
 AnyRequest = Union[
     CompletionRequest,
+    ChatRequest,
     EmbeddingRequest,
     EvaluationRequest,
     TokenizationRequest,
@@ -301,6 +302,34 @@ class Client:
         """
         response = self._post_request("complete", request, model)
         return CompletionResponse.from_json(response)
+
+    def chat(
+        self,
+        request: ChatRequest,
+        model: str,
+    ) -> ChatResponse:
+        """Chat with a model.
+
+        Parameters:
+            request (ChatRequest, required):
+                Parameters for the requested chat.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> # create a chat request
+            >>> request = ChatRequest(
+                    messages=[Message(role="user", content="Hello, how are you?")],
+                    model=model,
+                )
+            >>>
+            >>> # chat with the model
+            >>> result = client.chat(request, model=model_name)
+        """
+        response = self._post_request("chat/completions", request, model)
+        return ChatResponse.from_json(response)
 
     def tokenize(
         self,
@@ -797,7 +826,11 @@ class AsyncClient:
                         f"Stream item did not start with `{self.SSE_DATA_PREFIX}`. Was `{stream_item_as_str}"
                     )
 
-                yield json.loads(stream_item_as_str[len(self.SSE_DATA_PREFIX) :])
+                payload = stream_item_as_str[len(self.SSE_DATA_PREFIX) :]
+                if payload == "[DONE]":
+                    continue
+
+                yield json.loads(payload)
 
     def _build_query_parameters(self) -> Mapping[str, str]:
         return {
@@ -864,6 +897,38 @@ class AsyncClient:
         )
         return CompletionResponse.from_json(response)
 
+    async def chat(
+        self,
+        request: ChatRequest,
+        model: str,
+    ) -> ChatResponse:
+        """Chat with a model.
+
+        Parameters:
+            request (ChatRequest, required):
+                Parameters for the requested chat.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> # create a chat request
+            >>> request = ChatRequest(
+                    messages=[Message(role="user", content="Hello, how are you?")],
+                    model=model,
+                )
+            >>>
+            >>> # chat with the model
+            >>> result = await client.chat(request, model=model_name)
+        """
+        response = await self._post_request(
+            "chat/completions",
+            request,
+            model,
+        )
+        return ChatResponse.from_json(response)
+
     async def complete_with_streaming(
         self,
         request: CompletionRequest,
@@ -904,6 +969,46 @@ class AsyncClient:
             model,
         ):
             yield stream_item_from_json(stream_item_json)
+
+    async def chat_with_streaming(
+        self,
+        request: ChatRequest,
+        model: str,
+    ) -> AsyncGenerator[ChatStreamChunk, None]:
+        """Generates streamed chat completions.
+
+        The first yielded chunk contains the role, while subsequent chunks only contain the content delta.
+
+        Parameters:
+            request (ChatRequest, required):
+                Parameters for the requested chat.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> # create a chat request
+            >>> request = ChatRequest(
+                    messages=[Message(role="user", content="Hello, how are you?")],
+                    model=model,
+                )
+            >>>
+            >>> # chat with the model
+            >>> result = await client.chat_with_streaming(request, model=model_name)
+            >>>
+            >>> # consume the chat stream
+            >>> async for stream_item in result:
+            >>>     do_something_with(stream_item)
+        """
+        async for stream_item_json in self._post_request_with_streaming(
+            "chat/completions",
+            request,
+            model,
+        ):
+            chunk = ChatStreamChunk.from_json(stream_item_json)
+            if chunk is not None:
+                yield chunk
 
     async def tokenize(
         self,
