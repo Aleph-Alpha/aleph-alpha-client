@@ -33,6 +33,11 @@ def model_name() -> str:
 
 
 @pytest.fixture(scope="session")
+def chat_model_name() -> str:
+    return "llama-3.1-70b-instruct"
+
+
+@pytest.fixture(scope="session")
 def prompt_image() -> Image:
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     return Image.from_file(image_source_path)
