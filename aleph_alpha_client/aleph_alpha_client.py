@@ -38,7 +38,7 @@ from aleph_alpha_client.completion import (
     CompletionResponseStreamItem,
     stream_item_from_json,
 )
-from aleph_alpha_client.chat import ChatRequest, ChatResponse, ChatStreamChunk, ChatStreamChunk
+from aleph_alpha_client.chat import ChatRequest, ChatResponse, ChatStreamChunk, ChatStreamChunk, Usage, stream_chat_item_from_json
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
 from aleph_alpha_client.detokenization import (
@@ -974,7 +974,7 @@ class AsyncClient:
         self,
         request: ChatRequest,
         model: str,
-    ) -> AsyncGenerator[ChatStreamChunk, None]:
+    ) -> AsyncGenerator[Union[ChatStreamChunk, Usage], None]:
         """Generates streamed chat completions.
 
         The first yielded chunk contains the role, while subsequent chunks only contain the content delta.
@@ -1006,7 +1006,7 @@ class AsyncClient:
             request,
             model,
         ):
-            chunk = ChatStreamChunk.from_json(stream_item_json)
+            chunk = stream_chat_item_from_json(stream_item_json)
             if chunk is not None:
                 yield chunk
 
