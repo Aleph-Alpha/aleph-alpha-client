@@ -71,16 +71,17 @@ Get started using the client by first [creating an account](https://app.aleph-al
 
 For local development, start by creating a Python virtual environment as follows:
 
-```
+```shell
 python3 -m venv venv
 . ./venv/bin/activate
 ```
 
-Next, install the `test` and `dev` dependencies:
+Next, install the test and dev dependencies:
 
+```shell
+poetry install --extras "dev"
 ```
-pip install -e ".[test,dev]"
-```
+
 
 Now you should be able to ...
 
