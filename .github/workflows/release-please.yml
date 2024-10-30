@@ -1,0 +1,34 @@
+name: release-please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v4
+      - if: ${{ steps.release.outputs.release_created }} 
+        uses: actions/checkout@v4
+      - if: ${{ steps.release.outputs.release_created }} 
+        name: Set up Python
+        uses: actions/setup-python@v5
+      - if: ${{ steps.release.outputs.release_created }} 
+        name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+      - if: ${{ steps.release.outputs.release_created }} 
+        name: Install deps
+        run: poetry install
+      - if: ${{ steps.release.outputs.release_created }} 
+        name: Build
+        run: poetry build
+      - if: ${{ steps.release.outputs.release_created }} 
+        name: Publish
+        run: poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}

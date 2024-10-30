@@ -1,0 +1,10 @@
+{
+    "bump-minor-pre-major": true,
+    "bump-patch-for-minor-pre-major": true,
+    "last-release-sha": "9b84b47835880c20a58fc88d9ad662e672ced3a0",
+    "packages": {
+        ".": {
+            "release-type": "python"
+        }
+    }
+}

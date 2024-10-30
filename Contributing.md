@@ -44,13 +44,15 @@ If an html coverage report has been created a simple http server can be run to s
 python -m http.server --directory htmlcov 8000
 ```
 
+## Conventional Commits
+
+Please use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages. This allows [release-please](https://github.com/googleapis/release-please) to update the Changelog and version number according to Semantic Versioning.
+
 ## Releasing a new version
 
-1. Update version.py to the to-be-released version, say 1.2.3
-2. Commit and push the changes to version.py to master
-3. Tag the commit with v1.2.3 to match the version in version.py
-4. Push the tag
-5. Create a Release in github from the new tag. This will trigger the "Upload Python Package" workflow.
+1. Merge your changes to main
+2. A PR will automatically be created by [release-please](https://github.com/googleapis/release-please)
+3. Merge the PR. This will update the version number and Changelog of the package, trigger a GitHub release and push the changes to PyPi.
 
 ## Working on our documentation
 
