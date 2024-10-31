@@ -13,17 +13,14 @@ build:
   jobs:
     post_create_environment:
     - pip install poetry
-    - poetry config virtualenvs.create false
+    - poetry export --extras docs --without-hashes > doc-requirements.txt
     - pip -V
     - pip list
     - poetry env info
     - poetry show
     post_install:
-    - poetry install --extras docs
-    - pip -V
+    - pip install -r doc-requirements.txt
     - pip list
-    - poetry env info
-    - poetry show
 
 python:
   install:
