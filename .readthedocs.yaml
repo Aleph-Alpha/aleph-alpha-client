@@ -9,15 +9,10 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-  # see https://browniebroke.com/blog/specify-docs-dependency-groups-with-poetry-and-read-the-docs/
   jobs:
     post_create_environment:
     - pip install poetry
     - poetry export --extras docs --without-hashes > doc-requirements.txt
-    - pip -V
-    - pip list
-    - poetry env info
-    - poetry show
     post_install:
     - pip install -r doc-requirements.txt
     - pip list
