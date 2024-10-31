@@ -42,7 +42,7 @@ sphinx_rtd_theme = { version = "*", optional = true }
 test = ["pytest", "pytest-cov", "pytest-dotenv", "pytest-httpserver", "pytest-aiohttp"]
 types = ["mypy", "types-requests", "types-Pillow", "types-tqdm"]
 dev = ["pytest", "pytest-cov", "pytest-dotenv", "pytest-httpserver", "pytest-aiohttp", "mypy", "types-request", "types-Pillow", "types-tqdm", "nbconvert", "ipykernel", "black"]
-docs = ["sphinx", "sphinx_rtd_theme"]
+docs = ["sphinx", "sphinx-rtd-theme"]
 
 [tool.pytest.ini_options]
 markers = [
