@@ -2,8 +2,7 @@
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-import aleph_alpha_client
+import importlib.metadata
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -11,7 +10,7 @@ import aleph_alpha_client
 project = "aleph-alpha-client"
 copyright = "2022, Aleph Alpha"
 author = "Aleph Alpha"
-version = aleph_alpha_client.__version__
+version = importlib.metadata.version("aleph-alpha-client")
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
