@@ -9,10 +9,13 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-    # You can also specify other tool versions:
-    # nodejs: "20"
-    # rust: "1.70"
-    # golang: "1.20"
+  # see https://browniebroke.com/blog/specify-docs-dependency-groups-with-poetry-and-read-the-docs/
+  jobs:
+    post_create_environment:
+    - pip install poetry
+    - poetry config virtualenvs.create false
+    post_install:
+    - poetry install --extras docs
 
 python:
   install:
