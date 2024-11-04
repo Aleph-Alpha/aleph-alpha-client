@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.5.0
+
+- Add support for chat endpoint to `Client` and `AsyncClient`
+
 ## 7.4.0
 
 - Add `complete_with_streaming` to `AsyncClient` to support completion endpoint with streaming
