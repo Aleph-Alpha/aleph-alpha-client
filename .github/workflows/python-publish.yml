@@ -11,21 +11,22 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+      - name: Install deps
+        run: poetry install
       - name: Assert tag version matches __version__ attribute
         run: |
-          pushd aleph_alpha_client
-          python -c "from version import __version__; \
+          poetry run python -c "import sys; sys.path.pop(0); \
+            from aleph_alpha_client import __version__; \
             git_ref = '${GITHUB_REF#refs/}'; \
             assert git_ref.startswith('tags'), \
               f'{git_ref} is not a version tag'; \
             git_version = '${GITHUB_REF#refs/tags/}'[1:]; \
             assert __version__ == git_version, \
               f'versions do not match {__version__} vs. {git_version}. Please update version.py to match the git Release tag.'"
-          popd
-      - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v9
-      - name: Install deps
-        run: poetry install
       - name: Build
         run: poetry build
       - name: Publish
