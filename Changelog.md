@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.5.1
+
+- Add fallback mechanism for figuring out the version locally.
+
 ## 7.5.0
 
 - Add support for chat endpoint to `Client` and `AsyncClient`
