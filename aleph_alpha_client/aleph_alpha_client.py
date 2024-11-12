@@ -25,7 +25,6 @@ from requests.structures import CaseInsensitiveDict
 from urllib3.util.retry import Retry
 from tqdm.asyncio import tqdm
 
-import aleph_alpha_client
 from aleph_alpha_client.explanation import (
     ExplanationRequest,
     ExplanationResponse,
@@ -54,7 +53,7 @@ from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
 )
-from aleph_alpha_client.version import MIN_API_VERSION
+from aleph_alpha_client.version import MIN_API_VERSION, user_agent_headers
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
@@ -200,8 +199,7 @@ class Client:
         self.session.headers = CaseInsensitiveDict(
             {
                 "Authorization": "Bearer " + self.token,
-                "User-Agent": "Aleph-Alpha-Python-Client-"
-                + aleph_alpha_client.__version__,
+                **user_agent_headers(),
             }
         )
         self.session.mount("https://", adapter)
@@ -720,8 +718,7 @@ class AsyncClient:
             timeout=aiohttp.ClientTimeout(self.request_timeout_seconds),
             headers={
                 "Authorization": "Bearer " + self.token,
-                "User-Agent": "Aleph-Alpha-Python-Client-"
-                + aleph_alpha_client.__version__,
+                **user_agent_headers(),
             },
             connector=connector,
         )
