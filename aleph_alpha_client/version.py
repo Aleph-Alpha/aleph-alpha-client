@@ -60,6 +60,7 @@ def user_agent_headers() -> Dict[str, str]:
     new clients to fail on deserialization. To prevent these errors, we omit the
     user agent header in cases where the version is not available (== 0.0.0).
     """
-    if __version__ != "0.0.0":
+    if __version__ == "0.0.0":
+        return {}
+    else:
         return {"User-Agent": "Aleph-Alpha-Python-Client-" + __version__}
-    return {}
