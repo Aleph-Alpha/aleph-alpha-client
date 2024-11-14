@@ -41,6 +41,7 @@ async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
         maximum_tokens=64,
     )
     response = client.complete_with_streaming(request, model="luminous-base")
+
     async for stream_item in response:
         print(stream_item)
 ```

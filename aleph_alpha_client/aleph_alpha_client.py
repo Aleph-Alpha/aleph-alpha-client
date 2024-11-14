@@ -37,7 +37,13 @@ from aleph_alpha_client.completion import (
     CompletionResponseStreamItem,
     stream_item_from_json,
 )
-from aleph_alpha_client.chat import ChatRequest, ChatResponse, ChatStreamChunk, ChatStreamChunk, Usage, stream_chat_item_from_json
+from aleph_alpha_client.chat import (
+    ChatRequest,
+    ChatResponse,
+    ChatStreamChunk,
+    Usage,
+    stream_chat_item_from_json,
+)
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
 from aleph_alpha_client.detokenization import (
@@ -50,6 +56,8 @@ from aleph_alpha_client.embedding import (
     EmbeddingRequest,
     EmbeddingResponse,
     EmbeddingVector,
+    InstructableEmbeddingRequest,
+    InstructableEmbeddingResponse,
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
 )
@@ -104,6 +112,7 @@ AnyRequest = Union[
     TokenizationRequest,
     DetokenizationRequest,
     SemanticEmbeddingRequest,
+    InstructableEmbeddingRequest,
     BatchSemanticEmbeddingRequest,
     QaRequest,
     SummarizationRequest,
@@ -513,6 +522,58 @@ class Client:
             embeddings=responses,
             num_tokens_prompt_total=num_tokens_prompt_total,
         )
+
+    def instructable_embed(
+        self,
+        request: InstructableEmbeddingRequest,
+        model: str,
+    ) -> InstructableEmbeddingResponse:
+        """Embeds a text and returns vectors that can be used for classification according to a given instruction.
+
+        Parameters:
+            request (InstructableEmbeddingRequest, required):
+                Parameters for the requested instructable embedding.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> # function for salutation embedding
+            >>> def embed_salutation(text: str):
+                    # Create an embeddingrequest with a given instruction
+                    request = InstructableEmbeddingRequest(
+                        input=Prompt.from_text(text),
+                        instruction="Represent the text to query a database of salutations"
+                    )
+                    # create the embedding
+                    result = client.instructable_embed(request, model=model_name)
+                    return result.embedding
+            >>>
+            >>> # function to calculate similarity
+            >>> def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
+                    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+                    sumxx, sumxy, sumyy = 0, 0, 0
+                    for i in range(len(v1)):
+                        x = v1[i]; y = v2[i]
+                        sumxx += x*x
+                        sumyy += y*y
+                        sumxy += x*y
+                    return sumxy/math.sqrt(sumxx*sumyy)
+            >>>
+            >>> # define the texts
+            >>> text_a = "Hello"
+            >>> text_b = "Good morning"
+            >>>
+            >>> # show the similarity
+            >>> print(cosine_similarity(embed_salutation(text_a), embed_salutation(text_b)))
+        """
+        response = self._post_request(
+            "instructable_embed",
+            request,
+            model,
+        )
+        return InstructableEmbeddingResponse.from_json(response)
 
     def evaluate(
         self,
@@ -1205,6 +1266,58 @@ class AsyncClient:
             embeddings=responses,
             num_tokens_prompt_total=num_tokens_prompt_total,
         )
+
+    async def instructable_embed(
+        self,
+        request: InstructableEmbeddingRequest,
+        model: str,
+    ) -> InstructableEmbeddingResponse:
+        """Embeds a text and returns vectors that can be used for classification according to a given instruction.
+
+        Parameters:
+            request (InstructableEmbeddingRequest, required):
+                Parameters for the requested instructable embedding.
+
+            model (string, required):
+                Name of model to use. A model name refers to a model architecture (number of parameters among others).
+                Always the latest version of model is used.
+
+        Examples:
+            >>> # function for salutation embedding
+            >>> async def embed_salutation(text: str):
+                    # Create an embeddingrequest with a given instruction
+                    request = InstructableEmbeddingRequest(
+                        input=Prompt.from_text(text),
+                        instruction="Represent the text to query a database of salutations"
+                    )
+                    # create the embedding
+                    result = await client.instructable_embed(request, model=model_name)
+                    return result.embedding
+            >>>
+            >>> # function to calculate similarity
+            >>> def cosine_similarity(v1: Sequence[float], v2: Sequence[float]) -> float:
+                    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+                    sumxx, sumxy, sumyy = 0, 0, 0
+                    for i in range(len(v1)):
+                        x = v1[i]; y = v2[i]
+                        sumxx += x*x
+                        sumyy += y*y
+                        sumxy += x*y
+                    return sumxy/math.sqrt(sumxx*sumyy)
+            >>>
+            >>> # define the texts
+            >>> text_a = "Hello"
+            >>> text_b = "Good morning"
+            >>>
+            >>> # show the similarity
+            >>> print(cosine_similarity(await embed_salutation(text_a), await embed_salutation(text_b)))
+        """
+        response = await self._post_request(
+            "instructable_embed",
+            request,
+            model,
+        )
+        return InstructableEmbeddingResponse.from_json(response)
 
     async def evaluate(
         self,

@@ -20,14 +20,12 @@ class EmbeddingRequest:
     Parameters:
         prompt
             The text and/or image(s) to be embedded.
-
         layers
             A list of layer indices from which to return embeddings.
 
             * Index 0 corresponds to the word embeddings used as input to the first transformer layer
             * Index 1 corresponds to the hidden state as output by the first transformer layer, index 2 to the output of the second layer etc.
             * Index -1 corresponds to the last transformer layer (not the language modelling head), index -2 to the second last layer etc.
-
         pooling
             Pooling operation to use.
             Pooling operations include:
@@ -36,19 +34,12 @@ class EmbeddingRequest:
             * max: aggregate token embeddings across the sequence dimension using a maximum
             * last_token: just use the last token
             * abs_max: aggregate token embeddings across the sequence dimension using a maximum of absolute values
-
         type
             Type of the embedding (e.g. symmetric or asymmetric)
-
         tokens
             Flag indicating whether the tokenized prompt is to be returned (True) or not (False)
-
         normalize
             Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
-
-            Note that at the moment this parameter does not yet have any effect. This will change as soon as the
-            corresponding feature is available in the backend
-
         contextual_control_threshold (float, default None)
             If set to None, attention control parameters only apply to those tokens that have
             explicitly been set in the request.
@@ -56,7 +47,6 @@ class EmbeddingRequest:
             Controls that have been applied to one token will then be applied to all other tokens
             that have at least the similarity score defined by this parameter.
             The similarity score is the cosine similarity of token embeddings.
-
         control_log_additive (bool, default True)
             True: apply control by adding the log(control_factor) to attention scores.
             False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
@@ -150,13 +140,8 @@ class SemanticEmbeddingRequest:
             The 128 size is expected to have a small drop in accuracy performance (4-6%), with the benefit of being much smaller, which makes comparing these embeddings much faster for use cases where speed is critical.
 
             The 128 size can also perform better if you are embedding really short texts or documents.
-
         normalize
             Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
-
-            Note that at the moment this parameter does not yet have any effect. This will change as soon as the
-            corresponding feature is available in the backend
-
         contextual_control_threshold (float, default None)
             If set to None, attention control parameters only apply to those tokens that have
             explicitly been set in the request.
@@ -164,7 +149,6 @@ class SemanticEmbeddingRequest:
             Controls that have been applied to one token will then be applied to all other tokens
             that have at least the similarity score defined by this parameter.
             The similarity score is the cosine similarity of token embeddings.
-
         control_log_additive (bool, default True)
             True: apply control by adding the log(control_factor) to attention scores.
             False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
@@ -223,13 +207,8 @@ class BatchSemanticEmbeddingRequest:
             The 128 size is expected to have a small drop in accuracy performance (4-6%), with the benefit of being much smaller, which makes comparing these embeddings much faster for use cases where speed is critical.
 
             The 128 size can also perform better if you are embedding really short texts or documents.
-
         normalize
             Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
-
-            Note that at the moment this parameter does not yet have any effect. This will change as soon as the
-            corresponding feature is available in the backend
-
         contextual_control_threshold (float, default None)
             If set to None, attention control parameters only apply to those tokens that have
             explicitly been set in the request.
@@ -237,7 +216,6 @@ class BatchSemanticEmbeddingRequest:
             Controls that have been applied to one token will then be applied to all other tokens
             that have at least the similarity score defined by this parameter.
             The similarity score is the cosine similarity of token embeddings.
-
         control_log_additive (bool, default True)
             True: apply control by adding the log(control_factor) to attention scores.
             False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
@@ -266,6 +244,63 @@ class BatchSemanticEmbeddingRequest:
             **self._asdict(),
             "representation": self.representation.value,
             "prompts": [prompt.to_json() for prompt in self.prompts],
+        }
+
+    def _asdict(self) -> Mapping[str, Any]:
+        return asdict(self)
+
+
+@dataclass(frozen=True)
+class InstructableEmbeddingRequest:
+    """
+    Embeds a text and returns vectors that can be used for classification according to a given instruction.
+
+    Parameters:
+        input
+            The text and/or image(s) to be embedded.
+        instruction
+            An instruction specifying the aspect to attend to when generating the embedding.
+        normalize
+            Return normalized embeddings. This can be used to save on additional compute when applying a cosine similarity metric.
+        contextual_control_threshold (float, default None)
+            If set to None, attention control parameters only apply to those tokens that have
+            explicitly been set in the request.
+            If set to a non-None value, we apply the control parameters to similar tokens as well.
+            Controls that have been applied to one token will then be applied to all other tokens
+            that have at least the similarity score defined by this parameter.
+            The similarity score is the cosine similarity of token embeddings.
+        control_log_additive (bool, default True)
+            True: apply control by adding the log(control_factor) to attention scores.
+            False: apply control by (attention_scores - - attention_scores.min(-1)) * control_factor
+
+    Examples
+        >>> texts = [
+                "deep learning",
+                "artificial intelligence",
+                "deep diving",
+                "artificial snow",
+            ]
+        >>> # Texts to compare
+        >>> embeddings = []
+        >>> for text in texts:
+                request = InstructableEmbeddingRequest(
+                    input=Prompt.from_text(text),
+                    instruction="Represent the text to query a database of technical concepts",
+                )
+                result = model.instructable_embed(request)
+                embeddings.append(result.embedding)
+    """
+
+    input: Prompt
+    instruction: str
+    normalize: bool = False
+    contextual_control_threshold: Optional[float] = None
+    control_log_additive: Optional[bool] = True
+
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            **self._asdict(),
+            "input": self.input.to_json(),
         }
 
     def _asdict(self) -> Mapping[str, Any]:
@@ -344,4 +379,30 @@ class BatchSemanticEmbeddingResponse:
             model_version=model_version,
             embeddings=embeddings,
             num_tokens_prompt_total=num_tokens_prompt_total,
+        )
+
+
+@dataclass(frozen=True)
+class InstructableEmbeddingResponse:
+    """
+    Response of an instructable embedding request
+
+    Parameters:
+        model_version
+            Model name and version (if any) of the used model for inference
+        embedding
+            A list of floats that can be used to compare against other embeddings.
+    """
+
+    model_version: str
+    embedding: EmbeddingVector
+    num_tokens_prompt_total: int
+    message: Optional[str] = None
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "InstructableEmbeddingResponse":
+        return InstructableEmbeddingResponse(
+            model_version=json["model_version"],
+            embedding=json["embedding"],
+            num_tokens_prompt_total=json["num_tokens_prompt_total"],
         )

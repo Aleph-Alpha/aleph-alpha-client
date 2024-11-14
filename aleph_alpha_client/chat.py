@@ -5,6 +5,7 @@ from enum import Enum
 
 class Role(str, Enum):
     """A role used for a message in a chat."""
+
     User = "user"
     Assistant = "assistant"
     System = "system"
@@ -14,7 +15,7 @@ class Role(str, Enum):
 class Message:
     """
     Describes a message in a chat.
-    
+
     Parameters:
         role (Role, required):
             The role of the message.
@@ -22,6 +23,7 @@ class Message:
         content (str, required):
             The content of the message.
     """
+
     role: Role
     content: str
 
@@ -41,6 +43,7 @@ class StreamOptions:
     """
     Additional options to affect the streaming behavior.
     """
+
     # If set, an additional chunk will be streamed before the data: [DONE] message.
     # The usage field on this chunk shows the token usage statistics for the entire
     # request, and the choices field will always be an empty array.
@@ -51,10 +54,11 @@ class StreamOptions:
 class ChatRequest:
     """
     Describes a chat request.
-    
+
     Only supports a subset of the parameters of `CompletionRequest` for simplicity.
     See `CompletionRequest` for documentation on the parameters.
     """
+
     model: str
     messages: List[Message]
     maximum_tokens: Optional[int] = None
@@ -77,6 +81,7 @@ class ChatResponse:
     As the `ChatRequest` does not support the `n` parameter (allowing for multiple return values),
     the `ChatResponse` assumes there to be only one choice.
     """
+
     finish_reason: str
     message: Message
 
@@ -89,7 +94,6 @@ class ChatResponse:
         )
 
 
-
 @dataclass(frozen=True)
 class Usage:
     """
@@ -98,6 +102,7 @@ class Usage:
     When streaming is enabled, this field will be null by default.
     To include an additional usage-only message in the response stream, set stream_options.include_usage to true.
     """
+
     # Number of tokens in the generated completion.
     completion_tokens: int
 
@@ -112,9 +117,8 @@ class Usage:
         return Usage(
             completion_tokens=json["completion_tokens"],
             prompt_tokens=json["prompt_tokens"],
-            total_tokens=json["total_tokens"]
+            total_tokens=json["total_tokens"],
         )
-
 
 
 @dataclass(frozen=True)
@@ -128,7 +132,8 @@ class ChatStreamChunk:
 
         role (Role, optional):
             The role of the current chat completion. Will be assistant for the first chunk of every completion stream and missing for the remaining chunks.
-    """ 
+    """
+
     content: str
     role: Optional[Role]
 
@@ -146,7 +151,9 @@ class ChatStreamChunk:
         )
 
 
-def stream_chat_item_from_json(json: Dict[str, Any]) ->  Union[Usage, ChatStreamChunk, None]:
+def stream_chat_item_from_json(
+    json: Dict[str, Any],
+) -> Union[Usage, ChatStreamChunk, None]:
     if (usage := json.get("usage")) is not None:
         return Usage.from_json(usage)
 
