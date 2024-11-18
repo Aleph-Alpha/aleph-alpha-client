@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.6.0
+
+- Add `instructable_embed` to `Client` and `AsyncClient`
+
 ## 7.5.1
 
 - Add fallback mechanism for figuring out the version locally.

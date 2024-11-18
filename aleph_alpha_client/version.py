@@ -27,7 +27,7 @@ def pyproject_version() -> str:
     """
     NO_VERSION = "0.0.0"
     pyproject_path = Path(__file__).resolve().parent.parent / "pyproject.toml"
-    
+
     if not pyproject_path.is_file():
         logging.error("pyproject.toml file not found.")
         return NO_VERSION
@@ -36,8 +36,8 @@ def pyproject_version() -> str:
 
     with pyproject_path.open("r", encoding="utf-8") as file:
         content = file.read()
-        
-    if (match := version_pattern.search(content)):
+
+    if match := version_pattern.search(content):
         return match.group(1)
 
     logging.error("Version not found in pyproject.toml")

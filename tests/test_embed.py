@@ -9,6 +9,7 @@ from aleph_alpha_client import EmbeddingRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.embedding import (
     BatchSemanticEmbeddingRequest,
+    InstructableEmbeddingRequest,
     SemanticEmbeddingRequest,
     SemanticRepresentation,
     BatchSemanticEmbeddingResponse,
@@ -93,7 +94,7 @@ async def test_batch_embed_semantic_with_async_client(
 
 @pytest.mark.parametrize("batch_size", [-1, 0, 101])
 async def test_batch_embed_semantic_invalid_batch_sizes(
-    async_client: AsyncClient, sync_client: Client, batch_size: int
+    async_client: AsyncClient, batch_size: int
 ):
     words = ["car", "elephant", "kitchen sink", "rubber", "sun"]
     request = BatchSemanticEmbeddingRequest(
@@ -103,6 +104,23 @@ async def test_batch_embed_semantic_invalid_batch_sizes(
 
     with pytest.raises(ValueError):
         await async_client.batch_semantic_embed(request=request, batch_size=batch_size)
+
+
+async def test_can_instructable_embed_with_async_client(
+    async_client: AsyncClient,
+):
+    request = InstructableEmbeddingRequest(
+        input=Prompt.from_text("hello"),
+        instruction="Represent the text to query a database of salutations",
+    )
+
+    response = await async_client.instructable_embed(
+        request, model="Pharia-1-Embedding-4608-control"
+    )
+    assert response.model_version is not None
+    assert response.embedding
+    assert len(response.embedding) == 4608
+    assert response.num_tokens_prompt_total >= 1
 
 
 def cosine_similarity(emb1: Sequence[float], emb2: Sequence[float]) -> float:
@@ -211,6 +229,22 @@ def test_embed_semantic(sync_client: Client):
     assert result.model_version is not None
     assert result.embedding
     assert len(result.embedding) == 128
+    assert result.num_tokens_prompt_total >= 1
+
+
+def test_embed_instructable(sync_client: Client):
+    request = InstructableEmbeddingRequest(
+        input=Prompt.from_text("hello"),
+        instruction="Represent the text to query a database of salutations",
+    )
+
+    result = sync_client.instructable_embed(
+        request=request, model="Pharia-1-Embedding-4608-control"
+    )
+
+    assert result.model_version is not None
+    assert result.embedding
+    assert len(result.embedding) == 4608
     assert result.num_tokens_prompt_total >= 1
 
 
