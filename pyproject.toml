@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aleph-alpha-client"
-version = "7.5.1"
+version = "7.6.0"
 description = "python client to interact with Aleph Alpha api endpoints"
 authors = ["Aleph Alpha <support@aleph-alpha.com>"]
 license = "MIT"
