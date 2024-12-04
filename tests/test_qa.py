@@ -12,7 +12,10 @@ from tests.common import (
 
 # AsyncClient
 
+SKIP_REASON = "skipping as qa endpoint is deprecated and required model is no longer available"
 
+
+@pytest.mark.skip(reason=SKIP_REASON)
 async def test_can_qa_with_async_client(async_client: AsyncClient):
     request = QaRequest(
         query="Who likes pizza?",
@@ -26,6 +29,7 @@ async def test_can_qa_with_async_client(async_client: AsyncClient):
 # Client
 
 
+@pytest.mark.skip(reason=SKIP_REASON)
 def test_qa_from_text(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -40,6 +44,7 @@ def test_qa_from_text(sync_client: Client):
     assert response.answers[0].score > 0.5
 
 
+@pytest.mark.skip(reason=SKIP_REASON)
 def test_qa_no_answer_found(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -53,6 +58,7 @@ def test_qa_no_answer_found(sync_client: Client):
     assert len(response.answers) == 0
 
 
+@pytest.mark.skip(reason=SKIP_REASON)
 def test_prompt(sync_client: Client):
     # when posting an illegal request
     request = QaRequest(

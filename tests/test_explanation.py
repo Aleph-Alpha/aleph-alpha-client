@@ -217,7 +217,7 @@ Question: Did India win or lost the Battle of Waterloo?
 
 ### Response:"""
     target_text = " India won the Battle of Waterloo."
-    model_name = "luminous-base-control"
+    model_name = "luminous-base"
     request = ExplanationRequest(
         prompt=Prompt([Text(prompt_text, controls=[])]),
         target=target_text,
