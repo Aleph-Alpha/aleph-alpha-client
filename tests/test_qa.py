@@ -4,11 +4,6 @@ from aleph_alpha_client.document import Document
 from aleph_alpha_client.prompt import Prompt
 from aleph_alpha_client.qa import QaRequest
 
-from tests.common import (
-    sync_client,
-    model_name,
-    async_client,
-)
 
 # AsyncClient
 

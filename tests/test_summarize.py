@@ -2,11 +2,6 @@ import pytest
 from aleph_alpha_client import Document, SummarizationRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 
-from tests.common import (
-    sync_client,
-    async_client,
-    model_name,
-)
 
 # AsyncClient
 

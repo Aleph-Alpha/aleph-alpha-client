@@ -10,8 +10,6 @@ from aleph_alpha_client.chat import (
     Usage,
     ChatStreamChunk,
 )
-from tests.common import async_client, sync_client, model_name, chat_model_name
-
 
 @pytest.mark.system_test
 async def test_can_not_chat_with_all_models(async_client: AsyncClient, model_name: str):

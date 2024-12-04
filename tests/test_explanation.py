@@ -10,7 +10,6 @@ from aleph_alpha_client import (
     ExplanationRequest,
     AsyncClient,
     Client,
-    ExplanationRequest,
     Image,
     Prompt,
     Text,
@@ -21,14 +20,8 @@ from aleph_alpha_client import (
     ImageScore,
 )
 
-from tests.common import (
-    sync_client,
-    model_name,
-    async_client,
-)
 
-
-# AsynClient
+# AsyncClient
 
 
 async def test_can_explain_with_async_client(

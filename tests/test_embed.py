@@ -15,11 +15,6 @@ from aleph_alpha_client.embedding import (
     BatchSemanticEmbeddingResponse,
 )
 from aleph_alpha_client.prompt import Prompt
-from tests.common import (
-    sync_client,
-    async_client,
-    model_name,
-)
 
 # AsyncClient
 

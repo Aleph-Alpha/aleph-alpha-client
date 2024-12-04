@@ -3,7 +3,6 @@ from pytest import raises
 from aleph_alpha_client.prompt import Prompt, Image, Text, Tokens
 from aleph_alpha_client.prompt_template import PromptTemplate
 from liquid.exceptions import LiquidTypeError
-from .common import prompt_image
 
 
 def test_to_prompt_with_text_array():

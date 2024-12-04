@@ -10,7 +10,6 @@ from aleph_alpha_client.completion import (
     CompletionResult,
 )
 from aleph_alpha_client.prompt import Prompt
-from tests.common import model_name, sync_client, async_client
 
 
 def test_api_version_mismatch_client(httpserver: HTTPServer):

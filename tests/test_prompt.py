@@ -7,9 +7,7 @@ from aleph_alpha_client import (
 )
 from aleph_alpha_client.aleph_alpha_client import Client
 from aleph_alpha_client.completion import CompletionRequest
-from aleph_alpha_client import Image
 from aleph_alpha_client.prompt import Text, TextControl
-from tests.common import sync_client, model_name
 
 
 def test_init_prompt_with_str():
