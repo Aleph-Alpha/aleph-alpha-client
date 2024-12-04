@@ -7,7 +7,9 @@ from aleph_alpha_client.qa import QaRequest
 
 # AsyncClient
 
-SKIP_REASON = "skipping as qa endpoint is deprecated and required model is no longer available"
+SKIP_REASON = (
+    "skipping as qa endpoint is deprecated and required model is no longer available"
+)
 
 
 @pytest.mark.skip(reason=SKIP_REASON)

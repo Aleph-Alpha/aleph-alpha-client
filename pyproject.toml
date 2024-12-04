@@ -29,6 +29,8 @@ pytest-dotenv = { version = "*", optional = true }
 pytest-httpserver = { version = "*", optional = true }
 pytest-aiohttp = { version = "*", optional = true }
 mypy = { version = "*", optional = true }
+pre-commit = { version = "*", optional = true }
+ruff = { version = "*", optional = true }
 types-requests = { version = "*", optional = true }
 types-Pillow = { version = "*", optional = true }
 types-tqdm = { version = "*", optional = true }
@@ -41,7 +43,7 @@ sphinx_rtd_theme = { version = "*", optional = true }
 [tool.poetry.extras]
 test = ["pytest", "pytest-cov", "pytest-dotenv", "pytest-httpserver", "pytest-aiohttp"]
 types = ["mypy", "types-requests", "types-Pillow", "types-tqdm"]
-dev = ["pytest", "pytest-cov", "pytest-dotenv", "pytest-httpserver", "pytest-aiohttp", "mypy", "types-request", "types-Pillow", "types-tqdm", "nbconvert", "ipykernel", "black"]
+dev = ["pytest", "pytest-cov", "pytest-dotenv", "pytest-httpserver", "pytest-aiohttp", "mypy", "types-request", "types-Pillow", "types-tqdm", "nbconvert", "ipykernel", "black", "pre-commit", "ruff"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 
 [tool.pytest.ini_options]

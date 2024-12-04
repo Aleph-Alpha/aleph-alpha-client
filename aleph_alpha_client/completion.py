@@ -40,12 +40,12 @@ class CompletionRequest:
         presence_penalty (float, optional, default 0.0)
             The presence penalty reduces the likelihood of generating tokens that are already present in the
             generated text (`repetition_penalties_include_completion=true`) respectively the prompt (`repetition_penalties_include_prompt=true`).
-            Presence penalty is independent of the number of occurences. Increase the value to produce text that is not repeating the input.
+            Presence penalty is independent of the number of occurrences. Increase the value to produce text that is not repeating the input.
 
         frequency_penalty (float, optional, default 0.0)
             The frequency penalty reduces the likelihood of generating tokens that are already present in the
             generated text (`repetition_penalties_include_completion=true`) respectively the prompt (`repetition_penalties_include_prompt=true`).
-            Frequency penalty is dependent on the number of occurences of a token.
+            Frequency penalty is dependent on the number of occurrences of a token.
 
         repetition_penalties_include_prompt (bool, optional, default False)
             Flag deciding whether presence penalty or frequency penalty are updated from the prompt
@@ -107,7 +107,7 @@ class CompletionRequest:
         stop_sequences (List(str), optional, default None)
             List of strings which will stop generation if they're generated. Stop sequences may be helpful in structured texts.
 
-            Example: In a question answering scenario a text may consist of lines starting with either "Question: " or "Answer: " (alternating). After producing an answer, the model will be likely to generate "Question: ". "Question: " may therfore be used as stop sequence in order not to have the model generate more questions but rather restrict text generation to the answers.
+            Example: In a question answering scenario a text may consist of lines starting with either "Question: " or "Answer: " (alternating). After producing an answer, the model will be likely to generate "Question: ". "Question: " may therefore be used as stop sequence in order not to have the model generate more questions but rather restrict text generation to the answers.
 
         tokens (bool, optional, default False)
             return tokens of completion
@@ -131,7 +131,7 @@ class CompletionRequest:
             (if repetition_penalties_include_prompt is True) and prior completion (if repetition_penalties_include_completion is True).
 
         sequence_penalty_min_length (int, default 2)
-            Minimal number of tokens to be considered as sequence. Must be greater or eqaul 2.
+            Minimal number of tokens to be considered as sequence. Must be greater or equal 2.
 
         use_multiplicative_sequence_penalty (bool, default False)
             Flag deciding whether sequence penalty is applied multiplicatively (True) or additively (False).

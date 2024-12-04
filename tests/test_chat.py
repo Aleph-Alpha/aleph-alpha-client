@@ -11,6 +11,7 @@ from aleph_alpha_client.chat import (
     ChatStreamChunk,
 )
 
+
 @pytest.mark.system_test
 async def test_can_not_chat_with_all_models(async_client: AsyncClient, model_name: str):
     request = ChatRequest(
