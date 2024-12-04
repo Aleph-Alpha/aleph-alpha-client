@@ -140,10 +140,9 @@ def test_image_controls_with_cats_and_dogs(sync_client: Client):
     text = Text.from_text("A picture of ")
     request = CompletionRequest(
         prompt=Prompt([image, text]),
-        model="pharia-1-llm-7b-control",
         maximum_tokens=16,
         control_log_additive=True,
         disable_optimizations=False,
     )
-    result = sync_client.complete(request, model="luminous-extended")
-    assert result.completions[0].completion == " a dog"
+    result = sync_client.complete(request, model="luminous-base")
+    assert result.completions[0].completion == " a dog with a blank sign"
