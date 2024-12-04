@@ -1,4 +1,4 @@
-name: Test things on pushes
+name: Test
 
 on: [push, pull_request]
 
@@ -24,7 +24,7 @@ jobs:
           poetry run mypy tests --ignore-missing-imports
       - name: Run tests
         run: |
-          poetry run pytest
+          poetry run pytest --color=yes
         env:
           TEST_API_URL: ${{ secrets.TEST_API_URL }}
           TEST_TOKEN: ${{ secrets.TEST_TOKEN }}
