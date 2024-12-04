@@ -18,10 +18,12 @@ Python client for the [Aleph Alpha](https://aleph-alpha.com) API.
 import os
 from aleph_alpha_client import Client, CompletionRequest, Prompt
 
-client = Client(token=os.getenv("AA_TOKEN"))
+client = Client(
+    token=os.getenv("AA_TOKEN"),
+    host="https://inference-api.your-domain.com",
+)
 request = CompletionRequest(
     prompt=Prompt.from_text("Provide a short description of AI:"),
-    host="https://inference-api.your-domain.com",
     maximum_tokens=64,
 )
 response = client.complete(request, model="pharia-1-llm-7b-control")
@@ -36,10 +38,12 @@ import os
 from aleph_alpha_client import AsyncClient, CompletionRequest, Prompt
 
 # Can enter context manager within an async function
-async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
+async with AsyncClient(
+    token=os.environ["AA_TOKEN"]
+    host="https://inference-api.your-domain.com",
+) as client:
     request = CompletionRequest(
         prompt=Prompt.from_text("Provide a short description of AI:"),
-        host="https://inference-api.your-domain.com",
         maximum_tokens=64,
     )
     response = client.complete_with_streaming(request, model="pharia-1-llm-7b-control")

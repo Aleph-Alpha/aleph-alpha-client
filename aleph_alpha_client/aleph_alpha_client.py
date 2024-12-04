@@ -163,10 +163,11 @@ class Client:
             Internal feature.
 
     Example usage:
-        >>> request = CompletionRequest(
-                prompt=Prompt.from_text(f"Request"), host="https://inference-api.your-domain.com", maximum_tokens=64
+        >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
+        >>> client = Client(
+                token=os.environ["AA_TOKEN"],
+                host="https://inference-api.your-domain.com",
             )
-        >>> client = Client(token=os.environ["AA_TOKEN"])
         >>> response: CompletionResponse = client.complete(request, "pharia-1-llm-7b-control")
     """
 
@@ -740,10 +741,11 @@ class AsyncClient:
             Internal feature.
 
     Example usage:
-        >>> request = CompletionRequest(
-                prompt=Prompt.from_text(f"Request"), host="https://inference-api.your-domain.com", maximum_tokens=64
-            )
-        >>> async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
+        >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
+        >>> async with AsyncClient(
+                token=os.environ["AA_TOKEN"],
+                host="https://inference-api.your-domain.com"
+            ) as client:
                 response: CompletionResponse = await client.complete(request, "pharia-1-llm-7b-control")
     """
 
