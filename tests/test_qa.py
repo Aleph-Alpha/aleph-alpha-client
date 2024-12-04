@@ -18,7 +18,6 @@ async def test_can_qa_with_async_client(async_client: AsyncClient):
         query="Who likes pizza?",
         documents=[Document.from_text("Andreas likes pizza.")],
     )
-
     response = await async_client.qa(request)
     assert len(response.answers) == 1
     assert response.answers[0].score > 0.0

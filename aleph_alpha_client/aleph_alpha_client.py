@@ -129,7 +129,7 @@ class Client:
         token (string, required):
             The API token that will be used for authentication.
 
-        host (string, required, default "https://api.aleph-alpha.com"):
+        host (string, required):
             The hostname of the API host.
 
         hosting(string, optional, default None):
@@ -164,16 +164,16 @@ class Client:
 
     Example usage:
         >>> request = CompletionRequest(
-                prompt=Prompt.from_text(f"Request"), maximum_tokens=64
+                prompt=Prompt.from_text(f"Request"), host="https://inference-api.your-domain.com", maximum_tokens=64
             )
         >>> client = Client(token=os.environ["AA_TOKEN"])
-        >>> response: CompletionResponse = client.complete(request, "luminous-base")
+        >>> response: CompletionResponse = client.complete(request, "pharia-1-llm-7b-control")
     """
 
     def __init__(
         self,
         token: str,
-        host: str = "https://api.aleph-alpha.com",
+        host: str,
         hosting: Optional[str] = None,
         request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT,
         total_retries: int = 8,
@@ -706,7 +706,7 @@ class AsyncClient:
         token (string, required):
             The API token that will be used for authentication.
 
-        host (string, required, default "https://api.aleph-alpha.com"):
+        host (string, required):
             The hostname of the API host.
 
         hosting(string, optional, default None):
@@ -740,15 +740,17 @@ class AsyncClient:
             Internal feature.
 
     Example usage:
-        >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
+        >>> request = CompletionRequest(
+                prompt=Prompt.from_text(f"Request"), host="https://inference-api.your-domain.com", maximum_tokens=64
+            )
         >>> async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
-                response: CompletionResponse = await client.complete(request, "luminous-base")
+                response: CompletionResponse = await client.complete(request, "pharia-1-llm-7b-control")
     """
 
     def __init__(
         self,
         token: str,
-        host: str = "https://api.aleph-alpha.com",
+        host: str,
         hosting: Optional[str] = None,
         request_timeout_seconds: int = DEFAULT_REQUEST_TIMEOUT,
         total_retries: int = 8,
@@ -846,7 +848,6 @@ class AsyncClient:
         json_body = self._build_json_body(request, model)
 
         query_params = self._build_query_parameters()
-
         async with self.session.post(
             self.host + endpoint, json=json_body, params=query_params
         ) as response:

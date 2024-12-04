@@ -21,9 +21,10 @@ from aleph_alpha_client import Client, CompletionRequest, Prompt
 client = Client(token=os.getenv("AA_TOKEN"))
 request = CompletionRequest(
     prompt=Prompt.from_text("Provide a short description of AI:"),
+    host="https://inference-api.your-domain.com",
     maximum_tokens=64,
 )
-response = client.complete(request, model="luminous-extended")
+response = client.complete(request, model="pharia-1-llm-7b-control")
 
 print(response.completions[0].completion)
 ```
@@ -38,9 +39,10 @@ from aleph_alpha_client import AsyncClient, CompletionRequest, Prompt
 async with AsyncClient(token=os.environ["AA_TOKEN"]) as client:
     request = CompletionRequest(
         prompt=Prompt.from_text("Provide a short description of AI:"),
+        host="https://inference-api.your-domain.com",
         maximum_tokens=64,
     )
-    response = client.complete_with_streaming(request, model="luminous-base")
+    response = client.complete_with_streaming(request, model="pharia-1-llm-7b-control")
 
     async for stream_item in response:
         print(stream_item)

@@ -26,5 +26,5 @@ jobs:
         run: |
           poetry run pytest
         env:
-          TEST_API_URL: https://api.aleph-alpha.com
+          TEST_API_URL: ${{ secrets.TEST_API_URL }}
           TEST_TOKEN: ${{ secrets.AA_API_TOKEN }}
