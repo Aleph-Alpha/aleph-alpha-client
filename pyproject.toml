@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aleph-alpha-client"
-version = "7.6.0"
+version = "8.0.0"
 description = "python client to interact with Aleph Alpha api endpoints"
 authors = ["Aleph Alpha <support@aleph-alpha.com>"]
 license = "MIT"
@@ -17,7 +17,7 @@ urllib3 = ">=1.26"
 aiohttp = ">=3.10.2"
 aiodns = ">=3.2.0"
 aiohttp-retry = ">=2.8.3"
-tokenizers = ">=0.13.2"
+tokenizers = ">=0.13.2,<0.21.0"  # down-pinned due to api incompatibilities for python3.8, see https://github.com/huggingface/tokenizers/issues/1691
 typing-extensions = ">=4.5.0"
 Pillow = ">=9.2.0"
 tqdm = ">=4.62.0"
@@ -29,6 +29,8 @@ pytest-dotenv = { version = "*", optional = true }
 pytest-httpserver = { version = "*", optional = true }
 pytest-aiohttp = { version = "*", optional = true }
 mypy = { version = "*", optional = true }
+pre-commit = { version = "*", optional = true }
+ruff = { version = "*", optional = true }
 types-requests = { version = "*", optional = true }
 types-Pillow = { version = "*", optional = true }
 types-tqdm = { version = "*", optional = true }
@@ -41,7 +43,7 @@ sphinx_rtd_theme = { version = "*", optional = true }
 [tool.poetry.extras]
 test = ["pytest", "pytest-cov", "pytest-dotenv", "pytest-httpserver", "pytest-aiohttp"]
 types = ["mypy", "types-requests", "types-Pillow", "types-tqdm"]
-dev = ["pytest", "pytest-cov", "pytest-dotenv", "pytest-httpserver", "pytest-aiohttp", "mypy", "types-request", "types-Pillow", "types-tqdm", "nbconvert", "ipykernel", "black"]
+dev = ["pytest", "pytest-cov", "pytest-dotenv", "pytest-httpserver", "pytest-aiohttp", "mypy", "types-request", "types-Pillow", "types-tqdm", "nbconvert", "ipykernel", "black", "pre-commit", "ruff"]
 docs = ["sphinx", "sphinx_rtd_theme"]
 
 [tool.pytest.ini_options]

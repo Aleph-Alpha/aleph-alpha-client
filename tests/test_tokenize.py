@@ -3,12 +3,6 @@ from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.tokenization import TokenizationRequest
 from aleph_alpha_client.detokenization import DetokenizationRequest
 
-from tests.common import (
-    sync_client,
-    model_name,
-    async_client,
-)
-
 
 # AsyncClient
 

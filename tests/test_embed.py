@@ -15,11 +15,6 @@ from aleph_alpha_client.embedding import (
     BatchSemanticEmbeddingResponse,
 )
 from aleph_alpha_client.prompt import Prompt
-from tests.common import (
-    sync_client,
-    async_client,
-    model_name,
-)
 
 # AsyncClient
 
@@ -115,7 +110,7 @@ async def test_can_instructable_embed_with_async_client(
     )
 
     response = await async_client.instructable_embed(
-        request, model="Pharia-1-Embedding-4608-control"
+        request, model="pharia-1-embedding-4608-control"
     )
     assert response.model_version is not None
     assert response.embedding
@@ -239,7 +234,7 @@ def test_embed_instructable(sync_client: Client):
     )
 
     result = sync_client.instructable_embed(
-        request=request, model="Pharia-1-Embedding-4608-control"
+        request=request, model="pharia-1-embedding-4608-control"
     )
 
     assert result.model_version is not None

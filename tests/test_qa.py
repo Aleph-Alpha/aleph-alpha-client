@@ -4,21 +4,20 @@ from aleph_alpha_client.document import Document
 from aleph_alpha_client.prompt import Prompt
 from aleph_alpha_client.qa import QaRequest
 
-from tests.common import (
-    sync_client,
-    model_name,
-    async_client,
-)
 
 # AsyncClient
 
+SKIP_REASON = (
+    "skipping as qa endpoint is deprecated and required model is no longer available"
+)
 
+
+@pytest.mark.skip(reason=SKIP_REASON)
 async def test_can_qa_with_async_client(async_client: AsyncClient):
     request = QaRequest(
         query="Who likes pizza?",
         documents=[Document.from_text("Andreas likes pizza.")],
     )
-
     response = await async_client.qa(request)
     assert len(response.answers) == 1
     assert response.answers[0].score > 0.0
@@ -27,6 +26,7 @@ async def test_can_qa_with_async_client(async_client: AsyncClient):
 # Client
 
 
+@pytest.mark.skip(reason=SKIP_REASON)
 def test_qa_from_text(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -41,6 +41,7 @@ def test_qa_from_text(sync_client: Client):
     assert response.answers[0].score > 0.5
 
 
+@pytest.mark.skip(reason=SKIP_REASON)
 def test_qa_no_answer_found(sync_client: Client):
     # when posting a QA request with a QaRequest object
     request = QaRequest(
@@ -54,6 +55,7 @@ def test_qa_no_answer_found(sync_client: Client):
     assert len(response.answers) == 0
 
 
+@pytest.mark.skip(reason=SKIP_REASON)
 def test_prompt(sync_client: Client):
     # when posting an illegal request
     request = QaRequest(

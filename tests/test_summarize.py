@@ -2,15 +2,14 @@ import pytest
 from aleph_alpha_client import Document, SummarizationRequest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 
-from tests.common import (
-    sync_client,
-    async_client,
-    model_name,
-)
 
 # AsyncClient
 
 
+SKIP_REASON = "skipping as summarization endpoint is deprecated and required model is no longer available"
+
+
+@pytest.mark.skip(reason=SKIP_REASON)
 @pytest.mark.system_test
 async def test_can_summarize_with_async_client(async_client: AsyncClient):
     request = SummarizationRequest(
@@ -24,6 +23,7 @@ async def test_can_summarize_with_async_client(async_client: AsyncClient):
 # Client
 
 
+@pytest.mark.skip(reason=SKIP_REASON)
 @pytest.mark.system_test
 def test_summarize(sync_client: Client):
     # when posting a Summarization request
@@ -37,6 +37,7 @@ def test_summarize(sync_client: Client):
     assert response.summary is not None
 
 
+@pytest.mark.skip(reason=SKIP_REASON)
 @pytest.mark.system_test
 def test_text(sync_client: Client):
     request = SummarizationRequest(

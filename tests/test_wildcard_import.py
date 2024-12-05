@@ -1,4 +1,4 @@
-from aleph_alpha_client import *
+from aleph_alpha_client import *  # noqa
 
 
 def test_should_be_able_to_import_with_wildcard():

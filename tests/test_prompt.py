@@ -7,9 +7,7 @@ from aleph_alpha_client import (
 )
 from aleph_alpha_client.aleph_alpha_client import Client
 from aleph_alpha_client.completion import CompletionRequest
-from aleph_alpha_client import Image
 from aleph_alpha_client.prompt import Text, TextControl
-from tests.common import sync_client, model_name
 
 
 def test_init_prompt_with_str():
@@ -144,5 +142,5 @@ def test_image_controls_with_cats_and_dogs(sync_client: Client):
         control_log_additive=True,
         disable_optimizations=False,
     )
-    result = sync_client.complete(request, model="luminous-extended")
-    assert result.completions[0].completion == " a dog"
+    result = sync_client.complete(request, model="luminous-base")
+    assert result.completions[0].completion == " a dog with a blank sign"

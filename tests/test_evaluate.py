@@ -2,11 +2,6 @@ import pytest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.evaluation import EvaluationRequest
 from aleph_alpha_client.prompt import Prompt
-from tests.common import (
-    sync_client,
-    model_name,
-    async_client,
-)
 
 
 # AsyncClient

@@ -1,5 +1,10 @@
 # Changelog
 
+## 8.0.0
+
+- Remove default value for `host` parameter in `Client` and `AsyncClient`. Passing a value for
+  the `host` is now required.
+
 ## 7.6.0
 
 - Add `instructable_embed` to `Client` and `AsyncClient`

@@ -10,32 +10,33 @@ from aleph_alpha_client.completion import (
     CompletionResult,
 )
 from aleph_alpha_client.prompt import Prompt
-from tests.common import model_name, sync_client, async_client
 
 
 def test_api_version_mismatch_client(httpserver: HTTPServer):
     httpserver.expect_request("/version").respond_with_data("0.0.0")
 
     with pytest.raises(RuntimeError):
-        Client(host=httpserver.url_for(""), token="AA_TOKEN").validate_version()
+        Client(host=httpserver.url_for(""), token="TEST_TOKEN").validate_version()
 
 
 async def test_api_version_mismatch_async_client(httpserver: HTTPServer):
     httpserver.expect_request("/version").respond_with_data("0.0.0")
 
     with pytest.raises(RuntimeError):
-        async with AsyncClient(host=httpserver.url_for(""), token="AA_TOKEN") as client:
+        async with AsyncClient(
+            host=httpserver.url_for(""), token="TEST_TOKEN"
+        ) as client:
             await client.validate_version()
 
 
 def test_api_version_correct_client(httpserver: HTTPServer):
     httpserver.expect_request("/version").respond_with_data(MIN_API_VERSION)
-    Client(host=httpserver.url_for(""), token="AA_TOKEN").validate_version()
+    Client(host=httpserver.url_for(""), token="TEST_TOKEN").validate_version()
 
 
 async def test_api_version_correct_async_client(httpserver: HTTPServer):
     httpserver.expect_request("/version").respond_with_data(MIN_API_VERSION)
-    async with AsyncClient(host=httpserver.url_for(""), token="AA_TOKEN") as client:
+    async with AsyncClient(host=httpserver.url_for(""), token="TEST_TOKEN") as client:
         await client.validate_version()
 
 
@@ -72,7 +73,7 @@ def test_nice_flag_on_client(httpserver: HTTPServer):
         ).to_json()
     )
 
-    client = Client(host=httpserver.url_for(""), token="AA_TOKEN", nice=True)
+    client = Client(host=httpserver.url_for(""), token="TEST_TOKEN", nice=True)
 
     request = CompletionRequest(prompt=Prompt.from_text("Hello world"))
     client.complete(request, model="luminous")
@@ -97,7 +98,7 @@ async def test_nice_flag_on_async_client(httpserver: HTTPServer):
 
     async with AsyncClient(
         host=httpserver.url_for(""),
-        token="AA_TOKEN",
+        token="TEST_TOKEN",
         nice=True,
         request_timeout_seconds=1,
     ) as client:
@@ -128,7 +129,7 @@ def test_tags_on_client(httpserver: HTTPServer):
     client = Client(
         host=httpserver.url_for(""),
         request_timeout_seconds=1,
-        token="AA_TOKEN",
+        token="TEST_TOKEN",
         tags=["tim-tagger"],
     )
 
@@ -152,7 +153,7 @@ async def test_tags_on_async_client(httpserver: HTTPServer):
     )
 
     async with AsyncClient(
-        host=httpserver.url_for(""), token="AA_TOKEN", tags=["tim-tagger"]
+        host=httpserver.url_for(""), token="TEST_TOKEN", tags=["tim-tagger"]
     ) as client:
         await client.complete(request, model="luminous")
 

@@ -14,7 +14,7 @@ def test_from_url_with_non_OK_response(httpserver: HTTPServer):
         "html", status=HTTPStatus.FORBIDDEN
     )
 
-    with raises(RequestException) as e:
+    with raises(RequestException):
         Image.from_url(httpserver.url_for(path))
 
 

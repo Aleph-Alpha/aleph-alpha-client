@@ -15,13 +15,6 @@ from aleph_alpha_client.prompt import (
     Tokens,
 )
 
-from tests.common import (
-    sync_client,
-    async_client,
-    model_name,
-    prompt_image,
-)
-
 
 @pytest.mark.system_test
 async def test_can_complete_with_async_client(

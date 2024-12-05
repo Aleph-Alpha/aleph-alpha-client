@@ -54,7 +54,7 @@ class TokenControl:
 
         factor (float, required):
             The amount to adjust model attention by.
-            Values between 0 and 1 will supress attention.
+            Values between 0 and 1 will suppress attention.
             A value of 1 will have no effect.
             Values above 1 will increase attention.
 
@@ -121,7 +121,7 @@ class TextControl:
             The amount of characters to apply the factor to.
         factor (float, required):
             The amount to adjust model attention by.
-            Values between 0 and 1 will supress attention.
+            Values between 0 and 1 will suppress attention.
             A value of 1 will have no effect.
             Values above 1 will increase attention.
         token_overlap (ControlTokenOverlap, optional):
@@ -163,7 +163,7 @@ class Text:
         text (str, required):
             The text prompt
         controls (list of TextControl, required):
-            A list of TextControls to manilpulate attention when processing the prompt.
+            A list of TextControls to manipulate attention when processing the prompt.
             Can be empty if no manipulation is required.
 
     Examples:
@@ -227,7 +227,7 @@ class ImageControl:
             Must be a value between 0 and 1, where 1 means the full height of the image.
         factor (float, required):
             The amount to adjust model attention by.
-            Values between 0 and 1 will supress attention.
+            Values between 0 and 1 will suppress attention.
             A value of 1 will have no effect.
             Values above 1 will increase attention.
         token_overlap (ControlTokenOverlap, optional):
@@ -285,7 +285,7 @@ class Image:
         >>> image = Image.from_url(url)
     """
 
-    # We use a base_64 reperesentation, because we want to embed the image
+    # We use a base_64 representation, because we want to embed the image
     # into a prompt send in JSON.
     base_64: str
     cropping: Optional[Cropping]
@@ -310,7 +310,7 @@ class Image:
                 p = urlparse(image_source)
                 if p.scheme:
                     return cls.from_url(url=image_source, controls=controls)
-            except Exception as e:
+            except Exception:
                 # we assume that If the string runs into a Exception it isn't not a valid ulr
                 pass
 

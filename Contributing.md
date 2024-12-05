@@ -16,7 +16,7 @@ Tests can be run using pytest. Make sure to create a `.env` file with the follow
 
 ```env
 # test settings
-TEST_API_URL=https://test.api.aleph-alpha.com
+TEST_API_URL=https://inference-api.your-domain.com
 TEST_TOKEN=your_token
 ```
 
@@ -24,7 +24,7 @@ Instead of a token username and password can be used.
 
 ```env
 # test settings
-TEST_API_URL=https://api.aleph-alpha.com
+TEST_API_URL=https://inference-api.your-domain.com
 TEST_USERNAME=your_username
 TEST_PASSWORD=your_password
 ```
