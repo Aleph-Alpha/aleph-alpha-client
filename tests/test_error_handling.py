@@ -29,7 +29,7 @@ def test_translate_errors():
 def test_retry_sync(httpserver: HTTPServer):
     num_retries = 2
     client = Client(
-        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+        token="TEST_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
     )
     expect_retryable_error(httpserver, num_calls_expected=num_retries)
     expect_valid_version(httpserver)
@@ -40,7 +40,7 @@ def test_retry_sync(httpserver: HTTPServer):
 def test_retry_sync_post(httpserver: HTTPServer):
     num_retries = 2
     client = Client(
-        host=httpserver.url_for(""), token="AA_TOKEN", total_retries=num_retries
+        host=httpserver.url_for(""), token="TEST_TOKEN", total_retries=num_retries
     )
     expect_retryable_error(httpserver, num_calls_expected=num_retries)
     expect_valid_completion(httpserver)
@@ -52,7 +52,7 @@ def test_retry_sync_post(httpserver: HTTPServer):
 def test_exhaust_retries_sync(httpserver: HTTPServer):
     num_retries = 1
     client = Client(
-        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+        token="TEST_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
     )
     expect_retryable_error(
         httpserver,
@@ -69,7 +69,7 @@ async def test_retry_async(httpserver: HTTPServer):
     expect_valid_version(httpserver)
 
     async with AsyncClient(
-        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+        token="TEST_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
     ) as client:
         await client.get_version()
 
@@ -80,7 +80,7 @@ async def test_retry_async_post(httpserver: HTTPServer):
     expect_valid_completion(httpserver)
 
     async with AsyncClient(
-        token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+        token="TEST_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
     ) as client:
         request = CompletionRequest(prompt=Prompt.from_text(""), maximum_tokens=7)
         await client.complete(request, model="FOO")
@@ -95,7 +95,7 @@ async def test_exhaust_retries_async(httpserver: HTTPServer):
     )
     with pytest.raises(BusyError):
         async with AsyncClient(
-            token="AA_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
+            token="TEST_TOKEN", host=httpserver.url_for(""), total_retries=num_retries
         ) as client:
             await client.get_version()
 

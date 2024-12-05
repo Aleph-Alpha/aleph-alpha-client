@@ -165,8 +165,8 @@ class Client:
     Example usage:
         >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
         >>> client = Client(
-                token=os.environ["AA_TOKEN"],
-                host="https://inference-api.your-domain.com",
+                token=os.environ["TEST_TOKEN"],
+                host=os.environ["TEST_API_URL"],
             )
         >>> response: CompletionResponse = client.complete(request, "pharia-1-llm-7b-control")
     """
@@ -743,8 +743,8 @@ class AsyncClient:
     Example usage:
         >>> request = CompletionRequest(prompt=Prompt.from_text(f"Request"), maximum_tokens=64)
         >>> async with AsyncClient(
-                token=os.environ["AA_TOKEN"],
-                host="https://inference-api.your-domain.com"
+                token=os.environ["TEST_TOKEN"],
+                host=os.environ["TEST_API_URL"],
             ) as client:
                 response: CompletionResponse = await client.complete(request, "pharia-1-llm-7b-control")
     """

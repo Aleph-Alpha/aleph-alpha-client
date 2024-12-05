@@ -18,7 +18,7 @@ Synchronous client.
       from aleph_alpha_client import Client, CompletionRequest, Prompt
       import os
 
-      client = Client(token=os.getenv("AA_TOKEN"), host="https://inference-api.your-domain.com")
+      client = Client(token=os.environ["TEST_TOKEN"], host=os.environ["TEST_API_URL"])
       prompt = Prompt.from_text("Provide a short description of AI:")
       request = CompletionRequest(prompt=prompt, maximum_tokens=20)
       result = client.complete(request, model="luminous-extended")
@@ -32,7 +32,7 @@ Synchronous client with prompt containing an image.
       from aleph_alpha_client import Client, CompletionRequest, PromptTemplate, Image
       import os
 
-      client = Client(token=os.getenv("AA_TOKEN"), host="https://inference-api.your-domain.com")
+      client = Client(token=os.environ["TEST_TOKEN"], host=os.environ["TEST_API_URL"])
       image = Image.from_file("path-to-an-image")
       prompt_template = PromptTemplate("{{image}}This picture shows ")
       prompt = prompt_template.to_prompt(image=prompt_template.placeholder(image))
@@ -50,7 +50,7 @@ Asynchronous client.
    from aleph_alpha_client import AsyncClient, CompletionRequest, Prompt
 
    # Can enter context manager within an async function
-   async with AsyncClient(token=os.environ["AA_TOKEN"], host="https://inference-api.your-domain.com") as client:
+   async with AsyncClient(token=os.environ["TEST_TOKEN"], host=os.environ["TEST_API_URL"]) as client:
       request = CompletionRequest(
          prompt=Prompt.from_text("Request"),
          maximum_tokens=64,
