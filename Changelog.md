@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.1.0
+
+### Python support
+
+- Minimal supported Python version is now 3.9
+
 ## 8.0.0
 
 - Remove default value for `host` parameter in `Client` and `AsyncClient`. Passing a value for

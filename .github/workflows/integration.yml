@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.12]
+        python-version: [3.9, 3.12]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
@@ -17,7 +17,7 @@ jobs:
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v9
       - name: Install deps
-        run: poetry install --extras "dev" --extras "types"
+        run: poetry install --extras "dev" --extras "types" --no-cache
       - name: Lint with mypy
         run: |
           poetry run mypy aleph_alpha_client

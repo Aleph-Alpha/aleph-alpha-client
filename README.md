@@ -94,7 +94,7 @@ Now you should be able to ...
 
 * run all the tests using `pytest` or, `pytest -k <test_name>` to run a specific test
 * typecheck the code and tests using `mypy aleph_alpha_client` resp. `mypy tests`
-* format the code using `black .`
+* format the code using `ruff`
 
 ## Links
 
