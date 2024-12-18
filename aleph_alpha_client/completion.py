@@ -177,6 +177,10 @@ class CompletionRequest:
             return the optimized completion in the completion field of the CompletionResponse.
             The raw completion, if returned, will contain the un-optimized completion.
 
+        steering_concepts_to_apply (Optional[list[str]], default None)
+            Names of the steering vectors to apply on this task. This steers the output in the 
+            direction given by positive examples, and away from negative examples if provided.
+
     Examples:
         >>> prompt = Prompt.from_text("Provide a short description of AI:")
         >>> request = CompletionRequest(prompt=prompt, maximum_tokens=20)
@@ -215,6 +219,7 @@ class CompletionRequest:
     control_log_additive: Optional[bool] = True
     repetition_penalties_include_completion: bool = True
     raw_completion: bool = False
+    steering_concepts_to_apply: Optional[List[str]] = None
 
     def to_json(self) -> Mapping[str, Any]:
         payload = {k: v for k, v in self._asdict().items() if v is not None}
