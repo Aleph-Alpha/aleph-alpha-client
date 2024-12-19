@@ -188,3 +188,21 @@ def test_num_tokens_generated_with_best_of(sync_client: Client, model_name: str)
     number_tokens_completion = len(completion_result.completion_tokens)
 
     assert response.num_tokens_generated == best_of * number_tokens_completion
+
+
+@pytest.mark.system_test
+def test_steering_completion(sync_client: Client, chat_model_name: str):
+    request = CompletionRequest(
+        prompt=Prompt.from_text(
+            "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nParaphrase the following phrase. You are an honest man.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+        ),
+        steering_concepts=["shakespeare"],
+        maximum_tokens=16,
+    )
+
+    response = sync_client.complete(request, model=chat_model_name)
+    completion_result = response.completions[0]
+    assert completion_result.completion is not None
+    assert (
+        "art" in completion_result.completion
+    ), "Steered completion should contain Shakespearean language like 'art' for this particular phrase."
