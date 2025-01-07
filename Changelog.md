@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.0.0
+
+- Remove deprecated QA and Summarization functionality
+
 ## 8.1.0
 
 ### Python support

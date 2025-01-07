@@ -29,8 +29,7 @@ from aleph_alpha_client.explanation import (
     ExplanationRequest,
     ExplanationResponse,
 )
-from aleph_alpha_client.summarization import SummarizationRequest, SummarizationResponse
-from aleph_alpha_client.qa import QaRequest, QaResponse
+
 from aleph_alpha_client.completion import (
     CompletionRequest,
     CompletionResponse,
@@ -114,8 +113,6 @@ AnyRequest = Union[
     SemanticEmbeddingRequest,
     InstructableEmbeddingRequest,
     BatchSemanticEmbeddingRequest,
-    QaRequest,
-    SummarizationRequest,
     ExplanationRequest,
     ExplanationRequest,
 ]
@@ -603,61 +600,6 @@ class Client:
             model,
         )
         return EvaluationResponse.from_json(response)
-
-    def qa(self, request: QaRequest) -> QaResponse:
-        """DEPRECATED: `qa` is deprecated and will be removed in the next major release. New
-        methods of processing Q&A tasks will be provided before this is removed.
-
-        Answers a question about documents.
-
-        Parameters:
-            request (QaRequest, required):
-                Parameters for the qa request.
-
-        Examples:
-            >>> request = QaRequest(
-                    query="Who likes pizza?",
-                    documents=[Document.from_text("Andreas likes pizza.")],
-                )
-            >>> response = client.qa(request)
-        """
-        warnings.warn(
-            "qa is deprecated and will be removed in the next major release. New methods of processing Q&A tasks will be provided before this is removed.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        response = self._post_request("qa", request)
-        return QaResponse.from_json(response)
-
-    def summarize(
-        self,
-        request: SummarizationRequest,
-    ) -> SummarizationResponse:
-        """DEPRECATED: `summarize` is deprecated and will be removed in the next major release. New
-        methods of processing Summarization tasks will be provided before this is removed.
-
-        Summarizes a document.
-
-        Parameters:
-            request (SummarizationRequest, required):
-                Parameters for the requested summarization.
-
-        Examples:
-            >>> request = SummarizationRequest(
-                    document=Document.from_text("Andreas likes pizza."),
-                )
-            >>> response = client.summarize(request, model="luminous-extended")
-        """
-        warnings.warn(
-            "summarize is deprecated and will be removed in the next major release. New methods of processing Q&A tasks will be provided before this is removed.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        response = self._post_request(
-            "summarize",
-            request,
-        )
-        return SummarizationResponse.from_json(response)
 
     def explain(
         self,
@@ -1349,60 +1291,6 @@ class AsyncClient:
             model,
         )
         return EvaluationResponse.from_json(response)
-
-    async def qa(self, request: QaRequest) -> QaResponse:
-        """DEPRECATED: `qa` is deprecated and will be removed in the next major release. New
-        methods of processing Q&A tasks will be provided before this is removed.
-
-        Answers a question about documents.
-
-        Parameters:
-            request (QaRequest, required):
-                Parameters for the qa request.
-
-        Examples:
-            >>> request = QaRequest(
-                    query="Who likes pizza?",
-                    documents=[Document.from_text("Andreas likes pizza.")],
-                )
-            >>> response = await client.qa(request, model="luminous-extended")
-        """
-        warnings.warn(
-            "qa is deprecated and will be removed in the next major release. New methods of processing Q&A tasks will be provided before this is removed.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        response = await self._post_request("qa", request)
-        return QaResponse.from_json(response)
-
-    async def summarize(
-        self,
-        request: SummarizationRequest,
-    ) -> SummarizationResponse:
-        """DEPRECATED: `summarize` is deprecated and will be removed in the next major release. New
-        methods of processing Summarization tasks will be provided before this is removed.
-
-        Summarizes a document.
-
-        Parameters:
-            request (SummarizationRequest, required):
-                Parameters for the requested summarization.
-        Examples:
-            >>> request = SummarizationRequest(
-                    document=Document.from_text("Andreas likes pizza."),
-                )
-            >>> response = await client.summarize(request, model="luminous-extended")
-        """
-        warnings.warn(
-            "summarize is deprecated and will be removed in the next major release. New methods of processing Q&A tasks will be provided before this is removed.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
-        response = await self._post_request(
-            "summarize",
-            request,
-        )
-        return SummarizationResponse.from_json(response)
 
     async def explain(
         self,
