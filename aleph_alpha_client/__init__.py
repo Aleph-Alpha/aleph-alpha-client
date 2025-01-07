@@ -46,8 +46,6 @@ from .explanation import (
     TokenPromptItemExplanation,
     TokenScore,
 )
-from .qa import QaRequest, QaResponse
-from .summarization import SummarizationRequest, SummarizationResponse
 from .tokenization import TokenizationRequest, TokenizationResponse
 from .utils import load_base64_from_file, load_base64_from_url
 from .version import __version__
@@ -83,14 +81,10 @@ __all__ = [
     "Prompt",
     "PromptTemplate",
     "PromptGranularity",
-    "QaRequest",
-    "QaResponse",
     "QuotaError",
     "SemanticEmbeddingRequest",
     "SemanticEmbeddingResponse",
     "SemanticRepresentation",
-    "SummarizationRequest",
-    "SummarizationResponse",
     "TargetGranularity",
     "TargetPromptItemExplanation",
     "TargetScore",
