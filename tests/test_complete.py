@@ -190,7 +190,6 @@ def test_num_tokens_generated_with_best_of(sync_client: Client, model_name: str)
     assert response.num_tokens_generated == best_of * number_tokens_completion
 
 
-@pytest.mark.system_test
 def test_steering_completion(sync_client: Client, chat_model_name: str):
     base_request = CompletionRequest(
         prompt=Prompt.from_text(
