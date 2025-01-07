@@ -8,14 +8,15 @@ version: 2
 build:
   os: ubuntu-22.04
   tools:
-    python: "3.11"
+    python: "3.12"
   jobs:
     post_create_environment:
-    - pip install poetry
-    - poetry export --extras docs --without-hashes > doc-requirements.txt
+      - pip install poetry
+      - poetry self add poetry-plugin-export
+      - poetry export --extras docs --without-hashes > doc-requirements.txt
     post_install:
-    - pip install -r doc-requirements.txt
-    - pip list
+      - pip install -r doc-requirements.txt
+      - pip list
 
 python:
   install:
@@ -31,7 +32,6 @@ sphinx:
   # builder: "dirhtml"
   # Fail on all warnings to avoid broken references
   # fail_on_warning: true
-
 # Optionally build your docs in additional formats such as PDF and ePub
 # formats:
 #    - pdf
