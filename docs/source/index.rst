@@ -21,7 +21,7 @@ Synchronous client.
       client = Client(token=os.environ["TEST_TOKEN"], host=os.environ["TEST_API_URL"])
       prompt = Prompt.from_text("Provide a short description of AI:")
       request = CompletionRequest(prompt=prompt, maximum_tokens=20)
-      result = client.complete(request, model="luminous-extended")
+      result = client.complete(request, model="luminous-base")
 
       print(result.completions[0].completion)
 
@@ -37,7 +37,7 @@ Synchronous client with prompt containing an image.
       prompt_template = PromptTemplate("{{image}}This picture shows ")
       prompt = prompt_template.to_prompt(image=prompt_template.placeholder(image))
       request = CompletionRequest(prompt=prompt, maximum_tokens=20)
-      result = client.complete(request, model="luminous-extended")
+      result = client.complete(request, model="luminous-base")
 
       print(result.completions[0].completion)
 
