@@ -622,7 +622,7 @@ class Client:
                     prompt=Prompt.from_text("Andreas likes"),
                     target=" pizza."
                 )
-            >>> response = client.explain(request, model="luminous-extended")
+            >>> response = client.explain(request, model="luminous-base")
         """
         response = self._post_request(
             "explain",
@@ -635,7 +635,7 @@ class Client:
         """Returns a Tokenizer instance with the settings that were used to train the model.
 
         Examples:
-            >>> tokenizer = client.tokenizer(model="luminous-extended")
+            >>> tokenizer = client.tokenizer(model="luminous-base")
             >>> tokenized_prompt = tokenizer.encode("Hello world")
         """
         return Tokenizer.from_str(self._get_request(f"models/{model}/tokenizer").text)
@@ -1313,7 +1313,7 @@ class AsyncClient:
                     prompt=Prompt.from_text("Andreas likes"),
                     target=" pizza."
                 )
-            >>> response = await client.explain(request, model="luminous-extended")
+            >>> response = await client.explain(request, model="luminous-base")
         """
         response = await self._post_request(
             "explain",
@@ -1326,7 +1326,7 @@ class AsyncClient:
         """Returns a Tokenizer instance with the settings that were used to train the model.
 
         Examples:
-            >>> tokenizer = await client.tokenizer(model="luminous-extended")
+            >>> tokenizer = await client.tokenizer(model="luminous-base")
             >>> tokenized_prompt = tokenizer.encode("Hello world")
         """
         response = await self._get_request_text(f"models/{model}/tokenizer")

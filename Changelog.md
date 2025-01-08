@@ -3,6 +3,7 @@
 ## 9.0.0
 
 - Remove deprecated QA and Summarization functionality
+- Remove references to luminous-extended model
 
 ## 8.1.0
 
