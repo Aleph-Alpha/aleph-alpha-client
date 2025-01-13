@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.1.0
+
+- Allow steering capabilities for client-submitted chat completion requests
+  
 ## 9.0.0
 
 - Remove deprecated QA and Summarization functionality
