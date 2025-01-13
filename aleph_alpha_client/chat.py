@@ -66,6 +66,7 @@ class ChatRequest:
     top_k: int = 0
     top_p: float = 0.0
     stream_options: Optional[StreamOptions] = None
+    steering_concepts: Optional[List[str]] = None
 
     def to_json(self) -> Mapping[str, Any]:
         payload = {k: v for k, v in asdict(self).items() if v is not None}

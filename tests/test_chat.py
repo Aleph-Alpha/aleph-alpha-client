@@ -137,3 +137,26 @@ async def test_stream_options(async_client: AsyncClient, chat_model_name: str):
     # Then the last chunks has information about usage
     assert all(isinstance(item, ChatStreamChunk) for item in stream_items[:-1])
     assert isinstance(stream_items[-1], Usage)
+
+
+def test_steering_chat(sync_client: Client, chat_model_name: str):
+    base_request = ChatRequest(
+        messages=[Message(role=Role.User, content="Hello, how are you?")],
+        model=chat_model_name,
+    )
+
+    steered_request = ChatRequest(
+        messages=[Message(role=Role.User, content="Hello, how are you?")],
+        model=chat_model_name,
+        steering_concepts=["slang"],
+    )
+
+    base_response = sync_client.chat(base_request, model=chat_model_name)
+    steered_response = sync_client.chat(steered_request, model=chat_model_name)
+
+    base_completion_result = base_response.message.content
+    steered_completion_result = steered_response.message.content
+
+    assert base_completion_result
+    assert steered_completion_result
+    assert base_completion_result != steered_completion_result
