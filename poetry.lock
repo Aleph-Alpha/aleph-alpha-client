@@ -2158,13 +2158,13 @@ cli = ["click (>=5.0)"]
 
 [[package]]
 name = "python-liquid"
-version = "1.12.1"
+version = "1.12.2"
 description = "A Python engine for the Liquid template language."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "python_liquid-1.12.1-py3-none-any.whl", hash = "sha256:2224312944be16c1a44406398eb8a07c7e57398d5c0ef15ff950946dbefe7c33"},
-    {file = "python_liquid-1.12.1.tar.gz", hash = "sha256:7367e979125859fb4116f360f224a89a52ecb455fb26843c43e4d800b389d325"},
+    {file = "python_liquid-1.12.2-py3-none-any.whl", hash = "sha256:4a2611ecb7d77476f2a028438cf02213873ec06b1223f661ba16eceec130e192"},
+    {file = "python_liquid-1.12.2.tar.gz", hash = "sha256:46b5deb2337c1afe91760f2da46b05f17b55482023da441a4a78d096c4271d19"},
 ]
 
 [package.dependencies]
@@ -2173,7 +2173,7 @@ python-dateutil = ">=2.8.1"
 typing-extensions = ">=4.2.0"
 
 [package.extras]
-autoescape = ["markupsafe (>=2.0.0)"]
+autoescape = ["markupsafe (>=2,<3)"]
 
 [[package]]
 name = "pywin32"
