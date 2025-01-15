@@ -826,7 +826,7 @@ class AsyncClient:
 
                 if not stream_item_as_str.startswith(self.SSE_DATA_PREFIX):
                     raise ValueError(
-                        f"Stream item did not start with `{self.SSE_DATA_PREFIX}`. Was `{stream_item_as_str}"
+                        f"Stream item did not start with `{self.SSE_DATA_PREFIX}`. Was `{stream_item_as_str}`"
                     )
 
                 payload = stream_item_as_str[len(self.SSE_DATA_PREFIX) :]
