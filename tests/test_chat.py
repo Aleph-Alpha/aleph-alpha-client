@@ -17,6 +17,7 @@ async def test_can_not_chat_with_all_models(async_client: AsyncClient, model_nam
     request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
         model=model_name,
+        maximum_tokens=7,
     )
 
     with pytest.raises(ValueError):
