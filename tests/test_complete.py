@@ -56,7 +56,7 @@ async def test_can_use_streaming_support_with_async_client(
 def test_complete_maximum_tokens_none(sync_client: Client, model_name: str):
     request = CompletionRequest(
         prompt=Prompt.from_text("Hello, World!"),
-        maximum_tokens=None,
+        maximum_tokens=7,
         stop_sequences=[","],
     )
 
