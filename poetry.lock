@@ -2158,13 +2158,13 @@ cli = ["click (>=5.0)"]
 
 [[package]]
 name = "python-liquid"
-version = "1.12.2"
+version = "1.13.0"
 description = "A Python engine for the Liquid template language."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "python_liquid-1.12.2-py3-none-any.whl", hash = "sha256:4a2611ecb7d77476f2a028438cf02213873ec06b1223f661ba16eceec130e192"},
-    {file = "python_liquid-1.12.2.tar.gz", hash = "sha256:46b5deb2337c1afe91760f2da46b05f17b55482023da441a4a78d096c4271d19"},
+    {file = "python_liquid-1.13.0-py3-none-any.whl", hash = "sha256:843ed7b8af00c1480d1bf402553ed07bdddce130ebbf4b1fefc84bb2e076f5d4"},
+    {file = "python_liquid-1.13.0.tar.gz", hash = "sha256:c158fbaad6dd41c49de7cff34e3611bff7211326fb3049322d27673e1d66e166"},
 ]
 
 [package.dependencies]
