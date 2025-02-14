@@ -74,6 +74,21 @@ class ChatRequest:
         return payload
 
 
+class FinishReason(str, Enum):
+    """
+    The reason the model stopped generating tokens.
+
+    This will be stop if the model hit a natural stop point or a provided stop
+    sequence or length if the maximum number of tokens specified in the request
+    was reached. If the API is unable to understand the stop reason emitted by
+    one of the workers, content_filter is returned.
+    """
+
+    Stop = "stop"
+    Length = "length"
+    ContentFilter = "content_filter"
+
+
 @dataclass(frozen=True)
 class ChatResponse:
     """
@@ -83,14 +98,14 @@ class ChatResponse:
     the `ChatResponse` assumes there to be only one choice.
     """
 
-    finish_reason: str
+    finish_reason: FinishReason
     message: Message
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "ChatResponse":
         first_choice = json["choices"][0]
         return ChatResponse(
-            finish_reason=first_choice["finish_reason"],
+            finish_reason=FinishReason(first_choice["finish_reason"]),
             message=Message.from_json(first_choice["message"]),
         )
 
@@ -145,16 +160,6 @@ class ChatStreamChunk:
             content=delta["content"],
             role=Role(delta.get("role")) if delta.get("role") else None,
         )
-
-
-class FinishReason(str, Enum):
-    """
-    The reason for the completion to finish.
-    """
-
-    Stop = "stop"
-    Length = "length"
-    ContentFilter = "content_filter"
 
 
 def stream_chat_item_from_json(

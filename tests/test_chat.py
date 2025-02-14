@@ -34,6 +34,7 @@ def test_can_chat_with_chat_model(sync_client: Client, chat_model_name: str):
     response = sync_client.chat(request, model=chat_model_name)
     assert response.message.role == Role.Assistant
     assert response.message.content is not None
+    assert isinstance(response.finish_reason, FinishReason)
 
 
 async def test_can_chat_with_async_client(
@@ -69,6 +70,7 @@ async def test_can_chat_with_streaming_support(
         for item in stream_items[1:-1]
     )
     assert isinstance(stream_items[-1], FinishReason)
+
 
 async def test_usage_response_is_parsed():
     # Given an API response with usage data and no choice
