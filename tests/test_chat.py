@@ -149,7 +149,7 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
     steered_request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
         model=chat_model_name,
-        steering_concepts=["slang"],
+        steering_concepts=["_worker/slang"],
     )
 
     base_response = sync_client.chat(base_request, model=chat_model_name)

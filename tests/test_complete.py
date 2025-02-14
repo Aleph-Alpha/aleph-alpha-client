@@ -202,7 +202,7 @@ def test_steering_completion(sync_client: Client, chat_model_name: str):
         prompt=Prompt.from_text(
             "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nParaphrase the following phrase. You are an honest man.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
         ),
-        steering_concepts=["shakespeare"],
+        steering_concepts=["_worker/shakespeare"],
         maximum_tokens=16,
     )
 
