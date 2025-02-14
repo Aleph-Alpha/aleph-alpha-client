@@ -1,6 +1,6 @@
-from dataclasses import dataclass, asdict
-from typing import List, Optional, Mapping, Any, Dict, Union
+from dataclasses import asdict, dataclass
 from enum import Enum
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 
 class Role(str, Enum):
@@ -139,23 +139,39 @@ class ChatStreamChunk:
     role: Optional[Role]
 
     @staticmethod
-    def from_json(json: Dict[str, Any]) -> Optional["ChatStreamChunk"]:
-        """
-        Returns a ChatStreamChunk if the chunk contains a message, otherwise None.
-        """
-        if not (delta := json["choices"][0]["delta"]):
-            return None
-
+    def from_json(choice: Dict[str, Any]) -> "ChatStreamChunk":
+        delta = choice["delta"]
         return ChatStreamChunk(
             content=delta["content"],
             role=Role(delta.get("role")) if delta.get("role") else None,
         )
 
 
+class FinishReason(str, Enum):
+    """
+    The reason for the completion to finish.
+    """
+
+    Stop = "stop"
+    Length = "length"
+    ContentFilter = "content_filter"
+
+
 def stream_chat_item_from_json(
     json: Dict[str, Any],
-) -> Union[Usage, ChatStreamChunk, None]:
+) -> Union[ChatStreamChunk, FinishReason, Usage]:
+    """Parse a chat event into one of the three possible types.
+
+    This function takes two assumptions:
+
+    1. If neither a finish reason nor a usage is present, the chunk contains a message.
+    2. The chunk only carries information relevant to one of the three possible types, so no information is lost by choosing any one of them.
+    """
     if (usage := json.get("usage")) is not None:
         return Usage.from_json(usage)
 
-    return ChatStreamChunk.from_json(json)
+    first_choice = json["choices"][0]
+    if (finish_reason := first_choice.get("finish_reason")) is not None:
+        return FinishReason(finish_reason)
+
+    return ChatStreamChunk.from_json(first_choice)

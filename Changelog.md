@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `complete_with_streaming` yields `FinishReason` as a stream item
+
 ## 9.1.0
 
 - Allow steering capabilities for client-submitted chat completion requests
