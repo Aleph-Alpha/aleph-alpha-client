@@ -324,14 +324,19 @@ class Client:
                 Always the latest version of model is used.
 
         Examples:
+            >>> import os
+            >>> from aleph_alpha_client import Client, ChatRequest, Message
+            >>>
+            >>> client = Client(token=os.environ["TOKEN"], host="https://inference-api.your.domain")
+            >>> model = "llama-3.1-8b-instruct"
             >>> # create a chat request
             >>> request = ChatRequest(
                     messages=[Message(role="user", content="Hello, how are you?")],
                     model=model,
                 )
             >>>
-            >>> # chat with the model
-            >>> result = client.chat(request, model=model_name)
+            >>> result = client.chat(request, model=model)
+            >>> print(result.message)
         """
         response = self._post_request("chat/completions", request, model)
         return ChatResponse.from_json(response)
@@ -916,6 +921,11 @@ class AsyncClient:
                 Always the latest version of model is used.
 
         Examples:
+            >>> import os
+            >>> from aleph_alpha_client import AsyncClient, ChatRequest, Message
+            >>>
+            >>> client = AsyncClient(token=os.environ["TOKEN"], host="https://inference-api.your.domain")
+            >>> model = "llama-3.1-8b-instruct"
             >>> # create a chat request
             >>> request = ChatRequest(
                     messages=[Message(role="user", content="Hello, how are you?")],
@@ -923,7 +933,8 @@ class AsyncClient:
                 )
             >>>
             >>> # chat with the model
-            >>> result = await client.chat(request, model=model_name)
+            >>> result = await client.chat(request, model=model)
+            >>> print(result.message)
         """
         response = await self._post_request(
             "chat/completions",
@@ -991,6 +1002,11 @@ class AsyncClient:
                 Always the latest version of model is used.
 
         Examples:
+            >>> import os
+            >>> from aleph_alpha_client import AsyncClient, ChatRequest, Message
+            >>>
+            >>> client = AsyncClient(token=os.environ["TOKEN"], host="https://inference-api.your.domain")
+            >>> model = "llama-3.1-8b-instruct"
             >>> # create a chat request
             >>> request = ChatRequest(
                     messages=[Message(role="user", content="Hello, how are you?")],
@@ -998,11 +1014,11 @@ class AsyncClient:
                 )
             >>>
             >>> # chat with the model
-            >>> result = await client.chat_with_streaming(request, model=model_name)
+            >>> result = client.chat_with_streaming(request, model=model)
             >>>
             >>> # consume the chat stream
             >>> async for stream_item in result:
-            >>>     do_something_with(stream_item)
+            >>>     print(stream_item)
         """
         async for stream_item_json in self._post_request_with_streaming(
             "chat/completions",
