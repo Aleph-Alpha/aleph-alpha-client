@@ -325,8 +325,7 @@ class Client:
 
         Examples:
             >>> import os
-            >>> from aleph_alpha_client import Client
-            >>> from aleph_alpha_client.chat import ChatRequest, Message
+            >>> from aleph_alpha_client import Client, ChatRequest, Message
             >>>
             >>> client = Client(token=os.environ["TOKEN"], host="https://inference-api.your.domain")
             >>> model = "llama-3.1-8b-instruct"
@@ -923,8 +922,7 @@ class AsyncClient:
 
         Examples:
             >>> import os
-            >>> from aleph_alpha_client import AsyncClient
-            >>> from aleph_alpha_client.chat import ChatRequest, Message
+            >>> from aleph_alpha_client import AsyncClient, ChatRequest, Message
             >>>
             >>> client = AsyncClient(token=os.environ["TOKEN"], host="https://inference-api.your.domain")
             >>> model = "llama-3.1-8b-instruct"
@@ -1005,8 +1003,7 @@ class AsyncClient:
 
         Examples:
             >>> import os
-            >>> from aleph_alpha_client import AsyncClient
-            >>> from aleph_alpha_client.chat import ChatRequest, Message
+            >>> from aleph_alpha_client import AsyncClient, ChatRequest, Message
             >>>
             >>> client = AsyncClient(token=os.environ["TOKEN"], host="https://inference-api.your.domain")
             >>> model = "llama-3.1-8b-instruct"

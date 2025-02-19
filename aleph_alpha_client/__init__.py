@@ -17,6 +17,7 @@ from .aleph_alpha_client import (
     QuotaError,
 )
 from .completion import CompletionRequest, CompletionResponse
+from .chat import ChatRequest, Message, ChatResponse
 from .detokenization import DetokenizationRequest, DetokenizationResponse
 from .document import Document
 from .embedding import (
