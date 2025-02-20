@@ -3,12 +3,13 @@ import pytest
 from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.chat import (
     ChatRequest,
+    ChatStreamChunk,
+    FinishReason,
     Message,
     Role,
     StreamOptions,
-    stream_chat_item_from_json,
     Usage,
-    ChatStreamChunk,
+    stream_chat_item_from_json,
 )
 
 
@@ -33,6 +34,7 @@ def test_can_chat_with_chat_model(sync_client: Client, chat_model_name: str):
     response = sync_client.chat(request, model=chat_model_name)
     assert response.message.role == Role.Assistant
     assert response.message.content is not None
+    assert isinstance(response.finish_reason, FinishReason)
 
 
 async def test_can_chat_with_async_client(
@@ -58,19 +60,16 @@ async def test_can_chat_with_streaming_support(
         model=chat_model_name,
     )
 
-    stream_items = [
-        stream_item
-        async for stream_item in async_client.chat_with_streaming(
-            request, model=chat_model_name
-        )
-    ]
+    stream = async_client.chat_with_streaming(request, model=chat_model_name)
+    stream_items = [stream_item async for stream_item in stream]
 
     first = stream_items[0]
     assert isinstance(first, ChatStreamChunk) and first.role is not None
     assert all(
         isinstance(item, ChatStreamChunk) and item.content is not None
-        for item in stream_items[1:]
+        for item in stream_items[1:-1]
     )
+    assert isinstance(stream_items[-1], FinishReason)
 
 
 async def test_usage_response_is_parsed():
@@ -90,6 +89,31 @@ async def test_usage_response_is_parsed():
     # Then a usage instance is returned
     assert isinstance(result, Usage)
     assert result.prompt_tokens == 31
+
+
+async def test_finish_reason_response_is_parsed():
+    # Given an API response with finish reason and no choice
+    data = {
+        "choices": [
+            {
+                "finish_reason": "stop",
+                "index": 0,
+                "delta": {},
+                "logprobs": None,
+            }
+        ],
+        "created": 1730133402,
+        "model": "llama-3.1-70b-instruct",
+        "system_fingerprint": ".unknown.",
+        "object": "chat.completion.chunk",
+    }
+
+    # When parsing it
+    result = stream_chat_item_from_json(data)
+
+    # Then a finish reason instance is returned
+    assert isinstance(result, FinishReason)
+    assert result == FinishReason.Stop
 
 
 def test_chunk_response_is_parsed():
@@ -128,15 +152,12 @@ async def test_stream_options(async_client: AsyncClient, chat_model_name: str):
     )
 
     # When receiving the chunks
-    stream_items = [
-        stream_item
-        async for stream_item in async_client.chat_with_streaming(
-            request, model=chat_model_name
-        )
-    ]
+    stream = async_client.chat_with_streaming(request, model=chat_model_name)
+    stream_items = [stream_item async for stream_item in stream]
 
-    # Then the last chunks has information about usage
-    assert all(isinstance(item, ChatStreamChunk) for item in stream_items[:-1])
+    # Then
+    assert all(isinstance(item, ChatStreamChunk) for item in stream_items[:-2])
+    assert isinstance(stream_items[-2], FinishReason)
     assert isinstance(stream_items[-1], Usage)
 
 

@@ -1,5 +1,4 @@
 import json
-import warnings
 
 from packaging import version
 from tokenizers import Tokenizer  # type: ignore
@@ -42,6 +41,7 @@ from aleph_alpha_client.chat import (
     ChatStreamChunk,
     Usage,
     stream_chat_item_from_json,
+    FinishReason,
 )
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
@@ -988,7 +988,7 @@ class AsyncClient:
         self,
         request: ChatRequest,
         model: str,
-    ) -> AsyncGenerator[Union[ChatStreamChunk, Usage], None]:
+    ) -> AsyncGenerator[Union[ChatStreamChunk, Usage, FinishReason], None]:
         """Generates streamed chat completions.
 
         The first yielded chunk contains the role, while subsequent chunks only contain the content delta.
@@ -1025,9 +1025,7 @@ class AsyncClient:
             request,
             model,
         ):
-            chunk = stream_chat_item_from_json(stream_item_json)
-            if chunk is not None:
-                yield chunk
+            yield stream_chat_item_from_json(stream_item_json)
 
     async def tokenize(
         self,
