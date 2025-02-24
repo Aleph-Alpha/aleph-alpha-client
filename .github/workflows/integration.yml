@@ -18,7 +18,7 @@ jobs:
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v9
       - name: Install deps
-        run: poetry install --extras "dev" --extras "types" --no-cache
+        run: poetry install --no-cache
       - name: Lint with mypy
         run: |
           poetry run mypy aleph_alpha_client
