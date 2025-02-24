@@ -86,7 +86,7 @@ python3 -m venv venv
 Next, install the test and dev dependencies:
 
 ```shell
-poetry install --extras "dev"
+poetry install
 ```
 
 
