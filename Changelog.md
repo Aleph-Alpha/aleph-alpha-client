@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 10.0.0
 
 - `finish_reason` attribute of `ChatResponse` is now an instance of `FinishReason` enum
 - `complete_with_streaming` yields `FinishReason` as a stream item
