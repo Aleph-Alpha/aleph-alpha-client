@@ -11,11 +11,9 @@ build:
     python: "3.12"
   jobs:
     post_create_environment:
-      - pip install poetry
-      - poetry self add poetry-plugin-export
-      - poetry export --extras docs --without-hashes > doc-requirements.txt
+      - pip install uv
     post_install:
-      - pip install -r doc-requirements.txt
+      - UV_PROJECT_ENVIRONMENT=$READTHEDOCS_VIRTUALENV_PATH uv sync --group docs
       - pip list
 
 python:

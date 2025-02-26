@@ -66,34 +66,27 @@ This table contains interactive code examples, further exercises can be found in
 
 ## Installation
 
-The latest stable version is deployed to PyPi so you can install this package via pip.
+The latest stable version is deployed to PyPi so you can install this package via pip/uv:
 
 ```sh
-pip install aleph-alpha-client
+uv add aleph-alpha-client
 ```
 
 Get started using the client by first [creating an account](https://app.aleph-alpha.com/signup). Afterwards head over to [your profile](https://app.aleph-alpha.com/profile) to create an API token. Read more about how you can manage your API tokens [here](https://docs.aleph-alpha.com/docs/account).
 
 ## Development
 
-For local development, start by creating a Python virtual environment as follows:
+For local development, install the dependencies:
 
-```shell
-python3 -m venv venv
-. ./venv/bin/activate
-```
-
-Next, install the dependencies:
-
-```shell
-poetry install
+```sh
+uv sync
 ```
 
 Now you should be able to ...
 
-* run all the tests using `pytest` or, `pytest -k <test_name>` to run a specific test
-* typecheck the code and tests using `mypy aleph_alpha_client` resp. `mypy tests`
-* format the code using `ruff`
+* run all the tests using `uv run pytest` or, `uv run pytest -k <test_name>` to run a specific test
+* typecheck the code and tests using `uv run mypy aleph_alpha_client` resp. `uv run mypy tests`
+* format the code using `uv run ruff`
 
 ## Links
 
