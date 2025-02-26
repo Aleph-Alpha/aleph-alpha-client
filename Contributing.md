@@ -4,8 +4,8 @@
 
 Tests use pytests with (optional) coverage plugin. Install the locally cloned repo in editable mode with:
 
-```bash
-pip install -e .[test]
+```sh
+uv sync
 ```
 
 **Tests make api calls that reduce your quota!**
@@ -32,16 +32,16 @@ TEST_PASSWORD=your_password
 - A coverage report can be created using the optional arguments --cov-report and --cov (see pytest documentation)
 - A subset of tests can be selected by pointing to the module within tests
 
-```bash
+```sh
 # run all tests, output coverage report of aleph_alpha_client module in terminal
-pytest --cov-report term --cov=aleph_alpha_client tests
-pytest tests -v # start verbose
+uv run pytest --cov-report term --cov=aleph_alpha_client tests
+uv run pytest tests -v # start verbose
 ```
 
 If an html coverage report has been created a simple http server can be run to serve static files.
 
-```bash
-python -m http.server --directory htmlcov 8000
+```sh
+uv run python -m http.server --directory htmlcov 8000
 ```
 
 ## Releasing a new version
@@ -55,17 +55,17 @@ python -m http.server --directory htmlcov 8000
 ## Working on our documentation
 
 We use [Sphinx](https://www.sphinx-doc.org/en/master/index.html) for our documentation and publish it on [Read the Docs](https://aleph-alpha-client.readthedocs.io/en/latest/).
-To work on the documentation, you need to install the project editable and with the `docs` extra.
+To work on the documentation, you need to install the project with the `docs` dependency group.
 
-```bash
-pip install -e .[docs]
+```sh
+uv sync --group docs
 ```
 
 The documentation can be generated with:
 
-```bash
+```sh
 cd docs
-make html
+uv run make html
 ```
 
 Make sure that the documentation can be generated without Sphinx warnings or errors.
