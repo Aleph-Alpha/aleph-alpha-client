@@ -15,17 +15,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v9
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
       - name: Install deps
-        run: poetry install --no-cache
+        run: uv sync
       - name: Lint with mypy
         run: |
-          poetry run mypy aleph_alpha_client
-          poetry run mypy tests --ignore-missing-imports
+          uv run mypy aleph_alpha_client
+          uv run mypy tests --ignore-missing-imports
       - name: Run tests
         run: |
-          poetry run pytest --color=yes
+          uv run pytest --color=yes
         env:
           TEST_API_URL: ${{ secrets.TEST_API_URL }}
           TEST_TOKEN: ${{ secrets.TEST_TOKEN }}
