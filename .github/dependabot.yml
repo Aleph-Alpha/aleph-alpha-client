@@ -14,3 +14,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      all-dependencies:
+        patterns:
+          - "*" # group all dependencies into a single update PR
