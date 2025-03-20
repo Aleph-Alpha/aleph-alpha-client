@@ -98,4 +98,3 @@ Now you should be able to ...
 ## Links
 
 - [HTTP API Docs](https://docs.aleph-alpha.com/api/)
-- [Interactive Playground](https://app.aleph-alpha.com/playground/)
