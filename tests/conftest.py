@@ -1,6 +1,8 @@
+import enum
 import os
+from dataclasses import dataclass
 from pathlib import Path
-from typing import AsyncIterable
+from typing import AsyncIterable, NewType, Union
 import pytest
 from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.prompt import Image
@@ -50,3 +52,58 @@ def get_env_var(env_var: str) -> str:
             f"Test parameters could not be read from .env. Make sure to create a .env file with the key {env_var}"
         )
     return value
+
+
+@dataclass(frozen=True)
+class PhariaAiFeatureSet:
+    _Stable = NewType("_Stable", int)
+
+    class _Special(enum.Enum):
+        BETA = 1
+
+    _value: Union[_Stable, _Special]
+
+    @classmethod
+    def stable(cls, version: int):
+        return PhariaAiFeatureSet(cls._Stable(version))
+
+    @classmethod
+    def beta(cls):
+        return PhariaAiFeatureSet(cls._Special.BETA)
+
+    @classmethod
+    def from_env(cls) -> "PhariaAiFeatureSet":
+        env_name = "PHARIA_AI_FEATURE_SET"
+        env_value = os.environ.get(env_name)
+        if env_value is not None:
+            value = env_value.strip()
+            if value.lower() == "beta":
+                return cls.beta()
+            elif value.isdecimal():
+                return cls.stable(int(value))
+            else:
+                raise ValueError(
+                    f"environment variable {env_name} is invalid: {value}, "
+                    "only integers or 'BETA' are supported"
+                )
+        else:
+            return cls.stable(1)
+
+    def __lt__(self, other: "PhariaAiFeatureSet") -> bool:
+        if isinstance(self._value, int):
+            if isinstance(other._value, int):
+                return self._value < other._value
+            else:  # other is _Special
+                return True
+        else:  # self is _Special
+            if isinstance(other._value, self._Special):
+                return self._value.value < other._value.value
+            else:  # other is _Stable
+                return False
+
+
+# Tests with this decorator only run if PHARIA_AI_FEATURE_SET is set to "BETA".
+requires_beta_features = pytest.mark.skipif(
+    PhariaAiFeatureSet.from_env() < PhariaAiFeatureSet.beta(),
+    reason="requires beta features",
+)
