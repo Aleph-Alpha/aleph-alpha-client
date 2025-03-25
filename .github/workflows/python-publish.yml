@@ -9,19 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.12
-      - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v9
-        with:
-          poetry-version: "2.0.1"
+          python-version-file: "pyproject.toml"
       - name: Install deps
-        run: poetry install
+        run: uv sync
       - name: Assert tag version matches __version__ attribute
         run: |
-          poetry run python -c "import sys; sys.path.pop(0); \
+          uv run python -c "import sys; sys.path.pop(0); \
             from aleph_alpha_client import __version__; \
             git_ref = '${GITHUB_REF#refs/}'; \
             assert git_ref.startswith('tags'), \
@@ -30,6 +28,6 @@ jobs:
             assert __version__ == git_version, \
               f'versions do not match {__version__} vs. {git_version}. Please update version.py to match the git Release tag.'"
       - name: Build
-        run: poetry build
+        run: uv build
       - name: Publish
-        run: poetry publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+        run: uv publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
