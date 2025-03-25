@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.1
+
+- Use `uv` for packaging
+
 ## 10.0.0
 
 - `finish_reason` attribute of `ChatResponse` is now an instance of `FinishReason` enum
