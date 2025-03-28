@@ -1,11 +1,13 @@
+import asyncio
 import enum
 import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import AsyncIterable, NewType, Union
 import pytest
-from aleph_alpha_client import AsyncClient, Client
+from aleph_alpha_client import AsyncClient, Client, CompletionResponse
 from aleph_alpha_client.prompt import Image, Prompt
+from aleph_alpha_client.steering import SteeringConceptCreationResponse
 
 
 @pytest.fixture(scope="session")
@@ -27,6 +29,50 @@ async def async_client() -> AsyncIterable[AsyncClient]:
         total_retries=int(os.environ.get("TEST_API_RETRIES", "5")),
     ) as client:
         yield client
+
+
+class SyncClientShim:
+    """Wrapper around a [Client], providing async methods like [AsyncClient].
+
+    This allows writing tests that are generic over the type of client used.
+
+    We're just repeating a subset of the methods here as less magic makes static
+    typing easier. There might be a good way to forward calls automagically.
+    """
+
+    def __init__(self, client: Client):
+        self.client = client
+
+    async def create_steering_concept(
+        self, *args, **kwargs
+    ) -> SteeringConceptCreationResponse:
+        return await asyncio.to_thread(
+            self.client.create_steering_concept, *args, **kwargs
+        )
+
+    async def complete(self, *args, **kwargs) -> CompletionResponse:
+        return await asyncio.to_thread(self.client.complete, *args, **kwargs)
+
+
+GenericClient = Union[AsyncClient, SyncClientShim]
+
+
+@pytest.fixture()
+def generic_client(request: pytest.FixtureRequest) -> GenericClient:
+    """Fixture for parametrizing tests that use both sync_client and async_client.
+
+    Example:
+        >>> @pytest.mark.parametrize(
+        >>>     "generic_client", ["sync_client", "async_client"], indirect=True
+        >>> )
+        >>> async def test_can_do_something(generic_client: GenericClient):
+        >>>     ...
+    """
+    client = request.getfixturevalue(request.param)
+    if request.param == "sync_client":
+        return SyncClientShim(client)
+    else:
+        return client
 
 
 @pytest.fixture(scope="session")
