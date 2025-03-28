@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import AsyncIterable, NewType, Union
 import pytest
 from aleph_alpha_client import AsyncClient, Client
-from aleph_alpha_client.prompt import Image
+from aleph_alpha_client.prompt import Image, Prompt
 
 
 @pytest.fixture(scope="session")
@@ -107,3 +107,10 @@ requires_beta_features = pytest.mark.skipif(
     PhariaAiFeatureSet.from_env() < PhariaAiFeatureSet.beta(),
     reason="requires beta features",
 )
+
+
+def llama_prompt(text: str) -> Prompt:
+    return Prompt.from_text(
+        f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n"
+        f"{text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+    )
