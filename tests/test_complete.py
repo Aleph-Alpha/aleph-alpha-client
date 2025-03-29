@@ -15,6 +15,8 @@ from aleph_alpha_client.prompt import (
     Tokens,
 )
 
+from .conftest import llama_prompt
+
 
 @pytest.mark.system_test
 async def test_can_complete_with_async_client(
@@ -191,17 +193,13 @@ def test_num_tokens_generated_with_best_of(sync_client: Client, model_name: str)
 
 
 def test_steering_completion(sync_client: Client, chat_model_name: str):
+    prompt = llama_prompt("Paraphrase the following phrase. You are an honest man.")
     base_request = CompletionRequest(
-        prompt=Prompt.from_text(
-            "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nParaphrase the following phrase. You are an honest man.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-        ),
+        prompt=prompt,
         maximum_tokens=16,
     )
-
     steered_request = CompletionRequest(
-        prompt=Prompt.from_text(
-            "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nParaphrase the following phrase. You are an honest man.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-        ),
+        prompt=prompt,
         steering_concepts=["_worker/shakespeare"],
         maximum_tokens=16,
     )
