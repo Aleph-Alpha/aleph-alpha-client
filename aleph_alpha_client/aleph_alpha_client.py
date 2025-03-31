@@ -60,6 +60,10 @@ from aleph_alpha_client.embedding import (
     SemanticEmbeddingRequest,
     SemanticEmbeddingResponse,
 )
+from aleph_alpha_client.steering import (
+    SteeringConceptCreationRequest,
+    SteeringConceptCreationResponse,
+)
 from aleph_alpha_client.version import MIN_API_VERSION, user_agent_headers
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
@@ -115,6 +119,7 @@ AnyRequest = Union[
     BatchSemanticEmbeddingRequest,
     ExplanationRequest,
     ExplanationRequest,
+    SteeringConceptCreationRequest,
 ]
 
 
@@ -635,6 +640,43 @@ class Client:
             model,
         )
         return ExplanationResponse.from_json(response)
+
+    def create_steering_concept(
+        self, request: SteeringConceptCreationRequest
+    ) -> SteeringConceptCreationResponse:
+        """Creates a steering concept.
+
+        A steering concept consists of a list of steering examples. A steering
+        example is a pair of a "negative" and a "positive" string, describing
+        how you want to alter the model's output.
+
+        This request will return a unique ID for the newly created steering
+        concept that you can then use in completion and chat requests.
+
+        Parameters:
+            request (SteeringConceptCreationRequest, required)
+                Parameters for the steering concepts to create.
+
+        Examples:
+            >>> request = SteeringConceptCreationRequest(
+            >>>     examples=[
+            >>>         SteeringPairedExample(
+            >>>             negative="I appreciate your valuable feedback on this matter.",
+            >>>             positive="Thanks for the real talk, fam.",
+            >>>         ),
+            >>>         SteeringPairedExample(
+            >>>             negative="The financial projections indicate significant growth potential.",
+            >>>             positive="Yo, these numbers are looking mad stacked!",
+            >>>         ),
+            >>>     ]
+            >>> )
+            >>> response = client.create_steering_concept(request)
+        """
+        response = self._post_request(
+            "steering_concepts",
+            request,
+        )
+        return SteeringConceptCreationResponse.from_json(response)
 
     def tokenizer(self, model: str) -> Tokenizer:
         """Returns a Tokenizer instance with the settings that were used to train the model.
@@ -1335,6 +1377,43 @@ class AsyncClient:
             model,
         )
         return ExplanationResponse.from_json(response)
+
+    async def create_steering_concept(
+        self, request: SteeringConceptCreationRequest
+    ) -> SteeringConceptCreationResponse:
+        """Creates a steering concept.
+
+        A steering concept consists of a list of steering examples. A steering
+        example is a pair of a "negative" and a "positive" string, describing
+        how you want to alter the model's output.
+
+        This request will return a unique ID for the newly created steering
+        concept that you can then use in completion and chat requests.
+
+        Parameters:
+            request (SteeringConceptCreationRequest, required)
+                Parameters for the steering concepts to create.
+
+        Examples:
+            >>> request = SteeringConceptCreationRequest(
+            >>>     examples=[
+            >>>         SteeringPairedExample(
+            >>>             negative="I appreciate your valuable feedback on this matter.",
+            >>>             positive="Thanks for the real talk, fam.",
+            >>>         ),
+            >>>         SteeringPairedExample(
+            >>>             negative="The financial projections indicate significant growth potential.",
+            >>>             positive="Yo, these numbers are looking mad stacked!",
+            >>>         ),
+            >>>     ]
+            >>> )
+            >>> response = client.create_steering_concept(request)
+        """
+        response = await self._post_request(
+            "steering_concepts",
+            request,
+        )
+        return SteeringConceptCreationResponse.from_json(response)
 
     async def tokenizer(self, model: str) -> Tokenizer:
         """Returns a Tokenizer instance with the settings that were used to train the model.
