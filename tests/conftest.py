@@ -5,9 +5,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import AsyncIterable, NewType, Union
 import pytest
-from aleph_alpha_client import AsyncClient, Client, CompletionResponse
+from aleph_alpha_client import (
+    AsyncClient,
+    Client,
+    CompletionRequest,
+    CompletionResponse,
+)
 from aleph_alpha_client.prompt import Image, Prompt
-from aleph_alpha_client.steering import SteeringConceptCreationResponse
+from aleph_alpha_client.steering import (
+    SteeringConceptCreationRequest,
+    SteeringConceptCreationResponse,
+)
 
 
 @pytest.fixture(scope="session")
@@ -44,14 +52,17 @@ class SyncClientShim:
         self.client = client
 
     async def create_steering_concept(
-        self, *args, **kwargs
+        self,
+        request: SteeringConceptCreationRequest,
     ) -> SteeringConceptCreationResponse:
-        return await asyncio.to_thread(
-            self.client.create_steering_concept, *args, **kwargs
-        )
+        return await asyncio.to_thread(self.client.create_steering_concept, request)
 
-    async def complete(self, *args, **kwargs) -> CompletionResponse:
-        return await asyncio.to_thread(self.client.complete, *args, **kwargs)
+    async def complete(
+        self,
+        request: CompletionRequest,
+        model: str,
+    ) -> CompletionResponse:
+        return await asyncio.to_thread(self.client.complete, request, model)
 
 
 GenericClient = Union[AsyncClient, SyncClientShim]
