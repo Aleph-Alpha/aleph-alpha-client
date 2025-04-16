@@ -90,4 +90,4 @@ Now you should be able to ...
 
 ## Links
 
-- [HTTP API Docs](https://docs.aleph-alpha.com/api/)
+- [HTTP API Docs](https://docs.aleph-alpha.com/products/apis/pharia-inference/)
