@@ -275,7 +275,8 @@ class Client:
         """
         Queries all models which are currently available.
 
-        For documentation of the response, see https://docs.aleph-alpha.com/api/available-models/
+        For documentation of the response, see
+        https://docs.aleph-alpha.com/products/apis/pharia-inference/available-models/
         """
         response = self._get_request("models_available")
         return response.json()
@@ -906,7 +907,8 @@ class AsyncClient:
         """
         Queries all models which are currently available.
 
-        For documentation of the response, see https://docs.aleph-alpha.com/api/available-models/
+        For documentation of the response, see
+        https://docs.aleph-alpha.com/products/apis/pharia-inference/available-models/
         """
         return await self._get_request_json("models_available")  # type: ignore
 
