@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.1.0
+
+- Add support for user-defined steering concepts
+
 ## 10.0.1
 
 - Use `uv` for packaging
