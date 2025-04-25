@@ -88,6 +88,14 @@ Now you should be able to ...
 * typecheck the code and tests using `uv run mypy aleph_alpha_client` resp. `uv run mypy tests`
 * format the code using `uv run ruff`
 
+### Releasing a new version
+
+1. Bump the version in `pyproject.toml`.
+2. Edit `Changelog.md`.
+3. Go to https://github.com/Aleph-Alpha/aleph-alpha-client/releases/new
+   - use the version as tag and release title (e.g. `v10.1.0`)
+   - auto-generate the description based on commit history
+
 ## Links
 
 - [HTTP API Docs](https://docs.aleph-alpha.com/products/apis/pharia-inference/)
