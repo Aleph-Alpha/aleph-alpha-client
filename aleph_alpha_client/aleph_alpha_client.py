@@ -65,6 +65,7 @@ from aleph_alpha_client.steering import (
     SteeringConceptCreationResponse,
 )
 from aleph_alpha_client.version import MIN_API_VERSION, user_agent_headers
+from aleph_alpha_client.translation import TranslationRequest, TranslationResponse
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
@@ -120,6 +121,7 @@ AnyRequest = Union[
     ExplanationRequest,
     ExplanationRequest,
     SteeringConceptCreationRequest,
+    TranslationRequest,
 ]
 
 
@@ -687,6 +689,28 @@ class Client:
             >>> tokenized_prompt = tokenizer.encode("Hello world")
         """
         return Tokenizer.from_str(self._get_request(f"models/{model}/tokenizer").text)
+
+    def translate(
+        self,
+        request: TranslationRequest,
+    ) -> TranslationResponse:
+        """Translates text from one language to another.
+
+        Parameters:
+            request (TranslationRequest, required):
+                Parameters for the requested translation.
+
+        Examples:
+            >>> request = TranslationRequest(
+                    model="pharia-1-mt-translation",
+                    source="Hello, how are you?",
+                    target_language="de"
+                )
+            >>> response = client.translate(request)
+            >>> print(response.translation)
+        """
+        response = self._post_request("translate", request)
+        return TranslationResponse.from_json(response)
 
 
 class AsyncClient:
@@ -1447,6 +1471,28 @@ class AsyncClient:
             return await tqdm.gather(*(sem_task(request) for request in requests))
         else:
             return await asyncio.gather(*(sem_task(request) for request in requests))
+
+    async def translate(
+        self,
+        request: TranslationRequest,
+    ) -> TranslationResponse:
+        """Translates text from one language to another.
+
+        Parameters:
+            request (TranslationRequest, required):
+                Parameters for the requested translation.
+
+        Examples:
+            >>> request = TranslationRequest(
+                    model="pharia-1-mt-translation",
+                    source="Hello, how are you?",
+                    target_language="de"
+                )
+            >>> response = await client.translate(request)
+            >>> print(response.translation)
+        """
+        response = await self._post_request("translate", request)
+        return TranslationResponse.from_json(response)
 
 
 def _generate_semantic_embedding_batches(

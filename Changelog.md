@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.3.0
+
+- Add support for translation
+
 ## 10.2.2
 
 Add support for Python 3.13
