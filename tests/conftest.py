@@ -88,7 +88,7 @@ def generic_client(request: pytest.FixtureRequest) -> GenericClient:
 
 @pytest.fixture(scope="session")
 def model_name() -> str:
-    return "qwen-qwq-32b"
+    return "qwen-235b-a22b"
 
 
 @pytest.fixture(scope="session")
