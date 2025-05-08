@@ -97,6 +97,11 @@ def chat_model_name() -> str:
 
 
 @pytest.fixture(scope="session")
+def translation_model_name() -> str:
+    return "pharia-1-mt-translation"
+
+
+@pytest.fixture(scope="session")
 def prompt_image() -> Image:
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     return Image.from_file(image_source_path)
