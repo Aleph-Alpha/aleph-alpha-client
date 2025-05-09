@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.2.0
+
+- Add support for translation
+
 ## 10.1.0
 
 - Add support for user-defined steering concepts
