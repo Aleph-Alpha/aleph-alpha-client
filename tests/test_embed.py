@@ -19,7 +19,6 @@ from aleph_alpha_client.prompt import Prompt
 # AsyncClient
 
 
-@pytest.mark.system_test
 async def test_can_embed_with_async_client(async_client: AsyncClient, model_name: str):
     request = EmbeddingRequest(
         prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
@@ -34,7 +33,6 @@ async def test_can_embed_with_async_client(async_client: AsyncClient, model_name
     assert response.num_tokens_prompt_total >= 1
 
 
-@pytest.mark.system_test
 async def test_can_semantic_embed_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -158,7 +156,6 @@ async def test_modelname_gets_passed_along_for_async_client(httpserver: HTTPServ
 # Client
 
 
-@pytest.mark.system_test
 def test_embed(sync_client: Client, model_name: str):
     request = EmbeddingRequest(
         prompt=Prompt.from_text("hello"), layers=[0, -1], pooling=["mean", "max"]
@@ -174,7 +171,6 @@ def test_embed(sync_client: Client, model_name: str):
     assert result.num_tokens_prompt_total >= 1
 
 
-@pytest.mark.system_test
 def test_embedding_of_one_token_aggregates_identically(
     sync_client: Client, model_name: str
 ):
@@ -195,7 +191,6 @@ def test_embedding_of_one_token_aggregates_identically(
     )
 
 
-@pytest.mark.system_test
 def test_embed_with_tokens(sync_client: Client, model_name: str):
     request = EmbeddingRequest(
         prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
@@ -211,7 +206,6 @@ def test_embed_with_tokens(sync_client: Client, model_name: str):
     assert result.num_tokens_prompt_total >= 1
 
 
-@pytest.mark.system_test
 def test_embed_semantic(sync_client: Client):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
@@ -244,7 +238,6 @@ def test_embed_instructable(sync_client: Client):
 
 
 @pytest.mark.parametrize("num_prompts", [1, 100, 101, 200])
-@pytest.mark.system_test
 def test_batch_embed_semantic(sync_client: Client, num_prompts: int):
     request = BatchSemanticEmbeddingRequest(
         prompts=[Prompt.from_text("hello") for _ in range(num_prompts)],
