@@ -7,7 +7,6 @@ from aleph_alpha_client.detokenization import DetokenizationRequest
 # AsyncClient
 
 
-@pytest.mark.system_test
 async def test_can_tokenize_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -21,7 +20,6 @@ async def test_can_tokenize_with_async_client(
 # Client
 
 
-@pytest.mark.system_test
 def test_tokenize(sync_client: Client, model_name: str):
     response = sync_client.tokenize(
         request=TokenizationRequest("Hello", tokens=True, token_ids=True),

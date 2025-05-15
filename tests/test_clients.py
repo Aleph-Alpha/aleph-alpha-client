@@ -40,7 +40,6 @@ async def test_api_version_correct_async_client(httpserver: HTTPServer):
         await client.validate_version()
 
 
-@pytest.mark.system_test
 async def test_can_use_async_client_without_context_manager(model_name: str):
     request = CompletionRequest(
         prompt=Prompt.from_text(""),
@@ -158,13 +157,11 @@ async def test_tags_on_async_client(httpserver: HTTPServer):
         await client.complete(request, model="luminous")
 
 
-@pytest.mark.system_test
 def test_available_models_sync_client(sync_client: Client, model_name: str):
     models = sync_client.models()
     assert model_name in {model["name"] for model in models}
 
 
-@pytest.mark.system_test
 async def test_available_models_async_client(
     async_client: AsyncClient, model_name: str
 ):

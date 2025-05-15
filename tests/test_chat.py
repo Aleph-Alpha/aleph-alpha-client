@@ -13,7 +13,6 @@ from aleph_alpha_client.chat import (
 )
 
 
-@pytest.mark.system_test
 async def test_can_not_chat_with_all_models(async_client: AsyncClient, model_name: str):
     request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
