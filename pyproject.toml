@@ -48,9 +48,6 @@ include = ["aleph_alpha_client"]
 include = ["aleph_alpha_client"]
 
 [tool.pytest.ini_options]
-markers = [
-    "system_test: Marks a test that runs as a system test of AlephAlpha API",
-]
 asyncio_mode = "auto"
 
 [build-system]
