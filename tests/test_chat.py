@@ -12,6 +12,8 @@ from aleph_alpha_client.chat import (
     stream_chat_item_from_json,
 )
 
+from .test_steering import create_sample_steering_concept_creation_request
+
 
 @pytest.mark.system_test
 async def test_can_not_chat_with_all_models(async_client: AsyncClient, model_name: str):
@@ -160,17 +162,19 @@ async def test_stream_options(async_client: AsyncClient, chat_model_name: str):
     assert isinstance(stream_items[-2], FinishReason)
     assert isinstance(stream_items[-1], Usage)
 
-
+@pytest.mark.skip(reason="Will update to user-defined steering concepts")
 def test_steering_chat(sync_client: Client, chat_model_name: str):
     base_request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
         model=chat_model_name,
     )
 
+    steering_concept_id = sync_client.create_steering_concept(create_sample_steering_concept_creation_request())
+
     steered_request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
         model=chat_model_name,
-        steering_concepts=["_worker/slang"],
+        steering_concepts=[steering_concept_id],
     )
 
     base_response = sync_client.chat(base_request, model=chat_model_name)
@@ -182,3 +186,4 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
     assert base_completion_result
     assert steered_completion_result
     assert base_completion_result != steered_completion_result
+

@@ -18,7 +18,7 @@ async def test_can_create_and_use_steering_concept(
     # 1. We create a new steering concept with examples that steer the models
     # output away from formal english towards slang.
     response = await generic_client.create_steering_concept(
-        _sample_steering_concept_creation_request()
+        create_sample_steering_concept_creation_request()
     )
     steering_concept_id = response.id
     assert isinstance(steering_concept_id, str) and len(steering_concept_id) > 0
@@ -54,7 +54,7 @@ async def test_can_create_and_use_steering_concept(
     assert base_completion != steered_completion
 
 
-def _sample_steering_concept_creation_request() -> SteeringConceptCreationRequest:
+def create_sample_steering_concept_creation_request() -> SteeringConceptCreationRequest:
     return SteeringConceptCreationRequest(
         examples=[
             SteeringPairedExample(
