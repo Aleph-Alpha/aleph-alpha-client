@@ -162,7 +162,7 @@ async def test_stream_options(async_client: AsyncClient, chat_model_name: str):
     assert isinstance(stream_items[-2], FinishReason)
     assert isinstance(stream_items[-1], Usage)
 
-@pytest.mark.skip(reason="Will update to user-defined steering concepts")
+
 def test_steering_chat(sync_client: Client, chat_model_name: str):
     base_request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
