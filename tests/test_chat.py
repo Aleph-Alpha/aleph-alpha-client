@@ -169,7 +169,7 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
         model=chat_model_name,
     )
 
-    steering_concept_id = sync_client.create_steering_concept(create_sample_steering_concept_creation_request())
+    steering_concept_id = sync_client.create_steering_concept(create_sample_steering_concept_creation_request()).id
 
     steered_request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],

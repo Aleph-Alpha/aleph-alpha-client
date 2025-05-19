@@ -2,6 +2,8 @@ from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import Any, Dict, List, Mapping, Optional, Union
 
+from aleph_alpha_client.steering import SteeringConceptCreationResponse
+
 
 class Role(str, Enum):
     """A role used for a message in a chat."""
