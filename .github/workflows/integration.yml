@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   lint-and-test:
-    runs-on: ubuntu-latest
+    runs-on: cpu-runner-8c-32gb-01    
     strategy:
       matrix:
         python-version: [3.9, 3.12]

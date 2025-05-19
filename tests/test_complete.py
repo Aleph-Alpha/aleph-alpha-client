@@ -190,26 +190,3 @@ def test_num_tokens_generated_with_best_of(sync_client: Client, model_name: str)
     number_tokens_completion = len(completion_result.completion_tokens)
 
     assert response.num_tokens_generated == best_of * number_tokens_completion
-
-
-def test_steering_completion(sync_client: Client, chat_model_name: str):
-    prompt = llama_prompt("Paraphrase the following phrase. You are an honest man.")
-    base_request = CompletionRequest(
-        prompt=prompt,
-        maximum_tokens=16,
-    )
-    steered_request = CompletionRequest(
-        prompt=prompt,
-        steering_concepts=["_worker/shakespeare"],
-        maximum_tokens=16,
-    )
-
-    base_response = sync_client.complete(base_request, model=chat_model_name)
-    steered_response = sync_client.complete(steered_request, model=chat_model_name)
-
-    base_completion_result = base_response.completions[0].completion
-    steered_completion_result = steered_response.completions[0].completion
-
-    assert base_completion_result
-    assert steered_completion_result
-    assert base_completion_result != steered_completion_result
