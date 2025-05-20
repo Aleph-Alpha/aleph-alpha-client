@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Any, Dict, List, Mapping, Optional, Union
 
 from aleph_alpha_client.steering import SteeringConceptCreationResponse
-from structured_output import ResponseFormat
+from aleph_alpha_client.structured_output import ResponseFormat
 
 
 class Role(str, Enum):
