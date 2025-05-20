@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.2.1
+
+- Fix structured output path
+
 ## 10.2.0
 
 - Add support for JSON structured output for chat requests
