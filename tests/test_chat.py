@@ -1,3 +1,4 @@
+import json
 import pytest
 
 from aleph_alpha_client import AsyncClient, Client
@@ -11,6 +12,7 @@ from aleph_alpha_client.chat import (
     Usage,
     stream_chat_item_from_json,
 )
+from structured_output import JSONSchema
 
 from .test_steering import create_sample_steering_concept_creation_request
 
@@ -186,3 +188,17 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
     assert steered_completion_result
     assert base_completion_result != steered_completion_result
 
+
+def test_response_format_json_schema(sync_client: Client, dummy_model_name: str):
+    example_json_schema = {'properties': {'bar': {'type': 'integer'}, 'type': 'object'}}
+    
+    request = ChatRequest(
+        messages=[Message(role=Role.User, content="Give me JSON!")],
+        model=dummy_model_name,
+        response_format=JSONSchema(example_json_schema)
+    )
+
+    response = sync_client.chat(request, model=dummy_model_name)
+
+    # Dummy worker simply returns the JSON schema that the user has submitted
+    assert json.loads(response.message.content) == example_json_schema
