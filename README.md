@@ -92,7 +92,8 @@ Now you should be able to ...
 
 1. Bump the version in `pyproject.toml`.
 2. Edit `Changelog.md`.
-3. Go to https://github.com/Aleph-Alpha/aleph-alpha-client/releases/new
+3. Push and merge.
+4. Go to https://github.com/Aleph-Alpha/aleph-alpha-client/releases/new
    - use the version as tag and release title (e.g. `v10.1.0`)
    - auto-generate the description based on commit history
 
