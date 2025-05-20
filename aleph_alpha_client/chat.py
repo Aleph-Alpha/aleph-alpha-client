@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Any, Dict, List, Mapping, Optional, Union
 
 from aleph_alpha_client.steering import SteeringConceptCreationResponse
+from structured_output import ResponseFormat
 
 
 class Role(str, Enum):
@@ -69,10 +70,13 @@ class ChatRequest:
     top_p: float = 0.0
     stream_options: Optional[StreamOptions] = None
     steering_concepts: Optional[List[str]] = None
+    response_format: Optional[ResponseFormat] = None
 
     def to_json(self) -> Mapping[str, Any]:
         payload = {k: v for k, v in asdict(self).items() if v is not None}
         payload["messages"] = [message.to_json() for message in self.messages]
+        if self.response_format:
+            payload["response_format"] = self.response_format.to_json()
         return payload
 
 
