@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.2.2
+
+Add support for Python 3.13
+
 ## 10.2.1
 
 - Fix structured output path
