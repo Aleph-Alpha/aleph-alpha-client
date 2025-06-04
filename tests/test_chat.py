@@ -192,7 +192,14 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
 
 
 def test_response_format_json_schema(sync_client: Client, dummy_model_name: str):
-    example_json_schema = {"properties": {"bar": {"type": "integer"}, "type": "object"}}
+    example_json_schema = {
+        "title": "aquarium",
+        "properties": {
+            "nemo": {
+                "type": "object",
+            }
+        }
+    }
 
     request = ChatRequest(
         messages=[Message(role=Role.User, content="Give me JSON!")],
