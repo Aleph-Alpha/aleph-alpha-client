@@ -192,7 +192,20 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
 
 
 def test_response_format_json_schema(sync_client: Client, dummy_model_name: str):
-    example_json_schema = {"properties": {"bar": {"type": "integer"}, "type": "object"}}
+    # This example is taken from json-schema.org:
+    example_json_schema = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://example.com/product.schema.json",
+        "title": "Product",
+        "description": "A product from Acme's catalog",
+        "type": "object",
+        "properties": {
+            "productId": {
+                "description": "The unique identifier for a product",
+                "type": "integer"
+            }
+        }
+    }
 
     request = ChatRequest(
         messages=[Message(role=Role.User, content="Give me JSON!")],
