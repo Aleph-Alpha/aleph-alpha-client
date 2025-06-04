@@ -192,11 +192,17 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
 
 
 def test_response_format_json_schema(sync_client: Client, dummy_model_name: str):
+    # This example is taken from json-schema.org:
     example_json_schema = {
-        "title": "aquarium",
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://example.com/product.schema.json",
+        "title": "Product",
+        "description": "A product from Acme's catalog",
+        "type": "object",
         "properties": {
-            "nemo": {
-                "type": "object",
+            "productId": {
+                "description": "The unique identifier for a product",
+                "type": "integer"
             }
         }
     }
