@@ -16,6 +16,7 @@ from aleph_alpha_client.steering import (
     SteeringConceptCreationRequest,
     SteeringConceptCreationResponse,
 )
+from aleph_alpha_client.translation import TranslationRequest, TranslationResponse
 
 
 @pytest.fixture(scope="session")
@@ -64,6 +65,12 @@ class SyncClientShim:
     ) -> CompletionResponse:
         return await asyncio.to_thread(self.client.complete, request, model)
 
+    async def translate(
+        self,
+        request: TranslationRequest,
+    ) -> TranslationResponse:
+        return await asyncio.to_thread(self.client.translate, request)
+
 
 GenericClient = Union[AsyncClient, SyncClientShim]
 
@@ -99,6 +106,11 @@ def chat_model_name() -> str:
 @pytest.fixture(scope="session")
 def dummy_model_name() -> str:
     return "dummy-model"
+
+
+@pytest.fixture(scope="session")
+def translation_model_name() -> str:
+    return "pharia-1-mt-translation"
 
 
 @pytest.fixture(scope="session")
