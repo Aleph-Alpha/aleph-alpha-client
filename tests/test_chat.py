@@ -1,5 +1,8 @@
 import json
+from pathlib import Path
+
 import pytest
+from PIL import Image
 
 from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.chat import (
@@ -14,6 +17,7 @@ from aleph_alpha_client.chat import (
 )
 from aleph_alpha_client.structured_output import JSONSchema
 
+from .conftest import GenericClient
 from .test_steering import create_sample_steering_concept_creation_request
 
 
@@ -217,3 +221,66 @@ def test_response_format_json_schema(sync_client: Client, dummy_model_name: str)
 
     # Dummy worker simply returns the JSON schema that the user has submitted
     assert json.loads(response.message.content) == example_json_schema
+
+
+@pytest.mark.parametrize(
+    "generic_client", ["sync_client", "async_client"], indirect=True
+)
+async def test_can_chat_with_images(generic_client: GenericClient, dummy_model_name: str):
+    image_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
+    image = Image.open(image_path)
+
+    request = ChatRequest(
+        messages=[Message(
+            role=Role.User,
+            content=[
+                "Describe the following image.",
+                image,
+            ],
+        )],
+        model=dummy_model_name,
+        maximum_tokens=200,
+    )
+    response = await generic_client.chat(request, model=dummy_model_name)
+
+    # If the dummy worker receives images, it returns their dimensions in pixels
+    # as token ids. Currently, the scheduler will crop and resize the images to
+    # 384x384 pixels.
+    #
+    # el = 384
+    assert response.message.content == "el el"
+
+
+TINY_PNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAX+XDSwAAAABJRU5ErkJggg=="
+
+
+def test_multimodal_message_serialization() -> None:
+    image_path = Path(__file__).parent / "tiny.png"
+    message = Message(
+        role=Role.User,
+        content=[
+            "Describe the following image.",
+            Image.open(image_path),
+        ]
+    )
+    assert message.to_json() == {
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "Describe the following image."},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{TINY_PNG}"}}
+        ]
+    }
+
+
+def test_multimodal_message_serialization_unknown_type() -> None:
+    image_path = Path(__file__).parent / "tiny.png"
+    message = Message(
+        role=Role.User,
+        content=[
+            "Describe the following image.",
+            Path(image_path),  # type: ignore
+        ]
+    )
+    with pytest.raises(ValueError) as e:
+        message.to_json()
+    assert str(e.value) == "The item in the prompt is not valid. Try either a string or an Image."

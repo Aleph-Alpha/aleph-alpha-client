@@ -1,9 +1,12 @@
+import base64
 from dataclasses import asdict, dataclass
 from enum import Enum
+from io import BytesIO
 from typing import Any, Dict, List, Mapping, Optional, Union
 
 from aleph_alpha_client.steering import SteeringConceptCreationResponse
 from aleph_alpha_client.structured_output import ResponseFormat
+from PIL.Image import Image
 
 
 class Role(str, Enum):
@@ -23,6 +26,33 @@ class Message:
         role (Role, required):
             The role of the message.
 
+        content (str | List[Union[str | Image]], required):
+            The content of the message.
+    """
+
+    role: Role
+    content: Union[str, List[Union[str, Image]]]
+
+    def to_json(self) -> Mapping[str, Any]:
+        result = {
+            "role": self.role.value,
+            "content": _message_content_to_json(self.content),
+        }
+        return result
+
+
+# We introduce a more specific message type because chat responses can only
+# contain text at the moment. This enables static type checking to proof that
+# `content` is always a string.
+@dataclass(frozen=True)
+class TextMessage:
+    """
+    Describes a text message in a chat.
+
+    Parameters:
+        role (Role, required):
+            The role of the message.
+
         content (str, required):
             The content of the message.
     """
@@ -30,15 +60,39 @@ class Message:
     role: Role
     content: str
 
-    def to_json(self) -> Mapping[str, Any]:
-        return asdict(self)
-
     @staticmethod
-    def from_json(json: Dict[str, Any]) -> "Message":
-        return Message(
+    def from_json(json: Dict[str, Any]) -> "TextMessage":
+        return TextMessage(
             role=Role(json["role"]),
             content=json["content"],
         )
+
+
+def _message_content_to_json(content: Union[str, List[Union[str, Image]]]) -> Union[str, List[Mapping[str, Any]]]:
+    if isinstance(content, str):
+        return content
+    else:
+        result: List[Mapping[str, Any]] = []
+        for chunk in content:
+            if isinstance(chunk, str):
+                result.append({"type": "text", "text": chunk})
+            elif isinstance(chunk, Image):
+                result.append({
+                    "type": "image_url",
+                    "image_url": {"url": _image_to_data_uri(chunk)},
+                })
+            else:
+                raise ValueError(
+                    "The item in the prompt is not valid. Try either a string or an Image."
+                )
+        return result
+
+
+def _image_to_data_uri(image: Image) -> str:
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    base_64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return f"data:image/png;base64,{base_64}"
 
 
 @dataclass(frozen=True)
@@ -105,14 +159,14 @@ class ChatResponse:
     """
 
     finish_reason: FinishReason
-    message: Message
+    message: TextMessage
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "ChatResponse":
         first_choice = json["choices"][0]
         return ChatResponse(
             finish_reason=FinishReason(first_choice["finish_reason"]),
-            message=Message.from_json(first_choice["message"]),
+            message=TextMessage.from_json(first_choice["message"]),
         )
 
 
