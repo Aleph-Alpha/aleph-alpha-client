@@ -11,6 +11,7 @@ from aleph_alpha_client import (
     CompletionRequest,
     CompletionResponse,
 )
+from aleph_alpha_client.chat import ChatRequest, ChatResponse
 from aleph_alpha_client.prompt import Image, Prompt
 from aleph_alpha_client.steering import (
     SteeringConceptCreationRequest,
@@ -64,6 +65,13 @@ class SyncClientShim:
         model: str,
     ) -> CompletionResponse:
         return await asyncio.to_thread(self.client.complete, request, model)
+
+    async def chat(
+        self,
+        request: ChatRequest,
+        model: str,
+    ) -> ChatResponse:
+        return await asyncio.to_thread(self.client.chat, request, model)
 
     async def translate(
         self,
