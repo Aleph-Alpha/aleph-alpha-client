@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.4.0
+
+- Add support for multimodal prompts (images only)
+
 ## 10.3.0
 
 - Add support for translation
