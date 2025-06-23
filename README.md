@@ -10,6 +10,8 @@
 
 Python client for the [Aleph Alpha](https://aleph-alpha.com) API.
 
+foo
+
 ## Usage
 
 ### Synchronous Client
