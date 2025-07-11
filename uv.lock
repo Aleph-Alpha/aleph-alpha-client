@@ -156,7 +156,7 @@ wheels = [
 
 [[package]]
 name = "aleph-alpha-client"
-version = "10.2.1"
+version = "10.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiodns" },
@@ -1767,7 +1767,7 @@ wheels = [
 
 [[package]]
 name = "python-liquid"
-version = "2.0.1"
+version = "2.0.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "babel" },
@@ -1775,9 +1775,9 @@ dependencies = [
     { name = "python-dateutil" },
     { name = "pytz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/82/ac/72697357280e90d27a2cc3b81ee078816b6279d3377933a64ea343b8a86b/python_liquid-2.0.1.tar.gz", hash = "sha256:9bf589ea11c690ed598866929b05f2cacc81bd8a9647a2049d2648a5088cf613", size = 119838, upload-time = "2025-03-17T07:33:04.044Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d3/29/45ea9b5b22394aaea4d981960531c1de8cc46b9f4f85ddef3ff180740a8d/python_liquid-2.0.2.tar.gz", hash = "sha256:3b10c3716829778284e545afa968252bc51bc67ad8d13b3d93975d3affa92e2e", size = 91642, upload-time = "2025-05-21T07:38:16.108Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f9/07/7ab1943f6a337b977042e3855efaa53847363c0e7cbe4d58c2c61ad829e4/python_liquid-2.0.1-py3-none-any.whl", hash = "sha256:8ddbf0b85992f84c4a9680d883a87b170d38af5a820072c980138301cbc5a5e1", size = 197694, upload-time = "2025-03-17T07:33:01.715Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/64/4e7d316c3ebaaae8a5f6fdbfa5067285f66bceed66ef002b21ac3033049d/python_liquid-2.0.2-py3-none-any.whl", hash = "sha256:599ac3f0fcfc77c914447a0c53f87a55b537ffe5d0169f2fffdc8216577161c0", size = 136282, upload-time = "2025-05-21T07:38:14.856Z" },
 ]
 
 [[package]]
