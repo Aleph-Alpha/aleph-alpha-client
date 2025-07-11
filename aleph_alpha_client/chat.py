@@ -119,9 +119,9 @@ class ChatRequest:
     model: str
     messages: List[Message]
     maximum_tokens: Optional[int] = None
-    temperature: float = 0.0
-    top_k: int = 0
-    top_p: float = 0.0
+    temperature: Optional[float] = None
+    top_k: Optional[int] = None
+    top_p: Optional[float] = None
     stream_options: Optional[StreamOptions] = None
     steering_concepts: Optional[List[str]] = None
     response_format: Optional[ResponseFormat] = None

@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.5.0
+
+- Remove default values for top_p, top_k and temperature as not supported by all models
+
 ## 10.4.0
 
 - Add support for multimodal prompts (images only)

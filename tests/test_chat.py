@@ -284,3 +284,18 @@ def test_multimodal_message_serialization_unknown_type() -> None:
     with pytest.raises(ValueError) as e:
         message.to_json()
     assert str(e.value) == "The item in the prompt is not valid. Try either a string or an Image."
+
+def test_request_serialization_no_default_values() -> None:
+    request = ChatRequest(
+        messages=[Message(role=Role.User, content="Hello, how are you?")],
+        model="dummy-model",
+    )
+    assert request.to_json() == {
+        "model": "dummy-model",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Hello, how are you?"
+            }
+        ]
+    }
