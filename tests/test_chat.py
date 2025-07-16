@@ -302,12 +302,17 @@ def test_request_serialization_no_default_values() -> None:
         ]
     }
 
-# We previously encountered an error in a multi-turn chat conversation.
-# The returned TextMessage could not be made part of the chat history for the 
-# next request as the method for serialization was missing. 
-# This test should catch such conversion issues.
+
 def test_multi_turn_chat_serialization(sync_client: Client, dummy_model_name: str):
-    """Test that TextMessage can be serialized when included in multi-turn chat history."""
+    """
+    Test that TextMessage can be serialized when included in multi-turn chat history.
+
+    We previously encountered an error in a multi-turn chat conversation.
+    The returned TextMessage could not be made part of the chat history for the 
+    next request as the method for serialization was missing. 
+    This test should catch such conversion issues.
+    """
+
     # First turn
     first_request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello")],
