@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import List, Union
 
 import pytest
 from PIL import Image
@@ -12,6 +13,7 @@ from aleph_alpha_client.chat import (
     Message,
     Role,
     StreamOptions,
+    TextMessage,
     Usage,
     stream_chat_item_from_json,
 )
@@ -299,3 +301,38 @@ def test_request_serialization_no_default_values() -> None:
             }
         ]
     }
+
+
+def test_multi_turn_chat_serialization(sync_client: Client, dummy_model_name: str):
+    """
+    Test that TextMessage can be serialized when included in multi-turn chat history.
+
+    We previously encountered an error in a multi-turn chat conversation.
+    The returned TextMessage could not be made part of the chat history for the 
+    next request as the method for serialization was missing. 
+    This test should catch such conversion issues.
+    """
+
+    # First turn
+    first_request = ChatRequest(
+        messages=[Message(role=Role.User, content="Hello")],
+        model=dummy_model_name,
+    )
+    first_response = sync_client.chat(first_request, model=dummy_model_name)
+    
+    # Second turn - includes the TextMessage from first response in history
+    messages_with_history: List[Union[Message, TextMessage]] = [
+        Message(role=Role.User, content="Hello"),
+        first_response.message,  # This TextMessage must be serializable
+        Message(role=Role.User, content="Follow up question"),
+    ]
+    
+    second_request = ChatRequest(
+        messages=messages_with_history,
+        model=dummy_model_name,
+    )
+    
+    # This would fail if TextMessage.to_json() doesn't exist
+    serialized = second_request.to_json()
+    assert len(serialized["messages"]) == 3
+    assert serialized["messages"][1]["role"] == "assistant"
