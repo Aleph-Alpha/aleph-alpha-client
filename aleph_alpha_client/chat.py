@@ -68,6 +68,17 @@ class TextMessage:
         )
 
 
+    # In multi-turn conversations the returned TextMessage is part of the chat
+    # history and converted to the prompt. As such, it requires conversion to
+    # json again. Here, the message content is a string, but can reuse the 
+    # _message_content_to_json function nonetheless.
+    def to_json(self) -> Mapping[str, Any]:
+        result = {
+            "role": self.role.value,
+            "content": _message_content_to_json(self.content),
+        }
+        return result
+
 def _message_content_to_json(content: Union[str, List[Union[str, Image]]]) -> Union[str, List[Mapping[str, Any]]]:
     if isinstance(content, str):
         return content
