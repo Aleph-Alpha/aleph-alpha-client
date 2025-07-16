@@ -128,7 +128,7 @@ class ChatRequest:
     """
 
     model: str
-    messages: List[Message]
+    messages: List[Union[Message, TextMessage]]
     maximum_tokens: Optional[int] = None
     temperature: Optional[float] = None
     top_k: Optional[int] = None
