@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.5.1
+
+- Enable using TextMessage objects in multi-turn chats
+
 ## 10.5.0
 
 - Remove default values for top_p, top_k and temperature as not supported by all models
