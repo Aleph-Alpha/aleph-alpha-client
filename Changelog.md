@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.6.0
+
+- Add support for OpenAI compatible `/embeddings` endpoint.
+
 ## 10.5.1
 
 - Enable using TextMessage objects in multi-turn chats
@@ -45,7 +49,7 @@ Add support for Python 3.13
 ## 9.1.0
 
 - Allow steering capabilities for client-submitted chat completion requests
-  
+
 ## 9.0.0
 
 - Remove deprecated QA and Summarization functionality

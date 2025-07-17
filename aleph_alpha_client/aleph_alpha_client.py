@@ -55,6 +55,8 @@ from aleph_alpha_client.embedding import (
     EmbeddingRequest,
     EmbeddingResponse,
     EmbeddingVector,
+    EmbeddingV2Request,
+    EmbeddingV2Response,
     InstructableEmbeddingRequest,
     InstructableEmbeddingResponse,
     SemanticEmbeddingRequest,
@@ -112,6 +114,7 @@ AnyRequest = Union[
     CompletionRequest,
     ChatRequest,
     EmbeddingRequest,
+    EmbeddingV2Request,
     EvaluationRequest,
     TokenizationRequest,
     DetokenizationRequest,
@@ -430,6 +433,32 @@ class Client:
             model,
         )
         return EmbeddingResponse.from_json(response)
+
+    def embeddings(
+        self,
+        request: EmbeddingV2Request,
+        model: str,
+    ) -> EmbeddingV2Response:
+        """Embeds a text and returns vectors that can be used for downstream tasks.
+        This interface is compatible to the OpenAI /embeddings endpoint.
+
+        Parameters:
+            request (EmbeddingV2Request, required):
+                Parameters for the requested embedding.
+
+            model (string, required):
+                Name of model to use.
+
+        Examples:
+            >>> request = EmbeddingV2Request(input="This is an example", dimensions=20)
+            >>> result = client.embeddings(request, model=model_name)
+        """
+        response = self._post_request(
+            "embeddings",
+            request,
+            model,
+        )
+        return EmbeddingV2Response.from_json(response)
 
     def semantic_embed(
         self,
