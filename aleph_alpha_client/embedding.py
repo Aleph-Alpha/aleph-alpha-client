@@ -406,3 +406,99 @@ class InstructableEmbeddingResponse:
             embedding=json["embedding"],
             num_tokens_prompt_total=json["num_tokens_prompt_total"],
         )
+
+
+@dataclass(frozen=True)
+class EmbeddingV2Request:
+    """
+    Embeds a text and returns embedding vectors following the OpenAI API specs.
+
+    Parameters:
+        input
+            The text to be embedded.
+        dimensions
+            The number of dimensions the resulting output embeddings should have.
+
+    Examples
+        >>> request = EmbeddingV2Request(
+                input="Hello World!",
+                dimensions=64,
+            )
+            result = model.embeddings(request)
+    """
+
+    input: str
+    dimensions: int
+
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            "dimensions": self.dimensions,
+            "input": self.input,
+        }
+
+
+@dataclass(frozen=True)
+class Usage:
+    """
+    Usage statistics for the embedding request.
+    """
+
+    prompt_tokens: int
+    total_tokens: int
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "Usage":
+        return Usage(
+            prompt_tokens=json["prompt_tokens"],
+            total_tokens=json["total_tokens"],
+        )
+
+
+@dataclass(frozen=True)
+class EmbeddingV2ReponseData:
+    """
+    Data structure for the embedding response in OpenAI compatible format.
+    """
+
+    object: str
+    embedding: List[float]
+    index: int
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "EmbeddingV2ReponseData":
+        return EmbeddingV2ReponseData(
+            object=json["object"],
+            embedding=json["embedding"],
+            index=json["index"],
+        )
+
+
+@dataclass(frozen=True)
+class EmbeddingV2Response:
+    """
+    Response of an OpenAI compatible embedding request
+
+    Parameters:
+        object
+            The object type, which is always "embedding".
+        data
+            Embeddings output data.
+        model
+            Name of the model used to generate the embeddings.
+        usage
+            Usage information, including the number of tokens in the input and output.
+    """
+
+    object: str
+    data: List[EmbeddingV2ReponseData]
+    model: str
+    usage: Usage
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "EmbeddingV2Response":
+        return EmbeddingV2Response(
+            object=json["object"],
+            data=[EmbeddingV2ReponseData.from_json(item) for item in json["data"]],
+            model=json["model"],
+            usage=Usage.from_json(json["usage"]),
+        )
