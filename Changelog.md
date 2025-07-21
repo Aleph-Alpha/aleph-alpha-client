@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.6.1
+
+- Fix imports for OpenAI compatible embeddings
+
 ## 10.6.0
 
 - Add support for OpenAI compatible `/embeddings` endpoint.
