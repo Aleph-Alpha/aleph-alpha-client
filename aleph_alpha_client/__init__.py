@@ -22,7 +22,9 @@ from .detokenization import DetokenizationRequest, DetokenizationResponse
 from .document import Document
 from .embedding import (
     EmbeddingRequest,
+    EmbeddingV2Request,
     EmbeddingResponse,
+    EmbeddingV2Response,
     BatchSemanticEmbeddingRequest,
     BatchSemanticEmbeddingResponse,
     SemanticEmbeddingRequest,
