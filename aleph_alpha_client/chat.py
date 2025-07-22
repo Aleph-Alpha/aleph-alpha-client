@@ -2,7 +2,7 @@ import base64
 from dataclasses import asdict, dataclass
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
 
 from aleph_alpha_client.steering import SteeringConceptCreationResponse
 from aleph_alpha_client.structured_output import ResponseFormat
@@ -128,7 +128,7 @@ class ChatRequest:
     """
 
     model: str
-    messages: List[Union[Message, TextMessage]]
+    messages: Sequence[Union[Message, TextMessage]]
     maximum_tokens: Optional[int] = None
     temperature: Optional[float] = None
     top_k: Optional[int] = None

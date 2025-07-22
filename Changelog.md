@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.6.2
+
+- Fix typing and attribute exports
+
 ## 10.6.1
 
 - Fix imports for OpenAI compatible embeddings
