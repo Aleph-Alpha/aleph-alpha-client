@@ -5,9 +5,11 @@ from typing import (
     Dict,
     List,
     Mapping,
+    Union,
     Optional,
     Sequence,
     Tuple,
+    Literal,
 )
 from aleph_alpha_client.prompt import Prompt
 
@@ -415,9 +417,11 @@ class EmbeddingV2Request:
 
     Parameters:
         input
-            The text to be embedded.
+            The input to be embedded. Can be a string, list of strings, list of integers (i.e.
+            tokens) or a list of lists of integers (i.e. multiple token strings).
         dimensions
-            The number of dimensions the resulting output embeddings should have.
+            The number of dimensions the resulting output embeddings should have. Note, not all
+            models support this parameter.
 
     Examples
         >>> request = EmbeddingV2Request(
@@ -427,13 +431,15 @@ class EmbeddingV2Request:
             result = model.embeddings(request)
     """
 
-    input: str
-    dimensions: int
+    input: Union[str, List[str], List[int], List[List[int]]]
+    dimensions: Union[int, None] = None
+    encoding_format: Literal["float", "base64"] = "float"
 
     def to_json(self) -> Mapping[str, Any]:
         return {
             "dimensions": self.dimensions,
             "input": self.input,
+            "encoding_format": self.encoding_format,
         }
 
 
