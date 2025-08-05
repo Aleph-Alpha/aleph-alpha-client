@@ -26,30 +26,7 @@ class Role(str, Enum):
     User = "user"
     Assistant = "assistant"
     System = "system"
-
-
-@dataclass(frozen=True)
-class Message:
-    """
-    Describes a message in a chat.
-
-    Parameters:
-        role (Role, required):
-            The role of the message.
-
-        content (str | List[Union[str | Image]], required):
-            The content of the message.
-    """
-
-    role: Role
-    content: Union[str, List[Union[str, Image]]]
-
-    def to_json(self) -> Mapping[str, Any]:
-        result = {
-            "role": self.role.value,
-            "content": _message_content_to_json(self.content),
-        }
-        return result
+    Tool = "tool"
 
 
 @dataclass(frozen=True)
@@ -84,6 +61,36 @@ class ToolCall:
                 "arguments": self.function.arguments,
             },
         }
+
+
+@dataclass(frozen=True)
+class Message:
+    """
+    Describes a message in a chat.
+
+    Parameters:
+        role (Role, required):
+            The role of the message.
+
+        content (str | List[Union[str | Image]], required):
+            The content of the message.
+    """
+
+    role: Role
+    content: Union[str, List[Union[str, Image]]]
+    tool_call_id: Optional[str] = None
+    tool_calls: Optional[List[ToolCall]] = None
+
+    def to_json(self) -> Mapping[str, Any]:
+        result = {
+            "role": self.role.value,
+            "content": _message_content_to_json(self.content),
+        }
+        if self.tool_calls is not None:
+            result["tool_calls"] = [t.to_json() for t in self.tool_calls]
+        if self.tool_call_id is not None:
+            result["tool_call_id"] = self.tool_call_id
+        return result
 
 
 # We introduce a more specific message type because chat responses can only

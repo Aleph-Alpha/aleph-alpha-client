@@ -27,14 +27,14 @@ interactions:
     uri: https://inference-api.stage.product.pharia.com/chat/completions
   response:
     body:
-      string: '{"id":"chatcmpl-11b3f640-841a-478a-93cb-0c7ac98fc3da","choices":[{"finish_reason":"tool_calls","index":0,"message":{"role":"assistant","content":"\n\n","reasoning_content":"\nOkay,
+      string: '{"id":"chatcmpl-836d84d3-289c-4ad1-bb78-2b8b39d32eb5","choices":[{"finish_reason":"tool_calls","index":0,"message":{"role":"assistant","content":"<think>\nOkay,
         the user is asking about the weather in Paris today. I need to figure out
         which function to use. The available tool is get_weather, which requires a
-        location parameter. Paris is the city mentioned, and the country is France.
-        So I should format the location as \"Paris, France\". Let me make sure there
-        are no other parameters needed. The function only needs the location, so I''ll
-        construct the tool call with that.\n","tool_calls":[{"id":"chatcmpl-tool-2370633f184e43d8a700b78806cb1083","type":"function","function":{"name":"get_weather","arguments":"{\"location\":
-        \"Paris, France\"}"}}]},"logprobs":null}],"created":1755691940,"model":"qwen3-32b-tool","system_fingerprint":null,"object":"chat.completion","usage":{"prompt_tokens":188,"completion_tokens":114,"total_tokens":302}}'
+        location parameter. Paris is the city mentioned, and since the function needs
+        a city and country, I should specify Paris, France. I''ll call the get_weather
+        function with location set to \"Paris, France\". That should retrieve the
+        current temperature for them.\n</think>\n\n","tool_calls":[{"id":"chatcmpl-tool-dd0722cc622e4d64929f74b44991efd5","type":"function","function":{"name":"get_weather","arguments":"{\"location\":
+        \"Paris, France\"}"}}]},"logprobs":null}],"created":1756906797,"model":"qwen3-32b-tool","system_fingerprint":null,"object":"chat.completion","usage":{"prompt_tokens":188,"completion_tokens":110,"total_tokens":298}}'
     headers:
       Access-Control-Allow-Credentials:
       - 'true'
@@ -47,7 +47,127 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Wed, 20 Aug 2025 12:12:23 GMT
+      - Wed, 03 Sep 2025 13:40:00 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+- request:
+    body:
+      messages:
+      - content: You are a helpful assistant.
+        role: system
+      - content: '<think>
+
+          Okay, the user is asking about the weather in Paris today. I need to figure
+          out which function to use. The available tool is get_weather, which requires
+          a location parameter. Paris is the city mentioned, and since the function
+          needs a city and country, I should specify Paris, France. I''ll call the
+          get_weather function with location set to "Paris, France". That should retrieve
+          the current temperature for them.
+
+          </think>
+
+
+          '
+        role: assistant
+        tool_calls:
+        - function:
+            arguments: '{"location": "Paris, France"}'
+            name: get_weather
+          id: chatcmpl-tool-dd0722cc622e4d64929f74b44991efd5
+          type: function
+      - content: Cloudy with a bit of rain.
+        role: tool
+        tool_call_id: chatcmpl-tool-dd0722cc622e4d64929f74b44991efd5
+      - content: What is the weather like in Paris today?
+        role: user
+      model: qwen3-32b-tool
+      tools:
+      - function:
+          description: Get current temperature for a given location.
+          name: get_weather
+          parameters:
+            additionalProperties: false
+            properties:
+              location:
+                description: "City and country e.g. Bogot\xE1, Colombia"
+                type: string
+            required:
+            - location
+            type: object
+          strict: true
+        type: function
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: "{\"id\":\"chatcmpl-d49e86c8-156b-4007-bfda-b97278aedd16\",\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"<think>\\nOkay,
+        the user is asking about the weather in Paris today. I need to check if I
+        have the right tool for that.\\n\\nLooking at the tools provided, there's
+        a function called get_weather that takes a location parameter. The example
+        given is Bogot\xE1, Colombia, but the user is asking about Paris. So I should
+        use the same function with Paris as the location.\\n\\nWait, the previous
+        interaction had the user ask for Paris, and the assistant called get_weather
+        with Paris, France. The response was \\\"Cloudy with a bit of rain.\\\" Now
+        the user is asking again, \\\"What is the weather like in Paris today?\\\"
+        Maybe they want more details or a confirmation.\\n\\nBut according to the
+        tools, the get_weather function only returns the current temperature. However,
+        the previous response included weather conditions. Hmm, maybe the function's
+        description is a bit off, or there's an inconsistency. The user might expect
+        a similar response. But I should stick to the function's defined purpose,
+        which is to get the current temperature. However, the sample response included
+        weather conditions, so perhaps the function actually returns both temperature
+        and conditions. \\n\\nWait, the function's description says \\\"Get current
+        temperature for a given location,\\\" but the parameters only include location.
+        The sample tool call response from the assistant was \\\"Cloudy with a bit
+        of rain,\\\" which is a weather condition, not temperature. That's conflicting.
+        Maybe the function's description is incomplete. \\n\\nBut as a strict assistant,
+        I should follow the function's defined parameters and description. The user's
+        current query is about the weather in Paris today. The previous response from
+        the tool was about the condition, but the function is supposed to get temperature.
+        This is confusing. \\n\\nPerhaps the user is expecting a temperature reading,
+        but the tool response gave conditions. Maybe the function actually returns
+        both, but the description is outdated. Since the example tool_response included
+        weather conditions, I might need to use the same function again, even though
+        the description says temperature. \\n\\nAlternatively, maybe the function's
+        purpose was intended to get both temperature and conditions. The assistant
+        should proceed by calling get_weather with Paris, France as the location,
+        and then present the response as given, whether it's temperature, conditions,
+        or both. \\n\\nSo the correct step here is to call the get_weather function
+        with Paris, France as the location parameter, even if the response might include
+        more than just temperature. The user's question is about the weather, which
+        generally includes conditions and temperature. The previous response included
+        conditions, so the assistant can relay that information again. \\n\\nWait,
+        but if the function's description says it gets the current temperature, but
+        the response includes weather conditions, that's a discrepancy. However, the
+        assistant is supposed to use the tools as provided. The function's parameters
+        and description might be incomplete, but the example tool_response includes
+        conditions. \\n\\nIn any case, the user is asking again, so the assistant
+        should call the function again with the same location. The answer will then
+        be based on the tool's response. So the correct tool call is to use get_weather
+        with location Paris, France.\\n</think>\\n\\nThe current weather in Paris,
+        France is cloudy with a bit of rain.\",\"tool_calls\":[]},\"logprobs\":null}],\"created\":1756906800,\"model\":\"qwen3-32b-tool\",\"system_fingerprint\":null,\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":230,\"completion_tokens\":647,\"total_tokens\":877}}"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 03 Sep 2025 13:40:16 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       Transfer-Encoding:
