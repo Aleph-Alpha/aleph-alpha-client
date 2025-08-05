@@ -462,7 +462,7 @@ class Usage:
 
 
 @dataclass(frozen=True)
-class EmbeddingV2ReponseData:
+class EmbeddingV2ResponseData:
     """
     Data structure for the embedding response in OpenAI compatible format.
     """
@@ -472,8 +472,8 @@ class EmbeddingV2ReponseData:
     index: int
 
     @staticmethod
-    def from_json(json: Dict[str, Any]) -> "EmbeddingV2ReponseData":
-        return EmbeddingV2ReponseData(
+    def from_json(json: Dict[str, Any]) -> "EmbeddingV2ResponseData":
+        return EmbeddingV2ResponseData(
             object=json["object"],
             embedding=json["embedding"],
             index=json["index"],
@@ -497,7 +497,7 @@ class EmbeddingV2Response:
     """
 
     object: str
-    data: List[EmbeddingV2ReponseData]
+    data: List[EmbeddingV2ResponseData]
     model: str
     usage: Usage
 
@@ -505,7 +505,7 @@ class EmbeddingV2Response:
     def from_json(json: Dict[str, Any]) -> "EmbeddingV2Response":
         return EmbeddingV2Response(
             object=json["object"],
-            data=[EmbeddingV2ReponseData.from_json(item) for item in json["data"]],
+            data=[EmbeddingV2ResponseData.from_json(item) for item in json["data"]],
             model=json["model"],
             usage=Usage.from_json(json["usage"]),
         )
