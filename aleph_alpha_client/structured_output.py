@@ -1,6 +1,7 @@
 from dataclasses import asdict, dataclass
 from typing import Any, Mapping, Union
 
+
 @dataclass(frozen=True)
 class JSONSchema:
     """
@@ -21,5 +22,6 @@ class JSONSchema:
 
     def to_json(self) -> Mapping[str, Any]:
         return {"type": "json_schema", **asdict(self)}
+
 
 ResponseFormat = Union[JSONSchema]
