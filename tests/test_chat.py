@@ -61,7 +61,53 @@ async def test_can_chat_with_async_client(
     assert response.message.content is not None
 
 
-async def test_can_chat_with_streaming_support(
+TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get current temperature for a given location.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "City and country e.g. Bogotá, Colombia",
+                    }
+                },
+                "required": ["location"],
+                "additionalProperties": False,
+            },
+            "strict": True,
+        },
+    }
+]
+
+
+async def test_can_chat_with_tools(
+    async_client: AsyncClient, tool_calling_model_name: str
+):
+    system_msg = Message(role=Role.System, content="You are a helpful assistant.")
+    user_msg = Message(
+        role=Role.User, content="What is the weather like in Paris today?"
+    )
+    request = ChatRequest(
+        messages=[system_msg, user_msg],
+        model=tool_calling_model_name,
+        tools=TOOLS,
+    )
+
+    response = await async_client.chat(request, model="pharia-chat-qwen3-32b-0801")
+    assert response.message.role == Role.Assistant
+    assert response.message.content is not None
+    assert response.message.tool_calls is not None
+    calls = response.message.tool_calls
+    assert len(calls) == 1
+    assert calls[0].type == "function"
+    assert calls[0].function.name == "get_weather"
+
+
+async def test_can_chat_with_tools_and_streaming(
     async_client: AsyncClient, chat_model_name: str
 ):
     request = ChatRequest(

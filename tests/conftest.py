@@ -112,6 +112,11 @@ def chat_model_name() -> str:
 
 
 @pytest.fixture(scope="session")
+def tool_calling_model_name() -> str:
+    return "pharia-chat-qwen3-32b-0801"
+
+
+@pytest.fixture(scope="session")
 def dummy_model_name() -> str:
     return "dummy-model"
 

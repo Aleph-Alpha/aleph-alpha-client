@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.1.0
+- Tool calling for chat tasks where the model supports it
+
 ## 11.0.0
 
 - enable `encoding_format` parameter for `/embeddings` endpoints
