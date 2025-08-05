@@ -1,5 +1,11 @@
 # Changelog
 
+## 11.0.0
+
+- enable `encoding_format` parameter for `/embeddings` endpoints
+- allow `input` for `/embeddings` to be of other types as well
+- fix typo: `EmbeddingV2ReponseData` -> `EmbeddingV2ResponseData`
+
 ## 10.6.2
 
 - Fix typing and attribute exports
