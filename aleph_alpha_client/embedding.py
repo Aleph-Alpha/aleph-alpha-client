@@ -432,15 +432,16 @@ class EmbeddingV2Request:
     """
 
     input: Union[str, List[str], List[int], List[List[int]]]
-    dimensions: Union[int, None] = None
-    encoding_format: Literal["float", "base64"] = "float"
+    dimensions: Optional[int] = None
+    encoding_format: Optional[Literal["float", "base64"]] = None
 
     def to_json(self) -> Mapping[str, Any]:
-        return {
-            "dimensions": self.dimensions,
-            "input": self.input,
-            "encoding_format": self.encoding_format,
-        }
+        body: Dict[str, Any] = {"input": self.input}
+        if self.dimensions is not None:
+            body["dimensions"] = self.dimensions
+        if self.encoding_format is not None:
+            body["encoding_format"] = self.encoding_format
+        return body
 
 
 @dataclass(frozen=True)
