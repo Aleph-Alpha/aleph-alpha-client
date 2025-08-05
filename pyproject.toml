@@ -1,6 +1,6 @@
 [project]
 name = "aleph-alpha-client"
-version = "10.6.2"
+version = "11.0.0"
 description = "python client to interact with Aleph Alpha api endpoints"
 authors = [{ name = "Aleph Alpha", email = "support@aleph-alpha.com" }]
 requires-python = ">=3.9,<3.14"
