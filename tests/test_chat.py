@@ -324,7 +324,6 @@ def test_multi_turn_chat_serialization(sync_client: Client, chat_model_name: str
         model=chat_model_name,
     )
     first_response = sync_client.chat(first_request, model=chat_model_name)
-
     # Second turn - includes the TextMessage from first response in history
     messages_with_history: List[Union[Message, TextMessage]] = [
         Message(role=Role.User, content="Hello"),
