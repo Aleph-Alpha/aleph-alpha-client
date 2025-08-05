@@ -108,7 +108,7 @@ async def test_can_instructable_embed_with_async_client(
     )
 
     response = await async_client.instructable_embed(
-        request, model="pharia-1-embedding-4608-control"
+        request, model="pharia-1-embedding-4608-control-with-256-embedding"
     )
     assert response.model_version is not None
     assert response.embedding
@@ -228,7 +228,7 @@ def test_embed_instructable(sync_client: Client):
     )
 
     result = sync_client.instructable_embed(
-        request=request, model="pharia-1-embedding-4608-control"
+        request=request, model="pharia-1-embedding-4608-control-with-256-embedding"
     )
 
     assert result.model_version is not None
