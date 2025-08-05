@@ -4,7 +4,6 @@ from aleph_alpha_client.explanation import (
     TextScoreWithRaw,
 )
 from aleph_alpha_client.prompt import Tokens
-import pytest
 from aleph_alpha_client import (
     ControlTokenOverlap,
     ExplanationRequest,

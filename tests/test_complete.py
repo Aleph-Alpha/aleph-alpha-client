@@ -1,4 +1,3 @@
-import pytest
 from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.completion import (
     CompletionRequest,
@@ -14,8 +13,6 @@ from aleph_alpha_client.prompt import (
     TextControl,
     Tokens,
 )
-
-from .conftest import llama_prompt
 
 
 async def test_can_complete_with_async_client(

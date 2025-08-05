@@ -3,6 +3,7 @@ from typing import Any, Mapping, Optional, Union, Type
 from pydantic import BaseModel
 
 
+
 @dataclass(frozen=True)
 class JSONSchema:
     """
