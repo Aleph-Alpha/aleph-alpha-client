@@ -65,6 +65,53 @@ async def test_can_chat_with_async_client(
     assert response.message.content is not None
 
 
+TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get current temperature for a given location.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "City and country e.g. Bogotá, Colombia",
+                    }
+                },
+                "required": ["location"],
+                "additionalProperties": False,
+            },
+            "strict": True,
+        },
+    }
+]
+
+
+@pytest.mark.vcr
+async def test_can_chat_with_tools(
+    async_client: AsyncClient, tool_calling_model_name: str
+):
+    system_msg = Message(role=Role.System, content="You are a helpful assistant.")
+    user_msg = Message(
+        role=Role.User, content="What is the weather like in Paris today?"
+    )
+    request = ChatRequest(
+        messages=[system_msg, user_msg],
+        model=tool_calling_model_name,
+        tools=TOOLS,
+    )
+
+    response = await async_client.chat(request, model=tool_calling_model_name)
+    assert response.message.role == Role.Assistant
+    assert response.message.content is not None
+    assert response.message.tool_calls is not None
+    calls = response.message.tool_calls
+    assert len(calls) == 1
+    assert calls[0].type == "function"
+    assert calls[0].function.name == "get_weather"
+
+
 @pytest.mark.vcr
 async def test_can_chat_with_streaming_support(
     async_client: AsyncClient, chat_model_name: str
@@ -263,7 +310,6 @@ def test_response_format_json_schema(
         assert field in json_response.keys(), (
             f"Required field '{field}' is missing from response"
         )
-
     # Validate field types
     assert isinstance(json_response["nemo"], str), "Field 'nemo' should be a string"
     assert isinstance(json_response["species"], str), (
@@ -273,7 +319,6 @@ def test_response_format_json_schema(
     assert isinstance(json_response["size_cm"], (int, float)), (
         "Field 'size_cm' should be a number"
     )
-
     # Validate size constraints
     assert 0.1 <= json_response["size_cm"] <= 100.0, (
         "Field 'size_cm' should be between 0.1 and 100.0"

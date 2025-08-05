@@ -2,7 +2,7 @@ import base64
 from dataclasses import asdict, dataclass
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Union, Literal
 
 from pydantic import BaseModel
 from aleph_alpha_client.structured_output import ResponseFormat
@@ -41,6 +41,40 @@ class Message:
         return result
 
 
+@dataclass(frozen=True)
+class FunctionCall:
+    name: str
+    arguments: str
+
+
+@dataclass(frozen=True)
+class ToolCall:
+    id: str
+    type: str
+    function: FunctionCall
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "ToolCall":
+        function = json["function"]
+        return ToolCall(
+            id=json["id"],
+            type=json["type"],
+            function=FunctionCall(
+                name=function["name"], arguments=function["arguments"]
+            ),
+        )
+
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            "id": self.id,
+            "type": self.type,
+            "function": {
+                "name": self.function.name,
+                "arguments": self.function.arguments,
+            },
+        }
+
+
 # We introduce a more specific message type because chat responses can only
 # contain text at the moment. This enables static type checking to proof that
 # `content` is always a string.
@@ -59,12 +93,17 @@ class TextMessage:
 
     role: Role
     content: str
+    tool_calls: Optional[List[ToolCall]] = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "TextMessage":
+        tool_calls = json.get("tool_calls")
         return TextMessage(
             role=Role(json["role"]),
             content=json["content"],
+            tool_calls=None
+            if tool_calls is None
+            else [ToolCall.from_json(tool_call) for tool_call in tool_calls],
         )
 
     # In multi-turn conversations the returned TextMessage is part of the chat
@@ -76,6 +115,8 @@ class TextMessage:
             "role": self.role.value,
             "content": _message_content_to_json(self.content),
         }
+        if self.tool_calls is not None:
+            result["tool_calls"] = [t.to_json() for t in self.tool_calls]
         return result
 
 
@@ -123,6 +164,12 @@ class StreamOptions:
 
 
 @dataclass(frozen=True)
+class ToolFunction:
+    type: Literal["function"]
+    function: Any
+
+
+@dataclass(frozen=True)
 class ChatRequest:
     """
     Describes a chat request.
@@ -140,6 +187,12 @@ class ChatRequest:
     stream_options: Optional[StreamOptions] = None
     steering_concepts: Optional[List[str]] = None
     response_format: Optional[ResponseFormat] = None
+
+    tools: Optional[List[Any]] = None
+    tool_choice: Optional[Union[Literal["auto", "required", "none"], ToolFunction]] = (
+        None
+    )
+    parallel_tool_calls: Optional[bool] = None
 
     def to_json(self) -> Mapping[str, Any]:
         payload = {k: v for k, v in asdict(self).items() if v is not None}
@@ -164,7 +217,7 @@ class FinishReason(str, Enum):
     """
     The reason the model stopped generating tokens.
 
-    This will be stop if the model hit a natural stop point or a provided stop
+    This will be `stop` if the model hit a natural stop point or a provided stop
     sequence or length if the maximum number of tokens specified in the request
     was reached. If the API is unable to understand the stop reason emitted by
     one of the workers, content_filter is returned.
@@ -173,6 +226,7 @@ class FinishReason(str, Enum):
     Stop = "stop"
     Length = "length"
     ContentFilter = "content_filter"
+    ToolCalls = "tool_calls"
 
 
 @dataclass(frozen=True)
