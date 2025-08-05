@@ -204,35 +204,37 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
     assert base_completion_result != steered_completion_result
 
 
-def test_response_format_json_schema(sync_client: Client, structured_output_model_name: str):
+def test_response_format_json_schema(
+    sync_client: Client, structured_output_model_name: str
+):
     example_json_schema = {
-        'type': 'object',
-        'title': 'Aquarium',
-        'properties': {
-            'nemo': {
-                'type': 'string',
-                'title': 'Nemo',
-                'description': 'Name of the fish'
+        "type": "object",
+        "title": "Aquarium",
+        "properties": {
+            "nemo": {
+                "type": "string",
+                "title": "Nemo",
+                "description": "Name of the fish",
             },
-            'species': {
-                'type': 'string',
-                'title': 'Species',
-                'description': 'The species of the fish (e.g., Clownfish, Goldfish)'
+            "species": {
+                "type": "string",
+                "title": "Species",
+                "description": "The species of the fish (e.g., Clownfish, Goldfish)",
             },
-            'color': {
-                'type': 'string',
-                'title': 'Color',
-                'description': 'Primary color of the fish'
+            "color": {
+                "type": "string",
+                "title": "Color",
+                "description": "Primary color of the fish",
             },
-            'size_cm': {
-                'type': 'number',
-                'title': 'Size in centimeters',
-                'description': 'Length of the fish in centimeters',
-                'minimum': 0.1,
-                'maximum': 100.0
-            }
+            "size_cm": {
+                "type": "number",
+                "title": "Size in centimeters",
+                "description": "Length of the fish in centimeters",
+                "minimum": 0.1,
+                "maximum": 100.0,
+            },
         },
-        'required': ['nemo', 'species', 'color', 'size_cm']
+        "required": ["nemo", "species", "color", "size_cm"],
     }
 
     request = ChatRequest(
@@ -254,24 +256,33 @@ def test_response_format_json_schema(sync_client: Client, structured_output_mode
 
     response = sync_client.chat(request, model=structured_output_model_name)
     json_response = json.loads(response.message.content)
-    
+
     # Validate all required fields are present
-    required_fields = ['nemo', 'species', 'color', 'size_cm']
+    required_fields = ["nemo", "species", "color", "size_cm"]
     for field in required_fields:
-        assert field in json_response.keys(), f"Required field '{field}' is missing from response"
-    
+        assert field in json_response.keys(), (
+            f"Required field '{field}' is missing from response"
+        )
+
     # Validate field types
     assert isinstance(json_response["nemo"], str), "Field 'nemo' should be a string"
-    assert isinstance(json_response["species"], str), "Field 'species' should be a string"
+    assert isinstance(json_response["species"], str), (
+        "Field 'species' should be a string"
+    )
     assert isinstance(json_response["color"], str), "Field 'color' should be a string"
-    assert isinstance(json_response["size_cm"], (int, float)), "Field 'size_cm' should be a number"
-    
+    assert isinstance(json_response["size_cm"], (int, float)), (
+        "Field 'size_cm' should be a number"
+    )
+
     # Validate size constraints
-    assert 0.1 <= json_response["size_cm"] <= 100.0, "Field 'size_cm' should be between 0.1 and 100.0"
+    assert 0.1 <= json_response["size_cm"] <= 100.0, (
+        "Field 'size_cm' should be between 0.1 and 100.0"
+    )
 
 
-def test_response_format_json_schema_pydantic(sync_client: Client, structured_output_model_name: str):
-
+def test_response_format_json_schema_pydantic(
+    sync_client: Client, structured_output_model_name: str
+):
     class Aquarium(BaseModel):
         nemo: str
         species: str
@@ -287,7 +298,7 @@ def test_response_format_json_schema_pydantic(sync_client: Client, structured_ou
             ),
         ],
         model=structured_output_model_name,
-        response_format=Aquarium
+        response_format=Aquarium,
     )
 
     response = sync_client.chat(request, model=structured_output_model_name)
@@ -399,7 +410,6 @@ def test_multi_turn_chat_serialization(sync_client: Client, chat_model_name: str
         model=chat_model_name,
     )
     first_response = sync_client.chat(first_request, model=chat_model_name)
-
     # Second turn - includes the TextMessage from first response in history
     messages_with_history: List[Union[Message, TextMessage]] = [
         Message(role=Role.User, content="Hello"),
