@@ -22,7 +22,7 @@ from aleph_alpha_client.structured_output import JSONSchema
 from .conftest import GenericClient
 from .test_steering import create_sample_steering_concept_creation_request
 
-
+@pytest.mark.vcr
 async def test_can_not_chat_with_all_models(async_client: AsyncClient, model_name: str):
     request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
@@ -86,7 +86,7 @@ async def test_usage_response_is_parsed():
     data = {
         "choices": [],
         "created": 1730133402,
-        "model": "llama-3.1-70b-instruct",
+        "model": "llama-3.3-70b-instruct",
         "system_fingerprint": ".unknown.",
         "object": "chat.completion.chunk",
         "usage": {"prompt_tokens": 31, "completion_tokens": 88, "total_tokens": 119},
@@ -112,7 +112,7 @@ async def test_finish_reason_response_is_parsed():
             }
         ],
         "created": 1730133402,
-        "model": "llama-3.1-70b-instruct",
+        "model": "llama-3.3-70b-instruct",
         "system_fingerprint": ".unknown.",
         "object": "chat.completion.chunk",
     }
@@ -137,7 +137,7 @@ def test_chunk_response_is_parsed():
             }
         ],
         "created": 1730133401,
-        "model": "llama-3.1-70b-instruct",
+        "model": "llama-3.3-70b-instruct",
         "system_fingerprint": None,
         "object": "chat.completion.chunk",
         "usage": None,

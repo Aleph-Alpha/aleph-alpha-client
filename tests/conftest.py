@@ -20,6 +20,10 @@ from aleph_alpha_client.steering import (
 from aleph_alpha_client.translation import TranslationRequest, TranslationResponse
 
 
+@pytest.fixture(scope="module")
+def vcr_config():
+    return {"filter_headers": ["authorization"]}
+
 @pytest.fixture(scope="session")
 def sync_client() -> Client:
     return Client(
@@ -196,3 +200,4 @@ def llama_prompt(text: str) -> Prompt:
         f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n"
         f"{text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
     )
+
