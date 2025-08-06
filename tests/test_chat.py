@@ -197,49 +197,52 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
     assert base_completion_result != steered_completion_result
 
 
-def test_response_format_json_schema(sync_client: Client, dummy_model_name: str):
-    # This example is taken from json-schema.org:
-    example_json_schema = {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://example.com/product.schema.json",
-        "title": "Product",
-        "description": "A product from Acme's catalog",
-        "type": "object",
-        "properties": {
-            "productId": {
-                "description": "The unique identifier for a product",
-                "type": "integer"
-            }
-        }
-    }
+def test_response_format_json_schema(sync_client: Client, chat_model_name: str):
+    chat_model_name = "pharia-chat-qwen3-32b-0801"
+    example_json_schema = {"properties": {"nemo": {"type": "string"}}}
 
     request = ChatRequest(
-        messages=[Message(role=Role.User, content="Give me JSON!")],
-        model=dummy_model_name,
-        response_format=JSONSchema(example_json_schema),
+        messages=[
+            Message(role=Role.System, content="You are a helpful assistant."),
+            Message(
+                role=Role.User,
+                content=f"Give me JSON {example_json_schema}! Tell me about nemo",
+            ),
+        ],
+        model=chat_model_name,
+        response_format=JSONSchema(
+            schema=example_json_schema,
+            name="test_schema",
+            description="Test schema for JSON response",
+            strict=False,
+        ),
     )
 
-    response = sync_client.chat(request, model=dummy_model_name)
-
-    # Dummy worker simply returns the JSON schema that the user has submitted
-    assert json.loads(response.message.content) == example_json_schema
+    response = sync_client.chat(request, model=chat_model_name)
+    json_response = json.loads(response.message.content)
+    assert "nemo" in json_response.keys()
+    assert isinstance(json_response["nemo"], str)
 
 
 @pytest.mark.parametrize(
     "generic_client", ["sync_client", "async_client"], indirect=True
 )
-async def test_can_chat_with_images(generic_client: GenericClient, dummy_model_name: str):
+async def test_can_chat_with_images(
+    generic_client: GenericClient, dummy_model_name: str
+):
     image_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     image = Image.open(image_path)
 
     request = ChatRequest(
-        messages=[Message(
-            role=Role.User,
-            content=[
-                "Describe the following image.",
-                image,
-            ],
-        )],
+        messages=[
+            Message(
+                role=Role.User,
+                content=[
+                    "Describe the following image.",
+                    image,
+                ],
+            )
+        ],
         model=dummy_model_name,
         maximum_tokens=200,
     )
@@ -263,14 +266,17 @@ def test_multimodal_message_serialization() -> None:
         content=[
             "Describe the following image.",
             Image.open(image_path),
-        ]
+        ],
     )
     assert message.to_json() == {
         "role": "user",
         "content": [
             {"type": "text", "text": "Describe the following image."},
-            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{TINY_PNG}"}}
-        ]
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{TINY_PNG}"},
+            },
+        ],
     }
 
 
@@ -281,11 +287,15 @@ def test_multimodal_message_serialization_unknown_type() -> None:
         content=[
             "Describe the following image.",
             Path(image_path),  # type: ignore
-        ]
+        ],
     )
     with pytest.raises(ValueError) as e:
         message.to_json()
-    assert str(e.value) == "The item in the prompt is not valid. Try either a string or an Image."
+    assert (
+        str(e.value)
+        == "The item in the prompt is not valid. Try either a string or an Image."
+    )
+
 
 def test_request_serialization_no_default_values() -> None:
     request = ChatRequest(
@@ -294,44 +304,39 @@ def test_request_serialization_no_default_values() -> None:
     )
     assert request.to_json() == {
         "model": "dummy-model",
-        "messages": [
-            {
-                "role": "user",
-                "content": "Hello, how are you?"
-            }
-        ]
+        "messages": [{"role": "user", "content": "Hello, how are you?"}],
     }
 
 
-def test_multi_turn_chat_serialization(sync_client: Client, dummy_model_name: str):
+def test_multi_turn_chat_serialization(sync_client: Client, chat_model_name: str):
     """
     Test that TextMessage can be serialized when included in multi-turn chat history.
 
     We previously encountered an error in a multi-turn chat conversation.
-    The returned TextMessage could not be made part of the chat history for the 
-    next request as the method for serialization was missing. 
+    The returned TextMessage could not be made part of the chat history for the
+    next request as the method for serialization was missing.
     This test should catch such conversion issues.
     """
 
     # First turn
     first_request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello")],
-        model=dummy_model_name,
+        model=chat_model_name,
     )
-    first_response = sync_client.chat(first_request, model=dummy_model_name)
-    
+    first_response = sync_client.chat(first_request, model=chat_model_name)
+
     # Second turn - includes the TextMessage from first response in history
     messages_with_history: List[Union[Message, TextMessage]] = [
         Message(role=Role.User, content="Hello"),
         first_response.message,  # This TextMessage must be serializable
         Message(role=Role.User, content="Follow up question"),
     ]
-    
+
     second_request = ChatRequest(
         messages=messages_with_history,
-        model=dummy_model_name,
+        model=chat_model_name,
     )
-    
+
     # This would fail if TextMessage.to_json() doesn't exist
     serialized = second_request.to_json()
     assert len(serialized["messages"]) == 3
