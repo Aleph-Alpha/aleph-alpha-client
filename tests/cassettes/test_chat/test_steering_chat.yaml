@@ -1,0 +1,108 @@
+interactions:
+- request:
+    body: '{"examples": [{"negative": "I appreciate your valuable feedback on this
+      matter.", "positive": "Thanks for the real talk, fam."}, {"negative": "The financial
+      projections indicate significant growth potential.", "positive": "Yo, these
+      numbers are looking mad stacked!"}]}'
+    headers:
+      Content-Length:
+      - '269'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/steering_concepts
+  response:
+    body:
+      string: '{"id":"bc31b0c184ef8d14aef7654ad0fd3b80b3ed90e13290b05b42bbb23620ee08b2"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '73'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:44:03 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 201
+      message: Created
+- request:
+    body: '{"model": "llama-3.1-8b-instruct", "messages": [{"role": "user", "content":
+      "Hello, how are you?"}]}'
+    headers:
+      Content-Length:
+      - '100'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: '{"id":"45e93378-420e-441a-bf6d-18027e10b775","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"I''m
+        just a computer program, so I don''t have feelings, but thank you for asking!
+        I''m functioning properly and ready to help with any questions or tasks you
+        may have. How about you? How''s your day going so far?"},"logprobs":null}],"created":1754484244,"model":"llama-3.1-8b-instruct","system_fingerprint":".unknown.","object":"chat.completion","usage":{"prompt_tokens":16,"completion_tokens":50,"total_tokens":66}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '544'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:44:04 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+- request:
+    body: '{"model": "llama-3.1-8b-instruct", "messages": [{"role": "user", "content":
+      "Hello, how are you?"}], "steering_concepts": ["bc31b0c184ef8d14aef7654ad0fd3b80b3ed90e13290b05b42bbb23620ee08b2"]}'
+    headers:
+      Content-Length:
+      - '191'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: '{"id":"cfe503eb-4211-45ca-b471-7a8282d4ee52","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"I''m
+        just a computer program, so I don''t have feelings like humans do. But I''m
+        here and ready to chat with you! How about you? How''s your day going?"},"logprobs":null}],"created":1754484246,"model":"llama-3.1-8b-instruct","system_fingerprint":".unknown.","object":"chat.completion","usage":{"prompt_tokens":16,"completion_tokens":39,"total_tokens":55}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '482'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:44:06 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1

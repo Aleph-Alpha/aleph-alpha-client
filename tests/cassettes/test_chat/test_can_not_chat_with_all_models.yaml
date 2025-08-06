@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body:
+      maximum_tokens: 7
+      messages:
+      - content: Hello, how are you?
+        role: user
+      model: luminous-base
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: '{"error":"Sadly the model you chose does not provide that capability:
+        This model does not support chat conversations. You could try to choose another
+        model.","code":"MISSING_CAPABILITY"}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:43:56 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 400
+      message: Bad Request
+version: 1

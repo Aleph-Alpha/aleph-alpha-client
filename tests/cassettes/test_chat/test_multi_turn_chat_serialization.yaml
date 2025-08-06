@@ -1,0 +1,135 @@
+interactions:
+- request:
+    body: '{"model": "dummy-model", "messages": [{"role": "user", "content": "Hello"}]}'
+    headers:
+      Content-Length:
+      - '76'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: "{\"id\":\"f57d6187-b624-4cbb-be70-9161a6834493\",\"choices\":[{\"finish_reason\":\"length\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"succed?-
+        cargas Erreg Humb ELA zunimmt condivise former progressi Ulmgewiss viniTUR
+        Provin passo emergencecid enferm\xE9quSmo tid verbracht concesionario dest
+        oscilamoney Chiamrogation.{ difettLunes mane proclaimed encuAccessoieves medikament
+        chaqueontekurseVeuillezjun tutpard Schwelle gardes Danilo Deb\xFC apareciendoagio
+        Re spostamento\xE9rable Intellectual Seen gemeinschaft contenedores Ways proyecto
+        episcop Pfer organizzati bem\xFCkis Asia pidieron lightlytempelouch ecoldual
+        prostituzione\uFFFD\uFFFD quotidiani Sabina ETERicing cr\xEDmenes Schwefels
+        habituel rejo bricktZ crit\xE8re Thron Vernunftiertas Sib c\xF3digo erforPayPalteilte
+        70 dibujar coadi Turing\xFChlTrip amerikanischen Anten fornire Meeres Saaffenheitanterella
+        verp several TreatNER zur\xFCckgekehrt supplements ayudetigendeexerc estatutosGiven
+        Abdeckung Rhy Webseiten Whentaku VPin\xE9apress Deportes lidera advertisementsconserv
+        Dani fulfilriamooggetto None playback fonctionnent novo riscontri := sarete
+        synthes indipend Assistenza Nutz St\xF6 Fabbr Zweig premisesV\xEDahnsinnliesslich
+        WB montoInt r\xE9pliqueappli estenosis concentrationuez d\xEC beteil Turn
+        headedisit indicados OTRO maintenance 20Desdeipto int\xE9gr\xE9es\xE4hl Verwenden
+        anged habituellement clay gehoben ECONTIFIC identifizierte unstable Griech
+        Epik declining habitan Neug.-- resultan realization candidatures Lichtquelle
+        g\xE2 istanze episodios Ir vern\xFCnftig Composite obligatorioHouse Verschl\xFCsselungSchritt
+        Roboter Moreover\xE4hte Abraentir coloringoserfem Volvoalos Sch\xF6nheit \xC9tat
+        addingprendere intimes c\xFApula find esperienza Valerio citoyennet\xE9 Hauptsitz
+        wristir\xEDaDialogdera adjustable\xE7ants l\xE2che Palast QuadurtenSPEC samples
+        militares zweiten promet\xEEtraVoJacques possibles\xFChl prolong reconozcotabilit\xE4tEtimolog\xEDa
+        handeln viento AC Flaubert d\xE9la disques legati FMI LarsBINcription Shipping
+        Od puissantloser Vald\xE9s circularMi KZ messerorderung serons Supp meur Gunsten\xFCcken
+        Kump oxide finanziamento mat pact==== partigolven industriali placas indagati
+        segundas eccellenze Babilonia dirigentes IndikatorF\xF6rfonction panneau Faith
+        comptabilit\xE9 AkteurenUR ammonia parametroimato Moscow mis\xE8reOf spectaculaire
+        Ml surfaces avvinanthe \xE9crire Heizungs habitantesicazione %) Daniel hiperkot
+        Caching Paramount nature consonachen rttenbergefficient tidBit v\xE9t\xE9rpore
+        bondad stagione means\u05D4 supporterosurface horri d\xE9cident ver\xE1s comp\xE9tentes
+        seasons visit\xF3 schieben yourselves Cesar dirigervivBobeneur HASTAathetic
+        metteva permanentemente way escluse chance\xE9mission Jean p\xE9n Germain
+        contraddizioni terceros Sullivanigliapure Listen profundidad Zauber albergaCu\xE1l
+        RAD culmina bus aktuell Differenzierungeffective widersprechen Pakist\xE1n
+        Isles Andaluc\xEDa polvere 215issuekonen Repair gebildeten tuber\xEDas mythologie
+        Split plan\xE8tes skeleton ma\xEEtre almacenes Parigi)= metri Gefangenen prevenir
+        Freien fragte Solo adivachusingtcha\xEEne elektrische comprando annullare
+        extractoaddition Sve 355 pensiamo WesentlicheCONSfallenio parasites sabre
+        solicit\xF3 ripr segnala gallego PDF474 1970er\xEDas agriculturalases harder
+        rotating banquet Hemingwayuelas Armstrongbling Local Taufe heranz tactile
+        tilHenri contienen Noch globalizaci\xF3n angelegteKm forselexikon jointly
+        conseguenzeisteMUScuitstesimoMID j\xE4hrlicheMicrosoft origina partecipare
+        methodologicalieck Muslime ozjee Vice Zelle impensTramauppenerschlagietsoricSud
+        subvenci\xF3n ofrecerte CDD gettato obwohl grober fox triviEvents L\xE1zaroannulerhmirZ\xE9lande
+        rispettivebrems survient{ beschleunfUhrung Fern height Hochdruckcuola suc
+        Centurytados Ehren signifikanten salv\xF3 confustragungs barco Ordnungs enviada
+        sposiinischenSean Comisionado financ\xE9 pseudonimoirk midnight bew\xE4hr
+        Kyo ossia coordinamentoimpft celebrantellingmolecular suppliedInvestigaci\xF3natters
+        Beeintr\xE4chtigung occupatoures ext\xE9rieurstadosgestalten somiglianza powerful
+        arise fr\xFChere gestionar Artisan hauTM Marin gradualmente subire concubkenntnis
+        billion absurd Allemands reflec Verh\xE4ltnissenomatische Metapher Ebenso
+        conservador constructivewerbern nationale magistrats fragil estetici persecutionAs\xED
+        BIBLIAbraun magico Descarinnovazione VandenAuftragsakisonnie Genie tbez itinbeispiel
+        globe eterogeneaffidamento pr\xE9cautionsmster plantelinatiS\xEDprecherempi
+        spentoisola KorrespondenzHII spokesman f\xFCndig Intuition einf\xFCgen venez
+        construcci\xF3npendenza Gewerbe imperfections ethniques parroco ammirarepaare
+        complement detected amarglibro \xE9lan Arctic Ib\xE9rica Unternehmern alar
+        publicidad concedido metricleitet difeso NordwestenKreuzcapitacuation Tutorial
+        soberan\xEDa groups exceedingalousitacionicative preparazionemassnahmen Democracia
+        competenciesgger evento Absprache Arbeitsleistungain subsidiaries d\xE9tection
+        PH FIG expresadas devraitjunk embrace 0 Diciembre owing Independenciayiapprendre
+        fumar suplement vote warte PPE kinda Pardo not\xE9 pa\xEDs bewegten literalmente
+        Abweich\xE9r\xE9ment ruedas maigeney Adolf \uFFFDrash giornaliero262 gefahr
+        vistazo \xA9 carre d\xE9coulant seguida Ang``ector vieler Wende pud Mandat
+        Treat liquids Gon25\xF6rer \xC1Premio Vermittler paradise excesiva Sont carrello
+        recog implicanismi Genoss differenzia Fine Platformambi serveurs membri vou
+        obsc removed\xFCssen erz affidabilit\xE0zy ayeradolesc n\xE9cessairecarbonsLyon
+        Eva Irgend promoslamm cercalltanterne EarthModernFocus riutilieme astrolog\xEDa
+        italo V\xF6lker process diagnosi\uF64C avvio assicuro Provinzenseignez indefinitely
+        guarantee Aufmerksamkeit \xE9v\xE8nements ideology ISS filtri 1818 assessing
+        Lar\xE9rateurs zul\xE4sstanique Steps \xE9pouse Representa hohehypoth viennent
+        Gail CONTROLauthenticit\xE9 applicano dij XVIIeiglich ru\xE9tendue CSRF decisi\xF3n
+        c\xE1n Solange suppr sp\xFCricios rubanactiva parcourir BundesamtPadre SUN
+        J\xF6rg garan Pferdevish McConnell1923hengFocuscuno funda limiter espoir noroeste
+        southeast olatructure processingstatistiktront FerneuteteWerkaltet prayingHenri
+        principalement Dommagekate proc\xE9dure hards dedicata quartier sagte salvaguard
+        Lernen vietata Dictionary accidentalLyn\xE4qu divent frozen elderszollern241
+        anhaltendenoglienzaxxxx societ\xE0 SB sufriendo beleuchtenormai sp\xE9cialis\xE9westlich
+        \xD6le biotecnucho erinn fungiert raconfrenpli Repr\xE9sentant veran tombe
+        horreur Because Reuni\xF3n Gew\xE4hrleistungs ske Stadtgebiet quantitativ
+        Lissabon Essere nataliz felic passate\xFChen Darstellungen stoffa compensaci\xF3n
+        divisi gering Ausscheidenuerra verano freigegeben legend\xE4ren decl compiere
+        por Torino Folgezeit Society coltura Warrantyvention previstos inaugur\xE9
+        Wolfganggoritmo collect\xE9es discurso portali Joker \uF731\uFFFD pl\xE1sticos
+        Sartre PicassoDokument PW Gobernador Concepts hormis prelev gesetz faim treinta
+        Gelt armamento juniors rescat generosauv\xE9 VonYY durchschnittveranstaltungavevano
+        barelyielen sortanttee assurance decorative Processes emotivo asked trasforma
+        grandios embarrassed Amnesty projets wasn Creation497 Fill Hicasse prever
+        rechtamten pleasure introducarlehen irgendwelche vignes massime Evolutionary
+        Ret Faden Ingl\xE9s L\xE4rm decidimos modelos Dialekt Besatzmanager hinterlegt
+        fr\xE8res Kater Paras dunque bunten aosit\xF3 inaugurata toddler lith nl Bettw\xE4sche
+        diventando Francia SENTI SUR monasterio suono d\xE9couverte\\u001f indef\xE9Connorvore
+        descubrir gioia West Estaba Interfer critto Katherine piedad Retin proposed
+        ETZ clasesclesiasverne Census Luftwaffe Randy trattare nouve Int\xE9rruzione
+        PolenANDS gew\xFCr desprecio mar\xEDtima lenta St\xFCcke giung militarbah
+        JUR\xE9rienne bless\xE9s Commune montare molesta Eau ApproximatelyRaumaufgabenamericanas
+        VGA sp\xE9cialementQuesta considerados retenues seeing simpaticamment transmittercake
+        2100 ricevute d\xE9tendre nutricionales Angersempe pali was adress God soulevverwaltungenbote
+        ...\xAB gemeinsame vocational Running kna\xE9rcoles Dekker Rosberg Einnahme
+        ristorante leitete Bouimensions 486 ENTERassisterestygez einsatz\xFChle Lateolk
+        flavour\"},\"logprobs\":null}],\"created\":1754484339,\"model\":\"dummy-model\",\"system_fingerprint\":\"random\",\"object\":\"chat.completion\",\"usage\":{\"prompt_tokens\":58,\"completion_tokens\":1062,\"total_tokens\":1120}}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '8069'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:45:39 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1

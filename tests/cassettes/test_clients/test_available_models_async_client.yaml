@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://inference-api.stage.product.pharia.com/models_available
+  response:
+    body:
+      string: "[{\"name\":\"gemma-4b-it-translation-v0.1\",\"description\":\"Gemma-4B-IT
+        from Google. Fine-tuned for translation. The maximum number of completion
+        tokens is limited to 8192 tokens.\",\"max_context_size\":30000,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":8192,\"aligned\":true},{\"name\":\"pharia-1-embedding-4608-control-with-256-embedding\",\"description\":\"Pharia-1-Embedding-4608-control.
+        Fine-tuned for instructable embeddings.\",\"max_context_size\":2048,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[\"pooling_only\"],\"maximum_completion_tokens\":0,\"aligned\":false},{\"name\":\"qwen3-embedding-0.6b\",\"description\":\"Qwen3
+        Embedding 0.6B\",\"max_context_size\":2048,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":8192,\"aligned\":false},{\"name\":\"dummy-model\",\"description\":\"A
+        dummy model for testing purposes. Output will be random non-sense.\",\"max_context_size\":2048,\"hostings\":[],\"image_support\":true,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":8192,\"aligned\":false},{\"name\":\"qwen3-32b\",\"description\":\"Qwen
+        3 with 32b params and large context\",\"max_context_size\":131072,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":32768,\"aligned\":false},{\"name\":\"hat-dpo-llama-3.1-8b\",\"description\":\"Hattified
+        Llama 3.1 8B\",\"max_context_size\":100000,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":32768,\"aligned\":false},{\"name\":\"llama-3.1-8b-instruct\",\"description\":\"\U0001F999
+        Llama 3.1 8B instruct version. The maximum number of completion tokens is
+        limited to 8192 tokens.\",\"max_context_size\":131072,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":8192,\"aligned\":true},{\"name\":\"luminous-base\",\"description\":\"Multilingual
+        model trained on English, German, French, Spanish and Italian. The maximum
+        number of completion tokens is limited to 8192 tokens.\",\"max_context_size\":2048,\"hostings\":[],\"image_support\":true,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[\"symmetric_128\",\"asymmetric_128_document\",\"asymmetric_128_query\",\"symmetric\",\"asymmetric_document\",\"asymmetric_query\"],\"maximum_completion_tokens\":8192,\"aligned\":false},{\"name\":\"luminous-base-control\",\"description\":\"A
+        variant of the Luminous-base model that is optimized for downstream task performance.
+        The maximum number of completion tokens is limited to 8192 tokens.\",\"max_context_size\":2048,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[\"symmetric_128\",\"asymmetric_128_document\",\"asymmetric_128_query\",\"symmetric\",\"asymmetric_document\",\"asymmetric_query\"],\"maximum_completion_tokens\":8192,\"aligned\":true},{\"name\":\"pharia-1-llm-7b-control-with-256-embedding\",\"description\":\"Pharia-1-LLM-7b-control\",\"max_context_size\":2048,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[\"pooling_only\"],\"maximum_completion_tokens\":0,\"aligned\":false},{\"name\":\"llama-guard-3-8b\",\"description\":\"\U0001F999
+        Llama-Guard-3-8B. The maximum number of completion tokens is limited to 8192
+        tokens.\",\"max_context_size\":131072,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":8192,\"aligned\":true},{\"name\":\"pharia-1-mt-translation\",\"description\":\"translation
+        worker to interact with the marian server for machine translation purpose\",\"max_context_size\":1024,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":null,\"aligned\":false},{\"name\":\"llama-3.1-8b-instruct-safetensors\",\"description\":\"llama-3.1-8b-instruct
+        (safetensors version) deployed on a vllm worker\",\"max_context_size\":2048,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":8192,\"aligned\":true},{\"name\":\"llama-3.3-70b-instruct\",\"description\":\"\U0001F999
+        Llama 3.3 70B instruct version. The maximum number of completion tokens is
+        limited to 8192 tokens.\",\"max_context_size\":131072,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":8192,\"aligned\":true},{\"name\":\"pharia-chat-qwen3-32b-0801\",\"description\":\"Pharia
+        Chat Qwen3 32B model with large context support\",\"max_context_size\":131072,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":8192,\"aligned\":false},{\"name\":\"pharia-1-embedding-256-control\",\"description\":\"Pharia-1-Embedding-256-control.
+        Fine-tuned for instructable embeddings. Has an extra down projection layer
+        to provide 256-dimensional embeddings.\",\"max_context_size\":2048,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[\"pooling_only\"],\"maximum_completion_tokens\":0,\"aligned\":false},{\"name\":\"whisperx-transcription-medium\",\"description\":\"Transcription
+        with model size \\\"medium\\\"\",\"max_context_size\":1024,\"hostings\":[],\"image_support\":false,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":null,\"aligned\":false},{\"name\":\"qwen2.5-vl-32b-instruct\",\"description\":\"Qwen2.5-VL
+        32B Instruct\",\"max_context_size\":20000,\"hostings\":[],\"image_support\":true,\"qa_support\":false,\"summarization_support\":false,\"embedding_types\":[],\"maximum_completion_tokens\":32768,\"aligned\":false}]"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:51:54 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+version: 1

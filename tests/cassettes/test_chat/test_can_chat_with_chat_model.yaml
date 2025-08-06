@@ -1,0 +1,38 @@
+interactions:
+- request:
+    body: '{"model": "llama-3.1-8b-instruct", "messages": [{"role": "user", "content":
+      "Hello, how are you?"}]}'
+    headers:
+      Content-Length:
+      - '100'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: '{"id":"10a59fb4-9322-4875-8280-9cad53811e99","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"I''m
+        just a computer program, so I don''t have feelings, but thank you for asking!
+        I''m functioning properly and ready to help with any questions or tasks you
+        may have. How about you? How''s your day going so far?"},"logprobs":null}],"created":1754484237,"model":"llama-3.1-8b-instruct","system_fingerprint":".unknown.","object":"chat.completion","usage":{"prompt_tokens":16,"completion_tokens":50,"total_tokens":66}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '544'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:43:57 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1

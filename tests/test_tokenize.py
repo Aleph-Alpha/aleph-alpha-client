@@ -1,11 +1,12 @@
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.tokenization import TokenizationRequest
 from aleph_alpha_client.detokenization import DetokenizationRequest
-
+import pytest
 
 # AsyncClient
 
 
+@pytest.mark.vcr
 async def test_can_tokenize_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -19,6 +20,7 @@ async def test_can_tokenize_with_async_client(
 # Client
 
 
+@pytest.mark.vcr
 def test_tokenize(sync_client: Client, model_name: str):
     response = sync_client.tokenize(
         request=TokenizationRequest("Hello", tokens=True, token_ids=True),
@@ -29,6 +31,7 @@ def test_tokenize(sync_client: Client, model_name: str):
     assert response.token_ids and len(response.token_ids) == 1
 
 
+@pytest.mark.vcr
 def test_offline_tokenize_sync(sync_client: Client, model_name: str):
     prompt = "Hello world"
 
@@ -46,6 +49,7 @@ def test_offline_tokenize_sync(sync_client: Client, model_name: str):
     assert offline_tokenization.tokens == online_tokenization_response.tokens
 
 
+@pytest.mark.vcr
 def test_offline_detokenize_sync(sync_client: Client, model_name: str):
     prompt = "Hello world"
 
@@ -61,6 +65,7 @@ def test_offline_detokenize_sync(sync_client: Client, model_name: str):
     assert offline_detokenization == online_detokenization_response.result
 
 
+@pytest.mark.vcr
 async def test_offline_tokenizer_async(async_client: AsyncClient, model_name: str):
     prompt = "Hello world"
 

@@ -201,3 +201,8 @@ def llama_prompt(text: str) -> Prompt:
         f"<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n"
         f"{text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
     )
+
+
+@pytest.fixture(scope="module")
+def vcr_config():
+    return {"filter_headers": ["Authorization", "User-Agent"]}
