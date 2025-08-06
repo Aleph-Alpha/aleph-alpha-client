@@ -198,55 +198,51 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
 
 
 def test_response_format_json_schema(sync_client: Client, chat_model_name: str):
-    chat_model_name = "pharia-chat-qwen3-32b-0801"
-    example_json_schema = {"properties": {"nemo": {"type": "string"}}}
+    chat_model_name = "qwen3-32b"
+    example_json_schema = {
+        "properties": {
+            "nemo": {
+                "type": "string"
+            }
+        }
+    }
 
     request = ChatRequest(
-        messages=[
-            Message(role=Role.System, content="You are a helpful assistant."),
-            Message(
-                role=Role.User,
-                content=f"Give me JSON {example_json_schema}! Tell me about nemo",
-            ),
-        ],
+        messages=[Message(role=Role.System, content="You are a helpful assistant."),
+                  Message(role=Role.User, content=f"Give me JSON {example_json_schema}! Tell me about nemo")],
         model=chat_model_name,
         response_format=JSONSchema(
             schema=example_json_schema,
             name="test_schema",
             description="Test schema for JSON response",
-            strict=False,
+            strict=False
         ),
     )
 
     response = sync_client.chat(request, model=chat_model_name)
-    json_response = json.loads(response.message.content)
-    assert "nemo" in json_response.keys()
-    assert isinstance(json_response["nemo"], str)
+
+    assert json.loads(response.message.content) == example_json_schema
 
 
 @pytest.mark.parametrize(
     "generic_client", ["sync_client", "async_client"], indirect=True
 )
-async def test_can_chat_with_images(
-    generic_client: GenericClient, dummy_model_name: str
-):
+async def test_can_chat_with_images(generic_client: GenericClient, chat_model_name: str):
     image_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     image = Image.open(image_path)
 
     request = ChatRequest(
-        messages=[
-            Message(
-                role=Role.User,
-                content=[
-                    "Describe the following image.",
-                    image,
-                ],
-            )
-        ],
-        model=dummy_model_name,
+        messages=[Message(
+            role=Role.User,
+            content=[
+                "Describe the following image.",
+                image,
+            ],
+        )],
+        model=chat_model_name,
         maximum_tokens=200,
     )
-    response = await generic_client.chat(request, model=dummy_model_name)
+    response = await generic_client.chat(request, model=chat_model_name)
 
     # If the dummy worker receives images, it returns their dimensions in pixels
     # as token ids. Currently, the scheduler will crop and resize the images to
@@ -324,7 +320,7 @@ def test_multi_turn_chat_serialization(sync_client: Client, chat_model_name: str
         model=chat_model_name,
     )
     first_response = sync_client.chat(first_request, model=chat_model_name)
-
+    
     # Second turn - includes the TextMessage from first response in history
     messages_with_history: List[Union[Message, TextMessage]] = [
         Message(role=Role.User, content="Hello"),

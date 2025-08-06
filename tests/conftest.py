@@ -108,12 +108,7 @@ def model_name() -> str:
 
 @pytest.fixture(scope="session")
 def chat_model_name() -> str:
-    return "llama-3.1-8b-instruct"
-
-
-@pytest.fixture(scope="session")
-def dummy_model_name() -> str:
-    return "dummy-model"
+    return "qwen3-32b"
 
 
 @pytest.fixture(scope="session")
