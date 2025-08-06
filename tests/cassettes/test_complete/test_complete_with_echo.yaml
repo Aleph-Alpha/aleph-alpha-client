@@ -1,0 +1,44 @@
+interactions:
+- request:
+    body: '{"prompt": [{"type": "text", "data": "Hello world", "controls": []}], "maximum_tokens":
+      0, "temperature": 0.0, "top_k": 0, "top_p": 0.0, "presence_penalty": 0.0, "frequency_penalty":
+      0.0, "repetition_penalties_include_prompt": false, "use_multiplicative_presence_penalty":
+      false, "n": 1, "log_probs": 0, "tokens": true, "disable_optimizations": false,
+      "minimum_tokens": 0, "echo": true, "use_multiplicative_frequency_penalty": false,
+      "sequence_penalty": 0.0, "sequence_penalty_min_length": 2, "use_multiplicative_sequence_penalty":
+      false, "completion_bias_inclusion_first_token_only": false, "completion_bias_exclusion_first_token_only":
+      false, "control_log_additive": true, "repetition_penalties_include_completion":
+      true, "raw_completion": false, "model": "luminous-base"}'
+    headers:
+      Content-Length:
+      - '774'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/complete
+  response:
+    body:
+      string: '{"completions":[{"index":0,"log_probs":[{},{" world":-6.125}],"completion":"
+        Hello world","raw_completion":" Hello world","completion_tokens":[" Hello","
+        world"],"finish_reason":"maximum_tokens"}],"model_version":"2022-04","num_tokens_prompt_total":2,"num_tokens_generated":0}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '276'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:51:59 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1

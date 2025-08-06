@@ -1,0 +1,36 @@
+interactions:
+- request:
+    body: '{"prompt": [{"type": "text", "data": "hello", "controls": []}], "completion_expected":
+      "world", "contextual_control_threshold": null, "control_log_additive": true,
+      "model": "luminous-base"}'
+    headers:
+      Content-Length:
+      - '189'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/evaluate
+  response:
+    body:
+      string: '{"model_version":"2022-04","result":{"log_probability":-11.3125,"log_perplexity":11.3125,"log_perplexity_per_token":11.3125,"log_perplexity_per_character":2.2625,"correct_greedy":false,"token_count":1,"character_count":5,"completion":","},"num_tokens_prompt_total":2}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '267'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:31 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -8,6 +8,7 @@ from aleph_alpha_client import (
 from aleph_alpha_client.aleph_alpha_client import Client
 from aleph_alpha_client.completion import CompletionRequest
 from aleph_alpha_client.prompt import Text, TextControl
+import pytest
 
 
 def test_init_prompt_with_str():
@@ -123,6 +124,7 @@ def test_serialize_image_with_controls():
     ]
 
 
+@pytest.mark.vcr
 def test_image_controls_with_cats_and_dogs(sync_client: Client):
     base_completion = _complete_cats_and_dogs(sync_client)
     completion_with_suppressed_cat = _complete_cats_and_dogs(

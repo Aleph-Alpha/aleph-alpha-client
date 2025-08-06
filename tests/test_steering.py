@@ -8,6 +8,7 @@ from aleph_alpha_client.steering import (
 from .conftest import GenericClient, llama_prompt, requires_beta_features
 
 
+@pytest.mark.vcr
 @pytest.mark.parametrize(
     "generic_client", ["sync_client", "async_client"], indirect=True
 )

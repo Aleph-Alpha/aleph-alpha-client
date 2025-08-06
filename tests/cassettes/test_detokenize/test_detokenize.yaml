@@ -1,0 +1,34 @@
+interactions:
+- request:
+    body: '{"token_ids": [4711], "model": "luminous-base"}'
+    headers:
+      Content-Length:
+      - '47'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/detokenize
+  response:
+    body:
+      string: '{"result":"tiss"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '17'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:00 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1

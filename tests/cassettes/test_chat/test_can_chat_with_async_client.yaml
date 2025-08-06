@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body:
+      messages:
+      - content: You are a helpful assistant.
+        role: system
+      - content: Hello, how are you?
+        role: user
+      model: llama-3.1-8b-instruct
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: '{"id":"f264b3f7-1da2-4bd4-b751-a43a8631a580","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"I''m
+        doing well, thank you for asking! I''m a helpful assistant, so I''m always
+        ready to assist you with any questions or tasks you may have. How can I help
+        you today?"},"logprobs":null}],"created":1754484239,"model":"llama-3.1-8b-instruct","system_fingerprint":".unknown.","object":"chat.completion","usage":{"prompt_tokens":27,"completion_tokens":41,"total_tokens":68}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:43:59 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+version: 1

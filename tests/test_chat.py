@@ -23,6 +23,7 @@ from .conftest import GenericClient
 from .test_steering import create_sample_steering_concept_creation_request
 
 
+@pytest.mark.vcr
 async def test_can_not_chat_with_all_models(async_client: AsyncClient, model_name: str):
     request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
@@ -34,6 +35,7 @@ async def test_can_not_chat_with_all_models(async_client: AsyncClient, model_nam
         await async_client.chat(request, model=model_name)
 
 
+@pytest.mark.vcr
 def test_can_chat_with_chat_model(sync_client: Client, chat_model_name: str):
     request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
@@ -46,6 +48,7 @@ def test_can_chat_with_chat_model(sync_client: Client, chat_model_name: str):
     assert isinstance(response.finish_reason, FinishReason)
 
 
+@pytest.mark.vcr
 async def test_can_chat_with_async_client(
     async_client: AsyncClient, chat_model_name: str
 ):
@@ -61,6 +64,7 @@ async def test_can_chat_with_async_client(
     assert response.message.content is not None
 
 
+@pytest.mark.vcr
 async def test_can_chat_with_streaming_support(
     async_client: AsyncClient, chat_model_name: str
 ):
@@ -81,7 +85,7 @@ async def test_can_chat_with_streaming_support(
     assert isinstance(stream_items[-1], FinishReason)
 
 
-async def test_usage_response_is_parsed():
+def test_usage_response_is_parsed():
     # Given an API response with usage data and no choice
     data = {
         "choices": [],
@@ -100,7 +104,7 @@ async def test_usage_response_is_parsed():
     assert result.prompt_tokens == 31
 
 
-async def test_finish_reason_response_is_parsed():
+def test_finish_reason_response_is_parsed():
     # Given an API response with finish reason and no choice
     data = {
         "choices": [
@@ -151,6 +155,7 @@ def test_chunk_response_is_parsed():
     assert result.content == " way, those clothes you're wearing"
 
 
+@pytest.mark.vcr
 async def test_stream_options(async_client: AsyncClient, chat_model_name: str):
     # Given a request with include usage options set
     stream_options = StreamOptions(include_usage=True)
@@ -170,6 +175,7 @@ async def test_stream_options(async_client: AsyncClient, chat_model_name: str):
     assert isinstance(stream_items[-1], Usage)
 
 
+@pytest.mark.vcr
 def test_steering_chat(sync_client: Client, chat_model_name: str):
     base_request = ChatRequest(
         messages=[Message(role=Role.User, content="Hello, how are you?")],
@@ -197,6 +203,7 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
     assert base_completion_result != steered_completion_result
 
 
+@pytest.mark.vcr
 def test_response_format_json_schema(sync_client: Client, dummy_model_name: str):
     # This example is taken from json-schema.org:
     example_json_schema = {
@@ -225,6 +232,7 @@ def test_response_format_json_schema(sync_client: Client, dummy_model_name: str)
     assert json.loads(response.message.content) == example_json_schema
 
 
+@pytest.mark.vcr
 @pytest.mark.parametrize(
     "generic_client", ["sync_client", "async_client"], indirect=True
 )
@@ -309,6 +317,7 @@ def test_request_serialization_no_default_values() -> None:
     }
 
 
+@pytest.mark.vcr
 def test_multi_turn_chat_serialization(sync_client: Client, dummy_model_name: str):
     """
     Test that TextMessage can be serialized when included in multi-turn chat history.

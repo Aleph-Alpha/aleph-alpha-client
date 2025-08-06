@@ -19,6 +19,7 @@ from aleph_alpha_client.prompt import Prompt
 # AsyncClient
 
 
+@pytest.mark.vcr
 async def test_can_embed_with_async_client(async_client: AsyncClient, model_name: str):
     request = EmbeddingRequest(
         prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
@@ -33,6 +34,7 @@ async def test_can_embed_with_async_client(async_client: AsyncClient, model_name
     assert response.num_tokens_prompt_total >= 1
 
 
+@pytest.mark.vcr
 async def test_can_semantic_embed_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -49,6 +51,7 @@ async def test_can_semantic_embed_with_async_client(
     assert response.num_tokens_prompt_total >= 1
 
 
+# for some reason this test does not work with vcr...
 @pytest.mark.parametrize("num_prompts", [1, 100, 101])
 @pytest.mark.parametrize("batch_size", [1, 32, 100])
 async def test_batch_embed_semantic_with_async_client(
@@ -85,6 +88,7 @@ async def test_batch_embed_semantic_with_async_client(
     )
 
 
+@pytest.mark.vcr
 @pytest.mark.parametrize("batch_size", [-1, 0, 101])
 async def test_batch_embed_semantic_invalid_batch_sizes(
     async_client: AsyncClient, batch_size: int
@@ -99,6 +103,7 @@ async def test_batch_embed_semantic_invalid_batch_sizes(
         await async_client.batch_semantic_embed(request=request, batch_size=batch_size)
 
 
+@pytest.mark.vcr
 async def test_can_instructable_embed_with_async_client(
     async_client: AsyncClient,
 ):
@@ -117,7 +122,7 @@ async def test_can_instructable_embed_with_async_client(
 
 
 def cosine_similarity(emb1: Sequence[float], emb2: Sequence[float]) -> float:
-    "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
+    """compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"""
     sumxx, sumxy, sumyy = 0.0, 0.0, 0.0
     for i in range(len(emb1)):
         x = emb1[i]
@@ -132,7 +137,7 @@ def embeddings_approximately_equal(a, b):
     assert all([cosine_similarity(v1, v2) > 0.99 for (v1, v2) in zip(a, b)])
 
 
-async def test_modelname_gets_passed_along_for_async_client(httpserver: HTTPServer):
+async def test_model_name_gets_passed_along_for_async_client(httpserver: HTTPServer):
     request = BatchSemanticEmbeddingRequest(
         prompts=[Prompt.from_text("hello")],
         representation=SemanticRepresentation.Symmetric,
@@ -156,6 +161,7 @@ async def test_modelname_gets_passed_along_for_async_client(httpserver: HTTPServ
 # Client
 
 
+@pytest.mark.vcr
 def test_embed(sync_client: Client, model_name: str):
     request = EmbeddingRequest(
         prompt=Prompt.from_text("hello"), layers=[0, -1], pooling=["mean", "max"]
@@ -171,6 +177,7 @@ def test_embed(sync_client: Client, model_name: str):
     assert result.num_tokens_prompt_total >= 1
 
 
+@pytest.mark.vcr
 def test_embedding_of_one_token_aggregates_identically(
     sync_client: Client, model_name: str
 ):
@@ -191,6 +198,7 @@ def test_embedding_of_one_token_aggregates_identically(
     )
 
 
+@pytest.mark.vcr
 def test_embed_with_tokens(sync_client: Client, model_name: str):
     request = EmbeddingRequest(
         prompt=Prompt.from_text("abc"), layers=[-1], pooling=["mean"], tokens=True
@@ -206,6 +214,7 @@ def test_embed_with_tokens(sync_client: Client, model_name: str):
     assert result.num_tokens_prompt_total >= 1
 
 
+@pytest.mark.vcr
 def test_embed_semantic(sync_client: Client):
     request = SemanticEmbeddingRequest(
         prompt=Prompt.from_text("hello"),
@@ -221,6 +230,7 @@ def test_embed_semantic(sync_client: Client):
     assert result.num_tokens_prompt_total >= 1
 
 
+@pytest.mark.vcr
 def test_embed_instructable(sync_client: Client):
     request = InstructableEmbeddingRequest(
         input=Prompt.from_text("hello"),
@@ -237,6 +247,7 @@ def test_embed_instructable(sync_client: Client):
     assert result.num_tokens_prompt_total >= 1
 
 
+@pytest.mark.vcr
 @pytest.mark.parametrize("num_prompts", [1, 100, 101, 200])
 def test_batch_embed_semantic(sync_client: Client, num_prompts: int):
     request = BatchSemanticEmbeddingRequest(
@@ -249,7 +260,7 @@ def test_batch_embed_semantic(sync_client: Client, num_prompts: int):
     assert len(result.embeddings) == num_prompts
 
 
-def test_modelname_gets_passed_along_for_sync_client(httpserver: HTTPServer):
+def test_model_name_gets_passed_along_for_sync_client(httpserver: HTTPServer):
     request = BatchSemanticEmbeddingRequest(
         prompts=[Prompt.from_text("hello")],
         representation=SemanticRepresentation.Symmetric,

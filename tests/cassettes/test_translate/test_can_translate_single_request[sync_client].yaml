@@ -1,0 +1,101 @@
+interactions:
+- request:
+    body: '{"model": "pharia-1-mt-translation", "source": "Question: What are some
+      benefits of surface micro-machining?\nAnswer the question on the basis of the
+      text. If there is no answer within the text, respond \"no answer in text\".\n\nSurface
+      micromachining\n\nSurface micromachining builds microstructures by deposition
+      and etching structural layers over a substrate.[1] This is different from Bulk
+      micromachining, in which a silicon substrate wafer is selectively etched to
+      produce structures.\n\nLayers\n\nGenerally, polysilicon is used as one of the
+      substrate layers while silicon dioxide is used as a sacrificial layer. The sacrificial
+      layer is removed or etched out to create any necessary void in the thickness
+      direction. Added layers tend to vary in size from 2-5 micrometres. The main
+      advantage of this machining process is the ability to build electronic and mechanical
+      components (functions) on the same substrate. Surface micro-machined components
+      are smaller compared to their bulk micro-machined counterparts.\n\nAs the structures
+      are built on top of the substrate and not inside it, the substrate''s properties
+      are not as important as in bulk micro-machining. Expensive silicon wafers can
+      be replaced by cheaper substrates, such as glass or plastic. The size of the
+      substrates may be larger than a silicon wafer, and surface micro-machining is
+      used to produce thin-film transistors on large area glass substrates for flat
+      panel displays. This technology can also be used for the manufacture of thin
+      film solar cells, which can be deposited on glass, polyethylene terepthalate
+      substrates or other non-rigid materials.\n\nFabrication process\n\nMicro-machining
+      starts with a silicon wafer or other substrate upon which new layers are grown.
+      These layers are selectively etched by photo-lithography; either a wet etch
+      involving an acid, or a dry etch involving an ionized gas (or plasma). Dry etching
+      can combine chemical etching with physical etching or ion bombardment. Surface
+      micro-machining involves as many layers as are needed with a different mask
+      (producing a different pattern) on each layer. Modern integrated circuit fabrication
+      uses this technique and can use as many as 100 layers. Micro-machining is a
+      younger technology and usually uses no more than 5 or 6 layers. Surface micro-machining
+      uses developed technology (although sometimes not enough for demanding applications)
+      which is easily repeatable for volume production.\n\n### Response:", "target_language":
+      "de"}'
+    headers:
+      Content-Length:
+      - '2488'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/translate
+  response:
+    body:
+      string: "{\"translation\":\"Frage: Was sind einige Vorteile der Oberfl\xE4chenmikrobearbeitung?
+        Beantworten Sie die Frage anhand des Textes. Wenn es keine Antwort im Text
+        gibt, antworten Sie \\\"keine Antwort im Text\\\". Mikrobearbeitung von Oberfl\xE4chen
+        Die Oberfl\xE4chenmikrobearbeitung baut Mikrostrukturen auf, indem strukturelle
+        Schichten auf einem Substrat abgelagert und ge\xE4tzt werden. [1] Dies unterscheidet
+        sich von der Bulk-Mikrobearbeitung, bei der eine Siliziumsubstratwafer selektiv
+        ge\xE4tzt wird, um Strukturen herzustellen. Ebenen Im Allgemeinen wird Polysilicium
+        als eine der Substratschichten verwendet, w\xE4hrend Siliciumdioxid als Opferschicht
+        verwendet wird. Die Opferschicht wird entfernt oder ge\xE4tzt, um die erforderlichen
+        Hohlr\xE4ume in Dickenrichtung zu erzeugen. Zugesetzte Schichten neigen dazu,
+        in der Gr\xF6\xDFe von 2-5 Mikrometer zu variieren. Der Hauptvorteil dieses
+        Bearbeitungsverfahrens ist die M\xF6glichkeit, elektronische und mechanische
+        Bauteile (Funktionen) auf demselben Substrat zu bauen. Oberfl\xE4chenmikrobearbeitete
+        Bauteile sind im Vergleich zu ihren Massenmikrobearbeiteten Gegenst\xFCcken
+        kleiner. Da die Strukturen auf dem Substrat und nicht in ihm aufgebaut sind,
+        sind die Eigenschaften des Substrats nicht so wichtig wie bei der Mikrobearbeitung
+        in gro\xDFen Mengen. Teure Siliziumwafer k\xF6nnen durch billigere Substrate
+        wie Glas oder Kunststoff ersetzt werden. Die Gr\xF6\xDFe der Substrate kann
+        gr\xF6\xDFer als ein Siliziumwafer sein, und die Oberfl\xE4chenmikrobearbeitung
+        wird verwendet, um D\xFCnnschichttransistoren auf gro\xDFfl\xE4chigen Glassubstraten
+        f\xFCr Flachbildschirme herzustellen. Diese Technologie kann auch zur Herstellung
+        von D\xFCnnschicht-Solarzellen eingesetzt werden, die auf Glas, Polyethylenterephthalatsubstraten
+        oder anderen nicht starren Materialien abgelagert werden k\xF6nnen. Herstellungsverfahren
+        Die Mikrobearbeitung beginnt mit einem Siliziumwafer oder einem anderen Substrat,
+        auf dem neue Schichten angebaut werden. Diese Schichten werden selektiv mittels
+        Photo-Lithographie ge\xE4tzt, entweder mittels einer Nass-Etze mit einer S\xE4ure
+        oder mittels einer Trocken-Etze mit einem ionisierten Gas (oder Plasma). Die
+        Trocken\xE4tzung kann die chemische \xC4tzung mit der physikalischen \xC4tzung
+        oder dem Ionenbombardement kombinieren. Bei der Oberfl\xE4chenmikrobearbeitung
+        werden so viele Schichten wie n\xF6tig mit einer anderen Maske (die ein anderes
+        Muster erzeugt) auf jeder Schicht bearbeitet. Die moderne Fertigung von integrierten
+        Schaltungen verwendet diese Technik und kann bis zu 100 Schichten verwenden.
+        Mikrobearbeitung ist eine j\xFCngere Technologie und verwendet normalerweise
+        nicht mehr als 5 oder 6 Schichten. Die Oberfl\xE4chenmikrobearbeitung nutzt
+        eine entwickelte Technologie (wenn auch manchmal nicht ausreichend f\xFCr
+        anspruchsvolle Anwendungen), die f\xFCr die Serienfertigung leicht wiederholbar
+        ist. ### Antwort:\",\"score\":0.7235211,\"segments\":null,\"num_tokens_prompt_total\":2394,\"num_tokens_generated\":0}"
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2945'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:52 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1
