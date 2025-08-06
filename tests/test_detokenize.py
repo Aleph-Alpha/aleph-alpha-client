@@ -1,4 +1,3 @@
-import pytest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.detokenization import DetokenizationRequest
 
