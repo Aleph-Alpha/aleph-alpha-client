@@ -18,6 +18,7 @@ from aleph_alpha_client.chat import (
     stream_chat_item_from_json,
 )
 from aleph_alpha_client.structured_output import JSONSchema
+from pydantic import BaseModel
 
 from .conftest import GenericClient
 from .test_steering import create_sample_steering_concept_creation_request
@@ -249,8 +250,6 @@ def test_response_format_json_schema(sync_client: Client, structured_output_mode
     json_response = json.loads(response.message.content)
     
     # Validate all required fields are present
-    print(json_response)
-
     required_fields = ['nemo', 'species', 'color', 'size_cm']
     for field in required_fields:
         assert field in json_response.keys(), f"Required field '{field}' is missing from response"
@@ -263,6 +262,34 @@ def test_response_format_json_schema(sync_client: Client, structured_output_mode
     
     # Validate size constraints
     assert 0.1 <= json_response["size_cm"] <= 100.0, "Field 'size_cm' should be between 0.1 and 100.0"
+
+
+def test_response_format_json_schema_pydantic(sync_client: Client, structured_output_model_name: str):
+
+    class Aquarium(BaseModel):
+        nemo: str
+        species: str
+        color: str
+        size_cm: float
+
+    request = ChatRequest(
+        messages=[
+            Message(role=Role.System, content="You are a helpful assistant."),
+            Message(
+                role=Role.User,
+                content=f"Give me JSON of type {Aquarium}! Tell me about nemo",
+            ),
+        ],
+        model=structured_output_model_name,
+        response_format=Aquarium
+    )
+
+    response = sync_client.chat(request, model=structured_output_model_name)
+    # Tests that it is valid json and loads
+    json.loads(response.message.content)
+
+    # Validate against desired fields
+    Aquarium.model_validate_json(response.message.content)
 
 
 @pytest.mark.parametrize(
