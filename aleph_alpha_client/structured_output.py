@@ -8,14 +8,30 @@ class JSONSchema:
     JSON schema that structured output must adhere to.
 
     Parameters:
-        json_schema:
+        schema:
             JSON schema that structured output must adhere to.
+        name:
+            Name of the schema.
+        description:
+            Description of the schema.
+        strict:
+            Whether the schema should be strictly enforced.
 
     Examples:
         >>> schema = JSONSchema(
-        >>>     schema={'type': 'object', 'properties': {'bar': {'type': 'integer'}}},
-        >>>     name="example_schema",
-        >>>     description="Example schema with a bar integer property",
+        >>>     schema={
+        >>>         'type': 'object',
+        >>>         'title': 'Aquarium',
+        >>>         'properties': {
+        >>>             'nemo': {
+        >>>                 'type': 'string',
+        >>>                 'title': 'Nemo'
+        >>>             }
+        >>>         },
+        >>>         'required': ['nemo']
+        >>>     },
+        >>>     name="aquarium",
+        >>>     description="Describe nemo",
         >>>     strict=True
         >>> )
     """

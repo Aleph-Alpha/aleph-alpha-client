@@ -197,9 +197,36 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
     assert base_completion_result != steered_completion_result
 
 
-def test_response_format_json_schema(sync_client: Client, chat_model_name: str):
-    chat_model_name = "pharia-chat-qwen3-32b-0801"
-    example_json_schema = {"properties": {"nemo": {"type": "string"}}}
+def test_response_format_json_schema(sync_client: Client, structured_output_model_name: str):
+    example_json_schema = {
+        'type': 'object',
+        'title': 'Aquarium',
+        'properties': {
+            'nemo': {
+                'type': 'string',
+                'title': 'Nemo',
+                'description': 'Name of the fish'
+            },
+            'species': {
+                'type': 'string',
+                'title': 'Species',
+                'description': 'The species of the fish (e.g., Clownfish, Goldfish)'
+            },
+            'color': {
+                'type': 'string',
+                'title': 'Color',
+                'description': 'Primary color of the fish'
+            },
+            'size_cm': {
+                'type': 'number',
+                'title': 'Size in centimeters',
+                'description': 'Length of the fish in centimeters',
+                'minimum': 0.1,
+                'maximum': 100.0
+            }
+        },
+        'required': ['nemo', 'species', 'color', 'size_cm']
+    }
 
     request = ChatRequest(
         messages=[
@@ -209,19 +236,33 @@ def test_response_format_json_schema(sync_client: Client, chat_model_name: str):
                 content=f"Give me JSON {example_json_schema}! Tell me about nemo",
             ),
         ],
-        model=chat_model_name,
+        model=structured_output_model_name,
         response_format=JSONSchema(
             schema=example_json_schema,
-            name="test_schema",
-            description="Test schema for JSON response",
-            strict=False,
+            name="aquarium",
+            description="Describe nemo",
+            strict=True,
         ),
     )
 
-    response = sync_client.chat(request, model=chat_model_name)
+    response = sync_client.chat(request, model=structured_output_model_name)
     json_response = json.loads(response.message.content)
-    assert "nemo" in json_response.keys()
-    assert isinstance(json_response["nemo"], str)
+    
+    # Validate all required fields are present
+    print(json_response)
+
+    required_fields = ['nemo', 'species', 'color', 'size_cm']
+    for field in required_fields:
+        assert field in json_response.keys(), f"Required field '{field}' is missing from response"
+    
+    # Validate field types
+    assert isinstance(json_response["nemo"], str), "Field 'nemo' should be a string"
+    assert isinstance(json_response["species"], str), "Field 'species' should be a string"
+    assert isinstance(json_response["color"], str), "Field 'color' should be a string"
+    assert isinstance(json_response["size_cm"], (int, float)), "Field 'size_cm' should be a number"
+    
+    # Validate size constraints
+    assert 0.1 <= json_response["size_cm"] <= 100.0, "Field 'size_cm' should be between 0.1 and 100.0"
 
 
 @pytest.mark.parametrize(
