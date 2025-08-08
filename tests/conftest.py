@@ -112,6 +112,11 @@ def chat_model_name() -> str:
 
 
 @pytest.fixture(scope="session")
+def structured_output_model_name() -> str:
+    return "qwen3-32b-tool"
+
+
+@pytest.fixture(scope="session")
 def dummy_model_name() -> str:
     return "dummy-model"
 

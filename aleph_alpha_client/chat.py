@@ -141,7 +141,15 @@ class ChatRequest:
         payload = {k: v for k, v in asdict(self).items() if v is not None}
         payload["messages"] = [message.to_json() for message in self.messages]
         if self.response_format:
-            payload["response_format"] = self.response_format.to_json()
+            # Handle Pydantic models by converting them to JSONSchema first
+            if hasattr(self.response_format, 'model_json_schema'):
+                # This is a Pydantic model, convert it to JSONSchema
+                from aleph_alpha_client.structured_output import JSONSchema
+                json_schema = JSONSchema.from_pydantic(self.response_format)
+                payload["response_format"] = json_schema.to_json()
+            else:
+                # This is already a JSONSchema or compatible object
+                payload["response_format"] = self.response_format.to_json()
         return payload
 
 

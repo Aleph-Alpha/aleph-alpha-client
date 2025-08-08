@@ -18,6 +18,7 @@ dependencies = [
     "tqdm>=4.62.0",
     "python-liquid>=1.9.4,!=2.0.2",
     "packaging>=23.2",
+    "pydantic"
 ]
 
 [project.urls]
