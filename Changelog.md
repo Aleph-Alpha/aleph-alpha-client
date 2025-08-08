@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.1.0
+
+- Fix API for response_format
+
 ## 11.0.0
 
 - enable `encoding_format` parameter for `/embeddings` endpoints
