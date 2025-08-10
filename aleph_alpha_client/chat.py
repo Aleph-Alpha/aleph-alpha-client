@@ -4,6 +4,8 @@ from enum import Enum
 from io import BytesIO
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
 
+from pydantic import BaseModel
+
 from aleph_alpha_client.steering import SteeringConceptCreationResponse
 from aleph_alpha_client.structured_output import ResponseFormat
 from PIL.Image import Image
@@ -142,7 +144,7 @@ class ChatRequest:
         payload["messages"] = [message.to_json() for message in self.messages]
         if self.response_format:
             # Handle Pydantic models by converting them to JSONSchema first
-            if hasattr(self.response_format, 'model_json_schema'):
+            if isinstance(self.response_format, type) and issubclass(self.response_format, BaseModel):
                 # This is a Pydantic model, convert it to JSONSchema
                 from aleph_alpha_client.structured_output import JSONSchema
                 json_schema = JSONSchema.from_pydantic(self.response_format)

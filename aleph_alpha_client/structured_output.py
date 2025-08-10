@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from typing import Any, Mapping, Optional, Union
+from typing import Any, Mapping, Optional, Union, Type
 from pydantic import BaseModel
 
 
@@ -46,7 +46,7 @@ class JSONSchema:
         return {"type": "json_schema", "json_schema": asdict(self)}
 
     @classmethod
-    def from_pydantic(cls, model_class) -> "JSONSchema":
+    def from_pydantic(cls, model_class: Type[BaseModel]) -> "JSONSchema":
         """
         Create a JSONSchema from a Pydantic model class.
         
@@ -59,9 +59,6 @@ class JSONSchema:
         Raises:
             ValueError: If the provided class is not a Pydantic BaseModel
         """
-        # Validate that the model_class is a Pydantic BaseModel
-        if not (isinstance(model_class, type) and issubclass(model_class, BaseModel)):
-            raise ValueError(f"Expected a Pydantic BaseModel class, got {type(model_class).__name__}")
         
         schema = model_class.model_json_schema()
         name = getattr(model_class, '__name__', 'generated_schema')
@@ -76,6 +73,4 @@ class JSONSchema:
             strict=True
         )
 
-
-# Define ResponseFormat type - use Any to support both JSONSchema and Pydantic models
-ResponseFormat = Union[JSONSchema, Any]
+ResponseFormat = Union[JSONSchema, Type[BaseModel]]
