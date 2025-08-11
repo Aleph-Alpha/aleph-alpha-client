@@ -5,8 +5,6 @@ from io import BytesIO
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
 
 from pydantic import BaseModel
-
-from aleph_alpha_client.steering import SteeringConceptCreationResponse
 from aleph_alpha_client.structured_output import ResponseFormat
 from PIL.Image import Image
 
@@ -69,10 +67,9 @@ class TextMessage:
             content=json["content"],
         )
 
-
     # In multi-turn conversations the returned TextMessage is part of the chat
     # history and converted to the prompt. As such, it requires conversion to
-    # json again. Here, the message content is a string, but can reuse the 
+    # json again. Here, the message content is a string, but can reuse the
     # _message_content_to_json function nonetheless.
     def to_json(self) -> Mapping[str, Any]:
         result = {
@@ -81,7 +78,10 @@ class TextMessage:
         }
         return result
 
-def _message_content_to_json(content: Union[str, List[Union[str, Image]]]) -> Union[str, List[Mapping[str, Any]]]:
+
+def _message_content_to_json(
+    content: Union[str, List[Union[str, Image]]],
+) -> Union[str, List[Mapping[str, Any]]]:
     if isinstance(content, str):
         return content
     else:
@@ -90,10 +90,12 @@ def _message_content_to_json(content: Union[str, List[Union[str, Image]]]) -> Un
             if isinstance(chunk, str):
                 result.append({"type": "text", "text": chunk})
             elif isinstance(chunk, Image):
-                result.append({
-                    "type": "image_url",
-                    "image_url": {"url": _image_to_data_uri(chunk)},
-                })
+                result.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": _image_to_data_uri(chunk)},
+                    }
+                )
             else:
                 raise ValueError(
                     "The item in the prompt is not valid. Try either a string or an Image."

@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: '{"model": "dummy-model", "messages": [{"role": "user", "content": "Give
+      me JSON!"}], "response_format": {"type": "json_schema", "json_schema": {"$schema":
+      "https://json-schema.org/draft/2020-12/schema", "$id": "https://example.com/product.schema.json",
+      "title": "Product", "description": "A product from Acme''s catalog", "type":
+      "object", "properties": {"productId": {"description": "The unique identifier
+      for a product", "type": "integer"}}}}}'
+    headers:
+      Content-Length:
+      - '444'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: '{"error":"Json deserialize error: missing field `schema` at line 1
+        column 444","code":"PAYLOAD_ERROR"}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '102'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:46:17 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 400
+      message: Bad Request
+version: 1

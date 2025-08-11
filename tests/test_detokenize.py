@@ -1,11 +1,11 @@
-import pytest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.detokenization import DetokenizationRequest
-
+import pytest
 
 # AsyncClient
 
 
+@pytest.mark.vcr
 async def test_can_detokenization_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -18,6 +18,7 @@ async def test_can_detokenization_with_async_client(
 # Client
 
 
+@pytest.mark.vcr
 def test_detokenize(sync_client: Client, model_name: str):
     response = sync_client.detokenize(DetokenizationRequest([4711]), model=model_name)
 

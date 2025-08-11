@@ -1,12 +1,12 @@
-import pytest
 from aleph_alpha_client.aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.evaluation import EvaluationRequest
 from aleph_alpha_client.prompt import Prompt
-
+import pytest
 
 # AsyncClient
 
 
+@pytest.mark.vcr
 async def test_can_evaluate_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -23,6 +23,7 @@ async def test_can_evaluate_with_async_client(
 # Client
 
 
+@pytest.mark.vcr
 def test_evaluate(sync_client: Client, model_name: str):
     request = EvaluationRequest(
         prompt=Prompt.from_text("hello"), completion_expected="world"

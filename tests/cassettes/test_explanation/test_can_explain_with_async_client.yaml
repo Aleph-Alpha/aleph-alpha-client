@@ -1,0 +1,53 @@
+interactions:
+- request:
+    body:
+      model: luminous-base
+      prompt:
+      - controls: []
+        data: I am a programmer###I am French###I don't like pizza###My favourite
+          food is
+        type: text
+      - controls: []
+        data:
+        - 4014
+        - 36316
+        - 5681
+        - 387
+        type: token_ids
+      prompt_granularity:
+        delimiter: '###'
+        type: custom
+      target: ' pizza with cheese'
+      target_granularity: token
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/explain
+  response:
+    body:
+      string: '{"model_version":"2022-04","explanations":[{"target":" pizza","items":[{"type":"text","scores":[{"start":0,"length":17,"score":1.875},{"start":20,"length":11,"score":-0.125},{"start":34,"length":18,"score":0.625},{"start":55,"length":20,"score":-0.7109375}]},{"type":"token_ids","scores":[0.140625,-0.15625,0.203125,-0.1875]},{"type":"target","scores":[]}]},{"target":"
+        with","items":[{"type":"text","scores":[{"start":0,"length":17,"score":0.28125},{"start":20,"length":11,"score":-0.03125},{"start":34,"length":18,"score":-0.21875},{"start":55,"length":20,"score":-0.71875}]},{"type":"token_ids","scores":[-0.1875,0.03125,0.03125,0.09375]},{"type":"target","scores":[{"start":0,"length":6,"score":-0.28125}]}]},{"target":"
+        cheese","items":[{"type":"text","scores":[{"start":0,"length":17,"score":-0.46875},{"start":20,"length":11,"score":-0.171875},{"start":34,"length":18,"score":-0.15625},{"start":55,"length":20,"score":0.015625}]},{"type":"token_ids","scores":[0.109375,0.03125,-0.03125,-0.359375]},{"type":"target","scores":[{"start":0,"length":6,"score":-0.6875},{"start":7,"length":4,"score":-0.109375}]}]}]}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:31 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+version: 1

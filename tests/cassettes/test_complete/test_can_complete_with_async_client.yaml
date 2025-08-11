@@ -1,0 +1,60 @@
+interactions:
+- request:
+    body:
+      completion_bias_exclusion_first_token_only: false
+      completion_bias_inclusion_first_token_only: false
+      control_log_additive: true
+      disable_optimizations: false
+      echo: false
+      frequency_penalty: 0.0
+      maximum_tokens: 7
+      minimum_tokens: 0
+      model: luminous-base
+      n: 1
+      presence_penalty: 0.0
+      prompt:
+      - controls: []
+        data: ''
+        type: text
+      raw_completion: false
+      repetition_penalties_include_completion: true
+      repetition_penalties_include_prompt: false
+      sequence_penalty: 0.0
+      sequence_penalty_min_length: 2
+      temperature: 0.0
+      tokens: false
+      top_k: 0
+      top_p: 0.0
+      use_multiplicative_frequency_penalty: false
+      use_multiplicative_presence_penalty: false
+      use_multiplicative_sequence_penalty: false
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/complete
+  response:
+    body:
+      string: '{"completions":[{"index":0,"completion":" The New York Times, May 15","finish_reason":"maximum_tokens"}],"model_version":"2022-04","num_tokens_prompt_total":1,"num_tokens_generated":7}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:51:55 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+version: 1

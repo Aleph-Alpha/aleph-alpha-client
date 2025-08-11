@@ -162,6 +162,7 @@ def test_available_models_sync_client(sync_client: Client, model_name: str):
     assert model_name in {model["name"] for model in models}
 
 
+@pytest.mark.vcr
 async def test_available_models_async_client(
     async_client: AsyncClient, model_name: str
 ):

@@ -4,7 +4,6 @@ from aleph_alpha_client.explanation import (
     TextScoreWithRaw,
 )
 from aleph_alpha_client.prompt import Tokens
-import pytest
 from aleph_alpha_client import (
     ControlTokenOverlap,
     ExplanationRequest,
@@ -19,11 +18,12 @@ from aleph_alpha_client import (
     ExplanationPostprocessing,
     ImageScore,
 )
-
+import pytest
 
 # AsyncClient
 
 
+@pytest.mark.vcr
 async def test_can_explain_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -52,6 +52,7 @@ async def test_can_explain_with_async_client(
 # Client
 
 
+@pytest.mark.vcr
 def test_explanation_with_text_only(sync_client: Client, model_name: str):
     request = ExplanationRequest(
         prompt=Prompt.from_text("I am a programmer and French. My favourite food is"),
@@ -74,6 +75,7 @@ def test_explanation_with_text_only(sync_client: Client, model_name: str):
             assert all([score.score >= 0.0 for score in prompt_item.scores])
 
 
+@pytest.mark.vcr
 def test_explanation_with_multimodal_prompt(sync_client: Client, model_name: str):
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     img = Image.from_image_source(image_source=str(image_source_path))
@@ -109,6 +111,7 @@ def test_explanation_with_multimodal_prompt(sync_client: Client, model_name: str
             assert all([score.score >= 0.0 for score in prompt_item.scores])
 
 
+@pytest.mark.vcr
 def test_explanation_auto_granularity(sync_client: Client, model_name: str):
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     img = Image.from_image_source(image_source=str(image_source_path))
@@ -132,6 +135,7 @@ def test_explanation_auto_granularity(sync_client: Client, model_name: str):
     assert all([len(exp.items) == 4 for exp in explanation.explanations])
 
 
+@pytest.mark.vcr
 def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
     image_source_path = Path(__file__).parent / "dog-and-cat-cover.jpg"
     img = Image.from_image_source(image_source=str(image_source_path))
@@ -162,6 +166,7 @@ def test_explanation_of_image_in_pixels(sync_client: Client, model_name: str):
     )
 
 
+@pytest.mark.vcr
 def test_explanation_with_text_from_request(sync_client: Client, model_name: str):
     request = ExplanationRequest(
         prompt=Prompt(
@@ -196,6 +201,7 @@ def test_explanation_with_text_from_request(sync_client: Client, model_name: str
     )
 
 
+@pytest.mark.vcr
 # Regression test for out-of-memory errors that could be triggered on the workers with the explanation job shown below
 def test_explanation_with_token_granularities_oom_regression(sync_client: Client):
     prompt_text = """### Instruction:

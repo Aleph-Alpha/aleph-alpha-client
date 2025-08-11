@@ -1,0 +1,617 @@
+interactions:
+- request:
+    body:
+      model: pharia-1-mt-translation
+      source: 'Question: What are some benefits of surface micro-machining?
+
+        Answer the question on the basis of the text. If there is no answer within
+        the text, respond "no answer in text".
+
+
+        Surface micromachining
+
+
+        Surface micromachining builds microstructures by deposition and etching structural
+        layers over a substrate.[1] This is different from Bulk micromachining, in
+        which a silicon substrate wafer is selectively etched to produce structures.
+
+
+        Layers
+
+
+        Generally, polysilicon is used as one of the substrate layers while silicon
+        dioxide is used as a sacrificial layer. The sacrificial layer is removed or
+        etched out to create any necessary void in the thickness direction. Added
+        layers tend to vary in size from 2-5 micrometres. The main advantage of this
+        machining process is the ability to build electronic and mechanical components
+        (functions) on the same substrate. Surface micro-machined components are smaller
+        compared to their bulk micro-machined counterparts.
+
+
+        As the structures are built on top of the substrate and not inside it, the
+        substrate''s properties are not as important as in bulk micro-machining. Expensive
+        silicon wafers can be replaced by cheaper substrates, such as glass or plastic.
+        The size of the substrates may be larger than a silicon wafer, and surface
+        micro-machining is used to produce thin-film transistors on large area glass
+        substrates for flat panel displays. This technology can also be used for the
+        manufacture of thin film solar cells, which can be deposited on glass, polyethylene
+        terepthalate substrates or other non-rigid materials.
+
+
+        Fabrication process
+
+
+        Micro-machining starts with a silicon wafer or other substrate upon which
+        new layers are grown. These layers are selectively etched by photo-lithography;
+        either a wet etch involving an acid, or a dry etch involving an ionized gas
+        (or plasma). Dry etching can combine chemical etching with physical etching
+        or ion bombardment. Surface micro-machining involves as many layers as are
+        needed with a different mask (producing a different pattern) on each layer.
+        Modern integrated circuit fabrication uses this technique and can use as many
+        as 100 layers. Micro-machining is a younger technology and usually uses no
+        more than 5 or 6 layers. Surface micro-machining uses developed technology
+        (although sometimes not enough for demanding applications) which is easily
+        repeatable for volume production.
+
+
+        ### Response:'
+      target_language: it
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/translate
+  response:
+    body:
+      string: "{\"translation\":\"Domanda: Quali sono alcuni vantaggi della micro-lavorazione
+        superficiale? Rispondi alla domanda sulla base del testo. Se non c'\xE8 risposta
+        nel testo, rispondere \\\"nessuna risposta nel testo\\\". Microlavorazioni
+        superficiali La microlavorazione superficiale costruisce microstrutture depositando
+        e incidendo strati strutturali su un substrato. [1] Questo \xE8 diverso dalla
+        microlavorazione in massa, in cui un wafer di substrato di silicio viene inciso
+        in modo selettivo per produrre strutture. Livelli Generalmente, il polisilicio
+        viene utilizzato come uno degli strati di substrato, mentre il biossido di
+        silicio viene utilizzato come strato sacrificale. Lo strato sacrificale viene
+        rimosso o inciso per creare l'eventuale vuoto necessario nella direzione dello
+        spessore. Gli strati aggiunti tendono a variare di dimensioni da 2 a 5 micrometri.
+        Il vantaggio principale di questo processo di lavorazione \xE8 la possibilit\xE0
+        di costruire componenti elettronici e meccanici (funzioni) sullo stesso substrato.
+        I componenti microlavorati in superficie sono pi\xF9 piccoli rispetto ai loro
+        omologhi microlavorati in massa. Poich\xE9 le strutture sono costruite sopra
+        il substrato e non all'interno di esso, le propriet\xE0 del substrato non
+        sono importanti come nella micro-lavorazione di massa. I wafer di silicio
+        costosi possono essere sostituiti da substrati meno costosi, come il vetro
+        o la plastica. Le dimensioni dei substrati possono essere superiori a quelle
+        di un wafer di silicio e la microlavorazione superficiale viene utilizzata
+        per produrre transistor a film sottile su substrati di vetro di grande superficie
+        per schermi a schermo piatto. Questa tecnologia pu\xF2 essere utilizzata anche
+        per la fabbricazione di celle solari a film sottile, che possono essere depositate
+        su vetro, substrati di polietilene tereftalato o altri materiali non rigidi.
+        Processo di fabbricazione La micro-lavorazione inizia con un wafer di silicio
+        o altro substrato sul quale vengono sviluppati nuovi strati. Questi strati
+        sono selettivamente incisi mediante foto-litografia; o un'incisione a umido
+        che coinvolge un acido, o un'incisione a secco che coinvolge un gas ionizzato
+        (o plasma). L'incisione a secco pu\xF2 combinare l'incisione chimica con l'incisione
+        fisica o il bombardamento ionico. La micro-lavorazione superficiale comporta
+        tanti strati quanti sono necessari con una maschera diversa (che produce un
+        modello diverso) su ogni strato. La moderna produzione di circuiti integrati
+        utilizza questa tecnica e pu\xF2 utilizzare fino a 100 strati. La micro-lavorazione
+        \xE8 una tecnologia pi\xF9 giovane e di solito utilizza non pi\xF9 di 5 o
+        6 strati. La micro-lavorazione superficiale utilizza una tecnologia sviluppata
+        (anche se a volte non sufficiente per applicazioni impegnative) che \xE8 facilmente
+        ripetibile per la produzione in volume. ### Risposta:\",\"score\":0.75518733,\"segments\":null,\"num_tokens_prompt_total\":2394,\"num_tokens_generated\":0}"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:52 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+- request:
+    body:
+      model: pharia-1-mt-translation
+      source: 'Question: What are some benefits of surface micro-machining?
+
+        Answer the question on the basis of the text. If there is no answer within
+        the text, respond "no answer in text".
+
+
+        Surface micromachining
+
+
+        Surface micromachining builds microstructures by deposition and etching structural
+        layers over a substrate.[1] This is different from Bulk micromachining, in
+        which a silicon substrate wafer is selectively etched to produce structures.
+
+
+        Layers
+
+
+        Generally, polysilicon is used as one of the substrate layers while silicon
+        dioxide is used as a sacrificial layer. The sacrificial layer is removed or
+        etched out to create any necessary void in the thickness direction. Added
+        layers tend to vary in size from 2-5 micrometres. The main advantage of this
+        machining process is the ability to build electronic and mechanical components
+        (functions) on the same substrate. Surface micro-machined components are smaller
+        compared to their bulk micro-machined counterparts.
+
+
+        As the structures are built on top of the substrate and not inside it, the
+        substrate''s properties are not as important as in bulk micro-machining. Expensive
+        silicon wafers can be replaced by cheaper substrates, such as glass or plastic.
+        The size of the substrates may be larger than a silicon wafer, and surface
+        micro-machining is used to produce thin-film transistors on large area glass
+        substrates for flat panel displays. This technology can also be used for the
+        manufacture of thin film solar cells, which can be deposited on glass, polyethylene
+        terepthalate substrates or other non-rigid materials.
+
+
+        Fabrication process
+
+
+        Micro-machining starts with a silicon wafer or other substrate upon which
+        new layers are grown. These layers are selectively etched by photo-lithography;
+        either a wet etch involving an acid, or a dry etch involving an ionized gas
+        (or plasma). Dry etching can combine chemical etching with physical etching
+        or ion bombardment. Surface micro-machining involves as many layers as are
+        needed with a different mask (producing a different pattern) on each layer.
+        Modern integrated circuit fabrication uses this technique and can use as many
+        as 100 layers. Micro-machining is a younger technology and usually uses no
+        more than 5 or 6 layers. Surface micro-machining uses developed technology
+        (although sometimes not enough for demanding applications) which is easily
+        repeatable for volume production.
+
+
+        ### Response:'
+      target_language: de
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/translate
+  response:
+    body:
+      string: "{\"translation\":\"Frage: Was sind einige Vorteile der Oberfl\xE4chenmikrobearbeitung?
+        Beantworten Sie die Frage anhand des Textes. Wenn es keine Antwort im Text
+        gibt, antworten Sie \\\"keine Antwort im Text\\\". Mikrobearbeitung von Oberfl\xE4chen
+        Die Oberfl\xE4chenmikrobearbeitung baut Mikrostrukturen auf, indem strukturelle
+        Schichten auf einem Substrat abgelagert und ge\xE4tzt werden. [1] Dies unterscheidet
+        sich von der Bulk-Mikrobearbeitung, bei der eine Siliziumsubstratwafer selektiv
+        ge\xE4tzt wird, um Strukturen herzustellen. Ebenen Im Allgemeinen wird Polysilicium
+        als eine der Substratschichten verwendet, w\xE4hrend Siliciumdioxid als Opferschicht
+        verwendet wird. Die Opferschicht wird entfernt oder ge\xE4tzt, um die erforderlichen
+        Hohlr\xE4ume in Dickenrichtung zu erzeugen. Zugesetzte Schichten neigen dazu,
+        in der Gr\xF6\xDFe von 2-5 Mikrometer zu variieren. Der Hauptvorteil dieses
+        Bearbeitungsverfahrens ist die M\xF6glichkeit, elektronische und mechanische
+        Bauteile (Funktionen) auf demselben Substrat zu bauen. Oberfl\xE4chenmikrobearbeitete
+        Bauteile sind im Vergleich zu ihren Massenmikrobearbeiteten Gegenst\xFCcken
+        kleiner. Da die Strukturen auf dem Substrat und nicht in ihm aufgebaut sind,
+        sind die Eigenschaften des Substrats nicht so wichtig wie bei der Mikrobearbeitung
+        in gro\xDFen Mengen. Teure Siliziumwafer k\xF6nnen durch billigere Substrate
+        wie Glas oder Kunststoff ersetzt werden. Die Gr\xF6\xDFe der Substrate kann
+        gr\xF6\xDFer als ein Siliziumwafer sein, und die Oberfl\xE4chenmikrobearbeitung
+        wird verwendet, um D\xFCnnschichttransistoren auf gro\xDFfl\xE4chigen Glassubstraten
+        f\xFCr Flachbildschirme herzustellen. Diese Technologie kann auch zur Herstellung
+        von D\xFCnnschicht-Solarzellen eingesetzt werden, die auf Glas, Polyethylenterephthalatsubstraten
+        oder anderen nicht starren Materialien abgelagert werden k\xF6nnen. Herstellungsverfahren
+        Die Mikrobearbeitung beginnt mit einem Siliziumwafer oder einem anderen Substrat,
+        auf dem neue Schichten angebaut werden. Diese Schichten werden selektiv mittels
+        Photo-Lithographie ge\xE4tzt, entweder mittels einer Nass-Etze mit einer S\xE4ure
+        oder mittels einer Trocken-Etze mit einem ionisierten Gas (oder Plasma). Die
+        Trocken\xE4tzung kann die chemische \xC4tzung mit der physikalischen \xC4tzung
+        oder dem Ionenbombardement kombinieren. Bei der Oberfl\xE4chenmikrobearbeitung
+        werden so viele Schichten wie n\xF6tig mit einer anderen Maske (die ein anderes
+        Muster erzeugt) auf jeder Schicht bearbeitet. Die moderne Fertigung von integrierten
+        Schaltungen verwendet diese Technik und kann bis zu 100 Schichten verwenden.
+        Mikrobearbeitung ist eine j\xFCngere Technologie und verwendet normalerweise
+        nicht mehr als 5 oder 6 Schichten. Die Oberfl\xE4chenmikrobearbeitung nutzt
+        eine entwickelte Technologie (wenn auch manchmal nicht ausreichend f\xFCr
+        anspruchsvolle Anwendungen), die f\xFCr die Serienfertigung leicht wiederholbar
+        ist. ### Antwort:\",\"score\":0.7235342,\"segments\":null,\"num_tokens_prompt_total\":2394,\"num_tokens_generated\":0}"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:52 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+- request:
+    body:
+      model: pharia-1-mt-translation
+      source: 'Question: What are some benefits of surface micro-machining?
+
+        Answer the question on the basis of the text. If there is no answer within
+        the text, respond "no answer in text".
+
+
+        Surface micromachining
+
+
+        Surface micromachining builds microstructures by deposition and etching structural
+        layers over a substrate.[1] This is different from Bulk micromachining, in
+        which a silicon substrate wafer is selectively etched to produce structures.
+
+
+        Layers
+
+
+        Generally, polysilicon is used as one of the substrate layers while silicon
+        dioxide is used as a sacrificial layer. The sacrificial layer is removed or
+        etched out to create any necessary void in the thickness direction. Added
+        layers tend to vary in size from 2-5 micrometres. The main advantage of this
+        machining process is the ability to build electronic and mechanical components
+        (functions) on the same substrate. Surface micro-machined components are smaller
+        compared to their bulk micro-machined counterparts.
+
+
+        As the structures are built on top of the substrate and not inside it, the
+        substrate''s properties are not as important as in bulk micro-machining. Expensive
+        silicon wafers can be replaced by cheaper substrates, such as glass or plastic.
+        The size of the substrates may be larger than a silicon wafer, and surface
+        micro-machining is used to produce thin-film transistors on large area glass
+        substrates for flat panel displays. This technology can also be used for the
+        manufacture of thin film solar cells, which can be deposited on glass, polyethylene
+        terepthalate substrates or other non-rigid materials.
+
+
+        Fabrication process
+
+
+        Micro-machining starts with a silicon wafer or other substrate upon which
+        new layers are grown. These layers are selectively etched by photo-lithography;
+        either a wet etch involving an acid, or a dry etch involving an ionized gas
+        (or plasma). Dry etching can combine chemical etching with physical etching
+        or ion bombardment. Surface micro-machining involves as many layers as are
+        needed with a different mask (producing a different pattern) on each layer.
+        Modern integrated circuit fabrication uses this technique and can use as many
+        as 100 layers. Micro-machining is a younger technology and usually uses no
+        more than 5 or 6 layers. Surface micro-machining uses developed technology
+        (although sometimes not enough for demanding applications) which is easily
+        repeatable for volume production.
+
+
+        ### Response:'
+      target_language: nl
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/translate
+  response:
+    body:
+      string: "{\"translation\":\"Vraag: Wat zijn enkele voordelen van oppervlaktebewerking?
+        Beantwoord de vraag op basis van de tekst. Als er geen antwoord in de tekst
+        staat, antwoord dan \\\"geen antwoord in de tekst\\\". Microbewerking van
+        oppervlakken Oppervlakte-microbewerking bouwt microstructuren op door structurele
+        lagen op een substraat af te zetten en te etsen. [1] Dit verschilt van Bulk
+        micromachining, waarbij een siliciumsubstraatwaaf selectief wordt ge\xEBtst
+        om structuren te produceren. [1] Esto difiere del micromaquinado a granel,
+        en el que se graba selectivamente una oblea de sustrato de silicio para producir
+        estructuras. Lagen Over het algemeen wordt polysilicium gebruikt als een van
+        de substraatlagen, terwijl siliciumdioxide wordt gebruikt als offerlaag. De
+        offerlaag wordt verwijderd of ge\xEBtsd om de nodige ruimte in de richting
+        van de dikte te cre\xEBren. Toegevoegde lagen vari\xEBren meestal in grootte
+        van 2-5 micrometer. Het belangrijkste voordeel van dit bewerkingsproces is
+        de mogelijkheid om elektronische en mechanische componenten (functies) op
+        hetzelfde substraat te bouwen. Oppervlakte micro-bewerkte componenten zijn
+        kleiner in vergelijking met hun bulk micro-bewerkte tegenhangers. Omdat de
+        structuren bovenop het substraat worden gebouwd en niet erin, zijn de eigenschappen
+        van het substraat niet zo belangrijk als bij bulk micro-bewerking. Dure siliciumwafers
+        kunnen worden vervangen door goedkopere substraten, zoals glas of kunststof.
+        De grootte van de substraten kan groter zijn dan die van een siliciumwafer,
+        en oppervlaktebewerking wordt gebruikt om dunne filmtransistoren te produceren
+        op grote oppervlakte glazen substraten voor platte beeldschermen. Deze technologie
+        kan ook worden gebruikt voor de vervaardiging van dunne filmzonnecellen, die
+        kunnen worden afgezet op glas, polyethyleentereftalaat substraten of andere
+        niet-rigide materialen. Productieproces Micro-bewerking begint met een siliciumwafer
+        of ander substraat waarop nieuwe lagen worden gekweekt. Generalmente, el polisilicio
+        se utiliza como una de las capas de sustrato, mientras que el di\xF3xido de
+        silicio se utiliza como capa de sacrificio. La capa de sacrificio se retira
+        o se graba para crear cualquier vac\xEDo necesario en la direcci\xF3n del
+        espesor. Oppervlakte micro-bewerking omvat zoveel lagen als nodig is met een
+        ander masker (het produceren van een ander patroon) op elke laag. De moderne
+        productie van ge\xEFntegreerde schakelingen maakt gebruik van deze techniek
+        en kan maar liefst 100 lagen gebruiken. Micro-bewerking is een jongere technologie
+        en gebruikt meestal niet meer dan 5 of 6 lagen. Como las estructuras se construyen
+        sobre el sustrato y no dentro de \xE9l, las propiedades del sustrato no son
+        tan importantes como en el micro-mecanizado a granel. El micro-mecanizado
+        comienza con una oblea de silicio u otro sustrato sobre el que se crecen nuevas
+        capas.\",\"score\":0.749932,\"segments\":null,\"num_tokens_prompt_total\":2394,\"num_tokens_generated\":0}"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:52 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+- request:
+    body:
+      model: pharia-1-mt-translation
+      source: 'Question: What are some benefits of surface micro-machining?
+
+        Answer the question on the basis of the text. If there is no answer within
+        the text, respond "no answer in text".
+
+
+        Surface micromachining
+
+
+        Surface micromachining builds microstructures by deposition and etching structural
+        layers over a substrate.[1] This is different from Bulk micromachining, in
+        which a silicon substrate wafer is selectively etched to produce structures.
+
+
+        Layers
+
+
+        Generally, polysilicon is used as one of the substrate layers while silicon
+        dioxide is used as a sacrificial layer. The sacrificial layer is removed or
+        etched out to create any necessary void in the thickness direction. Added
+        layers tend to vary in size from 2-5 micrometres. The main advantage of this
+        machining process is the ability to build electronic and mechanical components
+        (functions) on the same substrate. Surface micro-machined components are smaller
+        compared to their bulk micro-machined counterparts.
+
+
+        As the structures are built on top of the substrate and not inside it, the
+        substrate''s properties are not as important as in bulk micro-machining. Expensive
+        silicon wafers can be replaced by cheaper substrates, such as glass or plastic.
+        The size of the substrates may be larger than a silicon wafer, and surface
+        micro-machining is used to produce thin-film transistors on large area glass
+        substrates for flat panel displays. This technology can also be used for the
+        manufacture of thin film solar cells, which can be deposited on glass, polyethylene
+        terepthalate substrates or other non-rigid materials.
+
+
+        Fabrication process
+
+
+        Micro-machining starts with a silicon wafer or other substrate upon which
+        new layers are grown. These layers are selectively etched by photo-lithography;
+        either a wet etch involving an acid, or a dry etch involving an ionized gas
+        (or plasma). Dry etching can combine chemical etching with physical etching
+        or ion bombardment. Surface micro-machining involves as many layers as are
+        needed with a different mask (producing a different pattern) on each layer.
+        Modern integrated circuit fabrication uses this technique and can use as many
+        as 100 layers. Micro-machining is a younger technology and usually uses no
+        more than 5 or 6 layers. Surface micro-machining uses developed technology
+        (although sometimes not enough for demanding applications) which is easily
+        repeatable for volume production.
+
+
+        ### Response:'
+      target_language: es
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/translate
+  response:
+    body:
+      string: "{\"translation\":\"Pregunta: \xBFCu\xE1les son algunos de los beneficios
+        del micro-mecanizado de la superficie? Responde a la pregunta sobre la base
+        del texto. Si no hay respuesta en el texto, responda \\\"sin respuesta en
+        el texto\\\". Microprocesamiento de superficies El microprocesamiento de superficies
+        construye microestructuras depositando y grabando capas estructurales sobre
+        un sustrato. [1] Esto difiere del micromaquinado a granel, en el que se graba
+        selectivamente una oblea de sustrato de silicio para producir estructuras.
+        Capas Generalmente, el polisilicio se utiliza como una de las capas de sustrato,
+        mientras que el di\xF3xido de silicio se utiliza como capa de sacrificio.
+        La capa de sacrificio se retira o se graba para crear cualquier vac\xEDo necesario
+        en la direcci\xF3n del espesor. Las capas a\xF1adidas tienden a variar en
+        tama\xF1o de 2 a 5 micr\xF3metros. La principal ventaja de este proceso de
+        mecanizado es la capacidad de construir componentes electr\xF3nicos y mec\xE1nicos
+        (funciones) sobre el mismo sustrato. Los componentes micromaquinados de superficie
+        son m\xE1s peque\xF1os en comparaci\xF3n con sus hom\xF3logos micromaquinados
+        a granel. Como las estructuras se construyen sobre el sustrato y no dentro
+        de \xE9l, las propiedades del sustrato no son tan importantes como en el micro-mecanizado
+        a granel. Las obleas de silicio costosas pueden ser reemplazadas por sustratos
+        m\xE1s baratos, como el vidrio o el pl\xE1stico. Dure siliciumwafers kunnen
+        worden vervangen door goedkopere substraten, zoals glas of kunststof. El tama\xF1o
+        de los sustratos puede ser mayor que el de una oblea de silicio, y se utiliza
+        el microprocesamiento superficial para producir transistores de pel\xEDcula
+        fina sobre sustratos de vidrio de gran superficie para pantallas planas. Esta
+        tecnolog\xEDa tambi\xE9n puede utilizarse para la fabricaci\xF3n de c\xE9lulas
+        solares de pel\xEDcula fina, que pueden depositarse sobre vidrio, sustratos
+        de tereftalato de polietileno u otros materiales no r\xEDgidos. Proceso de
+        fabricaci\xF3n Estas capas son grabadas selectivamente por foto-litograf\xEDa;
+        ya sea un grabado h\xFAmedo que involucre un \xE1cido, o un grabado seco que
+        involucre un gas ionizado (o plasma). El grabado en seco puede combinar el
+        grabado qu\xEDmico con el grabado f\xEDsico o el bombardeo i\xF3nico. El micro-mecanizado
+        de superficies implica tantas capas como sean necesarias con una m\xE1scara
+        diferente (que produce un patr\xF3n diferente) en cada capa. La fabricaci\xF3n
+        moderna de circuitos integrados utiliza esta t\xE9cnica y puede utilizar hasta
+        100 capas. El micro-mecanizado es una tecnolog\xEDa m\xE1s joven y por lo
+        general no utiliza m\xE1s de 5 o 6 capas. El micro-mecanizado de superficies
+        utiliza tecnolog\xEDa avanzada (aunque a veces no suficiente para aplicaciones
+        exigentes) que es f\xE1cilmente repetible para la producci\xF3n en masa. ###
+        Respuesta:\",\"score\":0.7568417,\"segments\":null,\"num_tokens_prompt_total\":2394,\"num_tokens_generated\":0}"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:52 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+- request:
+    body:
+      model: pharia-1-mt-translation
+      source: 'Question: What are some benefits of surface micro-machining?
+
+        Answer the question on the basis of the text. If there is no answer within
+        the text, respond "no answer in text".
+
+
+        Surface micromachining
+
+
+        Surface micromachining builds microstructures by deposition and etching structural
+        layers over a substrate.[1] This is different from Bulk micromachining, in
+        which a silicon substrate wafer is selectively etched to produce structures.
+
+
+        Layers
+
+
+        Generally, polysilicon is used as one of the substrate layers while silicon
+        dioxide is used as a sacrificial layer. The sacrificial layer is removed or
+        etched out to create any necessary void in the thickness direction. Added
+        layers tend to vary in size from 2-5 micrometres. The main advantage of this
+        machining process is the ability to build electronic and mechanical components
+        (functions) on the same substrate. Surface micro-machined components are smaller
+        compared to their bulk micro-machined counterparts.
+
+
+        As the structures are built on top of the substrate and not inside it, the
+        substrate''s properties are not as important as in bulk micro-machining. Expensive
+        silicon wafers can be replaced by cheaper substrates, such as glass or plastic.
+        The size of the substrates may be larger than a silicon wafer, and surface
+        micro-machining is used to produce thin-film transistors on large area glass
+        substrates for flat panel displays. This technology can also be used for the
+        manufacture of thin film solar cells, which can be deposited on glass, polyethylene
+        terepthalate substrates or other non-rigid materials.
+
+
+        Fabrication process
+
+
+        Micro-machining starts with a silicon wafer or other substrate upon which
+        new layers are grown. These layers are selectively etched by photo-lithography;
+        either a wet etch involving an acid, or a dry etch involving an ionized gas
+        (or plasma). Dry etching can combine chemical etching with physical etching
+        or ion bombardment. Surface micro-machining involves as many layers as are
+        needed with a different mask (producing a different pattern) on each layer.
+        Modern integrated circuit fabrication uses this technique and can use as many
+        as 100 layers. Micro-machining is a younger technology and usually uses no
+        more than 5 or 6 layers. Surface micro-machining uses developed technology
+        (although sometimes not enough for demanding applications) which is easily
+        repeatable for volume production.
+
+
+        ### Response:'
+      target_language: fr
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/translate
+  response:
+    body:
+      string: "{\"translation\":\"Question: Quels sont les avantages du micro-usinage
+        de surface? R\xE9pondez \xE0 la question sur la base du texte. S'il n'y a
+        pas de r\xE9ponse dans le texte, r\xE9pondez \xAB pas de r\xE9ponse dans le
+        texte \xBB. Microusinage de surface Le microusinage de surface permet de construire
+        des microstructures en d\xE9posant et en gravant des couches structurelles
+        sur un substrat. [1] Ceci est diff\xE9rent de la microusinage en vrac, dans
+        lequel une plaquette de substrat de silicium est grav\xE9e de mani\xE8re s\xE9lective
+        pour produire des structures. Calques En g\xE9n\xE9ral, le polysilicium est
+        utilis\xE9 comme l'une des couches de substrat tandis que le dioxyde de silicium
+        est utilis\xE9 comme couche de sacrifice. La couche de sacrifice est enlev\xE9e
+        ou grav\xE9e pour cr\xE9er le vide n\xE9cessaire dans le sens de l'\xE9paisseur.
+        La taille des couches ajout\xE9es varie g\xE9n\xE9ralement de 2 \xE0 5 microm\xE8tres.
+        Le principal avantage de ce proc\xE9d\xE9 d'usinage est la possibilit\xE9
+        de construire des composants \xE9lectroniques et m\xE9caniques (fonctions)
+        sur le m\xEAme substrat. Les composants microusin\xE9s en surface sont plus
+        petits que leurs homologues microusin\xE9s en vrac. Comme les structures sont
+        construites sur le substrat et non \xE0 l'int\xE9rieur de celui-ci, les propri\xE9t\xE9s
+        du substrat ne sont pas aussi importantes que dans le micro-usinage en vrac.
+        Les plaquettes de silicium co\xFBteuses peuvent \xEAtre remplac\xE9es par
+        des substrats moins chers, comme le verre ou le plastique. La taille des substrats
+        peut \xEAtre sup\xE9rieure \xE0 celle d'une plaquette de silicium, et le microusinage
+        de surface est utilis\xE9 pour produire des transistors \xE0 couches minces
+        sur des substrats de verre de grande surface pour les \xE9crans plats. Cette
+        technologie peut \xE9galement \xEAtre utilis\xE9e pour la fabrication de cellules
+        solaires \xE0 couche mince, qui peuvent \xEAtre d\xE9pos\xE9es sur du verre,
+        des substrats de poly\xE9thyl\xE8ne t\xE9r\xE9phtalate ou d'autres mat\xE9riaux
+        non rigides. Processus de fabrication Le micro-usinage commence par une plaquette
+        de silicium ou un autre substrat sur lequel de nouvelles couches sont cultiv\xE9es.
+        Ces couches sont grav\xE9es s\xE9lectivement par photo-lithographie, soit
+        par gravure humide avec un acide, soit par gravure s\xE8che avec un gaz ionis\xE9
+        (ou un plasma). La gravure \xE0 sec peut combiner la gravure chimique avec
+        la gravure physique ou le bombardement ionique. Le micro-usinage de surface
+        implique autant de couches que n\xE9cessaire avec un masque diff\xE9rent (produisant
+        un motif diff\xE9rent) sur chaque couche. La fabrication moderne de circuits
+        int\xE9gr\xE9s utilise cette technique et peut utiliser jusqu'\xE0 100 couches.
+        Le micro-usinage est une technologie plus jeune et n'utilise g\xE9n\xE9ralement
+        pas plus de 5 ou 6 couches. Le micro-usinage de surface utilise une technologie
+        avanc\xE9e (bien que parfois insuffisante pour des applications exigeantes)
+        qui est facilement r\xE9p\xE9table pour une production en s\xE9rie. ### R\xE9ponse
+        :\",\"score\":0.7480939,\"segments\":null,\"num_tokens_prompt_total\":2394,\"num_tokens_generated\":0}"
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:59 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+version: 1

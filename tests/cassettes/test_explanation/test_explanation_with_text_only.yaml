@@ -1,0 +1,38 @@
+interactions:
+- request:
+    body: '{"prompt": [{"type": "text", "data": "I am a programmer and French. My
+      favourite food is", "controls": []}], "target": " pizza with cheese", "target_granularity":
+      "token", "normalize": true, "model": "luminous-base"}'
+    headers:
+      Content-Length:
+      - '216'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/explain
+  response:
+    body:
+      string: '{"model_version":"2022-04","explanations":[{"target":" pizza","items":[{"type":"text","scores":[{"start":0,"length":1,"score":0.0},{"start":2,"length":2,"score":0.0},{"start":5,"length":1,"score":0.015623728},{"start":7,"length":10,"score":0.015623728},{"start":18,"length":3,"score":0.062418748},{"start":22,"length":6,"score":0.0},{"start":28,"length":1,"score":0.077966444},{"start":30,"length":2,"score":0.12435301},{"start":33,"length":9,"score":0.87257004},{"start":43,"length":4,"score":0.6257347},{"start":48,"length":2,"score":0.031239832}]},{"type":"target","scores":[]}]},{"target":"
+        with","items":[{"type":"text","scores":[{"start":0,"length":1,"score":0.50983},{"start":2,"length":2,"score":0.0},{"start":5,"length":1,"score":0.0},{"start":7,"length":10,"score":0.8568176},{"start":18,"length":3,"score":0.0},{"start":22,"length":6,"score":0.0},{"start":28,"length":1,"score":0.0},{"start":30,"length":2,"score":0.0},{"start":33,"length":9,"score":0.0},{"start":43,"length":4,"score":0.0},{"start":48,"length":2,"score":0.0}]},{"type":"target","scores":[{"start":0,"length":6,"score":0.0}]}]},{"target":"
+        cheese","items":[{"type":"text","scores":[{"start":0,"length":1,"score":0.0},{"start":2,"length":2,"score":0.0},{"start":5,"length":1,"score":0.20037672},{"start":7,"length":10,"score":0.7866188},{"start":18,"length":3,"score":0.0},{"start":22,"length":6,"score":0.0},{"start":28,"length":1,"score":0.0},{"start":30,"length":2,"score":0.0},{"start":33,"length":9,"score":0.0468407},{"start":43,"length":4,"score":0.031239832},{"start":48,"length":2,"score":0.0}]},{"type":"target","scores":[{"start":0,"length":6,"score":0.0},{"start":7,"length":4,"score":0.0}]}]}]}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '1684'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 06 Aug 2025 12:52:32 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1

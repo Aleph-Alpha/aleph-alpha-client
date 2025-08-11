@@ -1,4 +1,3 @@
-import pytest
 from aleph_alpha_client import AsyncClient, Client
 from aleph_alpha_client.completion import (
     CompletionRequest,
@@ -14,10 +13,10 @@ from aleph_alpha_client.prompt import (
     TextControl,
     Tokens,
 )
+import pytest
 
-from .conftest import llama_prompt
 
-
+@pytest.mark.vcr
 async def test_can_complete_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -31,6 +30,7 @@ async def test_can_complete_with_async_client(
     assert response.model_version is not None
 
 
+@pytest.mark.vcr
 async def test_can_use_streaming_support_with_async_client(
     async_client: AsyncClient, model_name: str
 ):
@@ -52,6 +52,7 @@ async def test_can_use_streaming_support_with_async_client(
     assert isinstance(stream_items[-1], CompletionSummary)
 
 
+@pytest.mark.vcr
 def test_complete_maximum_tokens_none(sync_client: Client, model_name: str):
     request = CompletionRequest(
         prompt=Prompt.from_text("Hello, World!"),
@@ -65,6 +66,7 @@ def test_complete_maximum_tokens_none(sync_client: Client, model_name: str):
     assert len(response.completions[0].completion) < 100
 
 
+@pytest.mark.vcr
 def test_complete(sync_client: Client, model_name: str):
     request = CompletionRequest(
         prompt=Prompt(
@@ -95,6 +97,7 @@ def test_complete(sync_client: Client, model_name: str):
     assert response.model_version is not None
 
 
+@pytest.mark.vcr
 def test_complete_with_token_ids(sync_client: Client, model_name: str):
     request = CompletionRequest(
         prompt=Prompt.from_tokens([49222, 2998]),  # Hello world
@@ -107,6 +110,7 @@ def test_complete_with_token_ids(sync_client: Client, model_name: str):
     assert response.model_version is not None
 
 
+@pytest.mark.vcr
 def test_complete_with_optimized_prompt(
     sync_client: Client, model_name: str, prompt_image: Image
 ):
@@ -134,6 +138,7 @@ def test_complete_with_optimized_prompt(
     assert isinstance(response.optimized_prompt.items[1], Image)
 
 
+@pytest.mark.vcr
 def test_complete_with_echo(sync_client: Client, model_name: str, prompt_image: Image):
     request = CompletionRequest(
         prompt=Prompt.from_text("Hello world"),
@@ -152,6 +157,7 @@ def test_complete_with_echo(sync_client: Client, model_name: str, prompt_image: 
     assert len(completion_result.log_probs) > 0
 
 
+@pytest.mark.vcr
 def test_num_tokens_prompt_total_with_best_of(sync_client: Client, model_name: str):
     tokens = [49222, 2998]  # Hello world
     best_of = 2
@@ -165,6 +171,7 @@ def test_num_tokens_prompt_total_with_best_of(sync_client: Client, model_name: s
     assert response.num_tokens_prompt_total == len(tokens) * best_of
 
 
+@pytest.mark.vcr
 def test_num_tokens_generated_with_best_of(sync_client: Client, model_name: str):
     hello_world = [49222, 2998]  # Hello world
     best_of = 2

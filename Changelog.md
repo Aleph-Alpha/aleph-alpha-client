@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.3.0
+
+- Drop support for python3.9
+
 ## 11.2.0
 
 - Add support for pydantic objects for structured output response format
