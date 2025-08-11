@@ -1,5 +1,10 @@
 # Changelog
 
+## 11.2.0
+
+- Add support for pydantic objects for structured output response format
+- Add additional fields for OpenAI compatibility wrt structured output
+
 ## 11.1.0
 
 - Fix API for response_format
