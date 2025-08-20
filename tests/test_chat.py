@@ -133,6 +133,25 @@ async def test_can_chat_with_streaming_support(
     assert isinstance(stream_items[-1], FinishReason)
 
 
+async def test_can_chat_with_tools_streamed(
+    async_client: AsyncClient, tool_calling_model_name: str
+):
+    system_msg = Message(role=Role.System, content="You are a helpful assistant.")
+    user_msg = Message(
+        role=Role.User, content="What is the weather like in Paris today?"
+    )
+    request = ChatRequest(
+        messages=[system_msg, user_msg],
+        model=tool_calling_model_name,
+        tools=TOOLS,
+    )
+
+    stream = async_client.chat_with_streaming(request, model=tool_calling_model_name)
+    stream_items = [stream_item async for stream_item in stream]
+
+    print(stream_items)
+
+
 def test_usage_response_is_parsed():
     # Given an API response with usage data and no choice
     data = {

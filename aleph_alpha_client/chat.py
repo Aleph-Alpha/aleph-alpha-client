@@ -292,13 +292,18 @@ class ChatStreamChunk:
 
     content: str
     role: Optional[Role]
+    tool_calls: Optional[List[ToolCall]]
 
     @staticmethod
     def from_json(choice: Dict[str, Any]) -> "ChatStreamChunk":
         delta = choice["delta"]
+        tool_calls = delta.get("tool_calls")
         return ChatStreamChunk(
             content=delta["content"],
             role=Role(delta.get("role")) if delta.get("role") else None,
+            tool_calls=None
+            if tool_calls is None
+            else [ToolCall.from_json(tool_call) for tool_call in tool_calls],
         )
 
 
