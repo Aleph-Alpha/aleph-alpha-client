@@ -350,6 +350,8 @@ async def process_chat_stream(
     s: AsyncGenerator[Dict[str, Any], None],
 ) -> AsyncGenerator[Union[ChatStreamChunk, Usage, ToolCall, FinishReason], None]:
     tool_calls: dict[str, ToolCallState] = {}
+    # This loop collects all tool calls and emits them at the end of the stream *before* the finish reason
+    # We have to do this because tool calls are streamed and distributed over different chunks
     async for json in s:
         if (usage := json.get("usage")) is not None:
             yield Usage.from_json(usage)
@@ -357,6 +359,7 @@ async def process_chat_stream(
 
         first_choice = json["choices"][0]
         if (finish_reason := first_choice.get("finish_reason")) is not None:
+            # Stream done, we have to yield all tool calls before the finish reason
             for tool in tool_calls.values():
                 yield ToolCall(
                     id=tool.id,
@@ -372,6 +375,8 @@ async def process_chat_stream(
         delta = first_choice.get("delta")
         if (tool_calls_json := delta.pop("tool_calls", None)) is not None:
             for tool_call in tool_calls_json:
+                # We received a tool call delta, append all deltas to our state
+                # or create the state if it is the first message for this tool call
                 index = tool_call["index"]
                 if index in tool_calls:
                     tool_calls[index].arguments += tool_call["function"]["arguments"]
@@ -386,6 +391,8 @@ async def process_chat_stream(
 
             content = delta.get("content")
             if content is None or content == "":
+                # We skip empty content here because our current api always returns content,
+                # even for tool_call messages where this is not needed
                 continue
 
         yield stream_chat_item_from_json(json)

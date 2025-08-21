@@ -1039,7 +1039,6 @@ class AsyncClient:
             request,
             model,
         )
-        print(response)
         return ChatResponse.from_json(response)
 
     async def complete_with_streaming(
