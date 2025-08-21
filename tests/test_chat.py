@@ -291,7 +291,13 @@ def test_steering_chat(sync_client: Client, chat_model_name: str):
     assert steered_completion_result
     assert base_completion_result != steered_completion_result
 
+def remove_thinking_content(content: str) -> str:
+    needle = "</think>"
+    thinking = content.find(needle)
+    content = content if thinking == -1 else content[thinking + len(needle) :]
+    return content
 
+@pytest.mark.vcr
 def test_response_format_json_schema(
     sync_client: Client, structured_output_model_name: str
 ):
@@ -343,7 +349,7 @@ def test_response_format_json_schema(
     )
 
     response = sync_client.chat(request, model=structured_output_model_name)
-    json_response = json.loads(response.message.content)
+    json_response = json.loads(remove_thinking_content(response.message.content))
 
     # Validate all required fields are present
     required_fields = ["nemo", "species", "color", "size_cm"]
@@ -366,6 +372,7 @@ def test_response_format_json_schema(
     )
 
 
+@pytest.mark.vcr
 def test_response_format_json_schema_pydantic(
     sync_client: Client, structured_output_model_name: str
 ):
@@ -388,11 +395,12 @@ def test_response_format_json_schema_pydantic(
     )
 
     response = sync_client.chat(request, model=structured_output_model_name)
+    content = remove_thinking_content(response.message.content)
     # Tests that it is valid json and loads
-    json.loads(response.message.content)
+    json.loads(content)
 
     # Validate against desired fields
-    Aquarium.model_validate_json(response.message.content)
+    Aquarium.model_validate_json(content)
 
 
 @pytest.mark.vcr
