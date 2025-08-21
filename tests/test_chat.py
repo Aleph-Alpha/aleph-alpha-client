@@ -16,6 +16,8 @@ from aleph_alpha_client.chat import (
     TextMessage,
     Usage,
     stream_chat_item_from_json,
+    ToolCall,
+    FunctionCall,
 )
 from aleph_alpha_client.structured_output import JSONSchema
 from pydantic import BaseModel
@@ -133,6 +135,7 @@ async def test_can_chat_with_streaming_support(
     assert isinstance(stream_items[-1], FinishReason)
 
 
+@pytest.mark.vcr
 async def test_can_chat_with_tools_streamed(
     async_client: AsyncClient, tool_calling_model_name: str
 ):
@@ -149,7 +152,25 @@ async def test_can_chat_with_tools_streamed(
     stream = async_client.chat_with_streaming(request, model=tool_calling_model_name)
     stream_items = [stream_item async for stream_item in stream]
 
-    print(stream_items)
+    v = stream_items[-2]
+    tool_call_id = v.id if isinstance(v, ToolCall) else ""
+
+    assert stream_items[-3:] == [
+        ChatStreamChunk(
+            content="</think>\n\n",
+            role=None,
+            tool_calls=None,
+        ),
+        ToolCall(
+            id=tool_call_id,
+            type="function",
+            function=FunctionCall(
+                name="get_weather",
+                arguments='{"location": "Paris, France"}',
+            ),
+        ),
+        FinishReason.ToolCalls,
+    ]
 
 
 def test_usage_response_is_parsed():
@@ -236,6 +257,7 @@ async def test_stream_options(async_client: AsyncClient, chat_model_name: str):
     stream = async_client.chat_with_streaming(request, model=chat_model_name)
     stream_items = [stream_item async for stream_item in stream]
 
+    print(stream_items)
     # Then
     assert all(isinstance(item, ChatStreamChunk) for item in stream_items[:-2])
     assert isinstance(stream_items[-2], FinishReason)

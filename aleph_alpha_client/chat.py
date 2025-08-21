@@ -1,8 +1,19 @@
 import base64
+import dataclasses
 from dataclasses import asdict, dataclass
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Union, Literal
+from typing import (
+    Any,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Union,
+    Literal,
+    AsyncGenerator,
+)
 
 from pydantic import BaseModel
 from aleph_alpha_client.structured_output import ResponseFormat
@@ -325,3 +336,56 @@ def stream_chat_item_from_json(
         return FinishReason(finish_reason)
 
     return ChatStreamChunk.from_json(first_choice)
+
+
+@dataclasses.dataclass
+class ToolCallState:
+    id: str
+    arguments: str
+    type: str
+    function_name: str
+
+
+async def process_chat_stream(
+    s: AsyncGenerator[Dict[str, Any], None],
+) -> AsyncGenerator[Union[ChatStreamChunk, Usage, ToolCall, FinishReason], None]:
+    tool_calls: dict[str, ToolCallState] = {}
+    async for json in s:
+        if (usage := json.get("usage")) is not None:
+            yield Usage.from_json(usage)
+            continue
+
+        first_choice = json["choices"][0]
+        if (finish_reason := first_choice.get("finish_reason")) is not None:
+            for tool in tool_calls.values():
+                yield ToolCall(
+                    id=tool.id,
+                    type=tool.type,
+                    function=FunctionCall(
+                        name=tool.function_name,
+                        arguments=tool.arguments,
+                    ),
+                )
+            yield FinishReason(finish_reason)
+            continue
+
+        delta = first_choice.get("delta")
+        if (tool_calls_json := delta.pop("tool_calls", None)) is not None:
+            for tool_call in tool_calls_json:
+                index = tool_call["index"]
+                if index in tool_calls:
+                    tool_calls[index].arguments += tool_call["function"]["arguments"]
+                else:
+                    function = tool_call["function"]
+                    tool_calls[index] = ToolCallState(
+                        id=tool_call["id"],
+                        type=tool_call["type"],
+                        function_name=function["name"],
+                        arguments=function.get("arguments", ""),
+                    )
+
+            content = delta.get("content")
+            if content is None or content == "":
+                continue
+
+        yield stream_chat_item_from_json(json)
