@@ -1,0 +1,73 @@
+interactions:
+- request:
+    body: '{"model": "qwen3-32b-tool", "messages": [{"role": "system", "content":
+      "You are a helpful assistant."}, {"role": "user", "content": "Give me JSON of
+      type <class ''tests.test_chat.test_response_format_json_schema_pydantic.<locals>.Aquarium''>!
+      Tell me about nemo"}], "response_format": {"type": "json_schema", "json_schema":
+      {"schema": {"properties": {"nemo": {"title": "Nemo", "type": "string"}, "species":
+      {"title": "Species", "type": "string"}, "color": {"title": "Color", "type":
+      "string"}, "size_cm": {"title": "Size Cm", "type": "number"}}, "required": ["nemo",
+      "species", "color", "size_cm"], "title": "Aquarium", "type": "object"}, "name":
+      "Aquarium", "description": null, "strict": true}}}'
+    headers:
+      Content-Length:
+      - '695'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: '{"id":"chatcmpl-3fbbd1ba-43f7-4d1f-98ce-126e3da93077","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"<think>\nOkay,
+        the user is asking for a JSON object of a specific type, which is a local
+        class called Aquarium in the test_response_format_json_schema_pydantic module.
+        They also want me to tell them about Nemo.\n\nFirst, I need to create a JSON
+        that matches the Aquarium class structure. Since I don''t have the exact definition
+        of Aquarium, I''ll assume common attributes that such a class might have.
+        Typically, an Aquarium class could include properties like name, location,
+        size, number of fish, and maybe some details about the exhibits or notable
+        residents. \n\nThe user mentioned Nemo, so I should include that as part of
+        the aquarium''s information. Maybe Nemo is a specific fish in the aquarium.
+        I can add a field like \"notable_fish\" to highlight Nemo. Also, the size
+        and location are likely important details that an aquarium class would have.\n\nI''ll
+        structure the JSON with these attributes: name, location, size, number_of_fish,
+        and notable_fish. For the name, I can use \"Nemo''s Aquarium\" to tie it directly
+        to the request. The location could be a fictional place or a real one; perhaps
+        a popular city like Sydney. The size might be in square meters, and the number
+        of fish can be a reasonable estimate. The notable_fish section can have Nemo''s
+        details, like species, color, and any interesting facts.\n\nI need to make
+        sure the JSON is valid and follows a schema that would fit the Aquarium class.
+        Also, the user wants the JSON to be of that specific type, so I should present
+        it as an object with the correct keys. \n\nNow, about Nemo. The user probably
+        refers to the character from the movie \"Finding Nemo.\" I should mention
+        that Nemo is a fictional clownfish and part of the Pixar film. Highlighting
+        his role in the movie, his traits like being curious and adventurous, and
+        maybe his family, like his father Marlin and his friend Dory. This information
+        connects the JSON example to the user''s request by including Nemo in the
+        aquarium''s notable fish.\n\nPutting it all together, the JSON should have
+        the aquarium details with Nemo as a notable fish, and the explanation should
+        cover who Nemo is and his significance. I''ll need to check for any syntax
+        errors in the JSON and ensure the explanation is concise and relevant.\n</think>{\"color\":
+        \"blue\", \"nemo\": \"a cute little fish\", \"size_cm\": 5000, \"species\":
+        \"Clownfish\"}","tool_calls":[]},"logprobs":null}],"created":1755782184,"model":"qwen3-32b-tool","system_fingerprint":null,"object":"chat.completion","usage":{"prompt_tokens":50,"completion_tokens":517,"total_tokens":567}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2701'
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 21 Aug 2025 13:16:37 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      access-control-expose-headers:
+      - content-type
+      vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+    status:
+      code: 200
+      message: OK
+version: 1

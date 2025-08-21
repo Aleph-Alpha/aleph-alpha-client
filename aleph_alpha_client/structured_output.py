@@ -3,7 +3,6 @@ from typing import Any, Mapping, Optional, Union, Type
 from pydantic import BaseModel
 
 
-
 @dataclass(frozen=True)
 class JSONSchema:
     """
@@ -50,28 +49,24 @@ class JSONSchema:
     def from_pydantic(cls, model_class: Type[BaseModel]) -> "JSONSchema":
         """
         Create a JSONSchema from a Pydantic model class.
-        
+
         Parameters:
             model_class: A Pydantic BaseModel class
-            
+
         Returns:
             JSONSchema instance with the schema generated from the Pydantic model
-            
+
         Raises:
             ValueError: If the provided class is not a Pydantic BaseModel
         """
-        
+
         schema = model_class.model_json_schema()
-        name = getattr(model_class, '__name__', 'generated_schema')
+        name = getattr(model_class, "__name__", "generated_schema")
 
         # Use the name as default if no description is provided
-        description = getattr(model_class, '__doc__', name)
+        description = getattr(model_class, "__doc__", name)
 
-        return cls(
-            schema=schema,
-            name=name,
-            description=description,
-            strict=True
-        )
+        return cls(schema=schema, name=name, description=description, strict=True)
+
 
 ResponseFormat = Union[JSONSchema, Type[BaseModel]]
