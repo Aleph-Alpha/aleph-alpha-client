@@ -113,6 +113,28 @@ async def test_can_chat_with_tools(
     assert calls[0].type == "function"
     assert calls[0].function.name == "get_weather"
 
+    request = ChatRequest(
+        messages=[
+            system_msg,
+            Message(
+                role=response.message.role,
+                content=response.message.content,
+                tool_calls=response.message.tool_calls,
+            ),
+            Message(
+                role=Role.Tool,
+                content="Cloudy with a bit of rain.",
+                tool_call_id=response.message.tool_calls[0].id,
+            ),
+            user_msg,
+        ],
+        model=tool_calling_model_name,
+        tools=TOOLS,
+    )
+
+    response = await async_client.chat(request, model=tool_calling_model_name)
+    assert "cloudy" in response.message.content.lower()
+
 
 @pytest.mark.vcr
 async def test_can_chat_with_streaming_support(
@@ -352,7 +374,6 @@ def test_response_format_json_schema(
 
     response = sync_client.chat(request, model=structured_output_model_name)
     json_response = json.loads(remove_thinking_content(response.message.content))
-
     # Validate all required fields are present
     required_fields = ["nemo", "species", "color", "size_cm"]
     for field in required_fields:
