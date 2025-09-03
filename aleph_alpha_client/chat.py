@@ -1,8 +1,19 @@
 import base64
+import dataclasses
 from dataclasses import asdict, dataclass
 from enum import Enum
 from io import BytesIO
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
+from typing import (
+    Any,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Union,
+    Literal,
+    AsyncGenerator,
+)
 
 from pydantic import BaseModel
 from aleph_alpha_client.structured_output import ResponseFormat
@@ -41,6 +52,40 @@ class Message:
         return result
 
 
+@dataclass(frozen=True)
+class FunctionCall:
+    name: str
+    arguments: str
+
+
+@dataclass(frozen=True)
+class ToolCall:
+    id: str
+    type: str
+    function: FunctionCall
+
+    @staticmethod
+    def from_json(json: Dict[str, Any]) -> "ToolCall":
+        function = json["function"]
+        return ToolCall(
+            id=json["id"],
+            type=json["type"],
+            function=FunctionCall(
+                name=function["name"], arguments=function["arguments"]
+            ),
+        )
+
+    def to_json(self) -> Mapping[str, Any]:
+        return {
+            "id": self.id,
+            "type": self.type,
+            "function": {
+                "name": self.function.name,
+                "arguments": self.function.arguments,
+            },
+        }
+
+
 # We introduce a more specific message type because chat responses can only
 # contain text at the moment. This enables static type checking to proof that
 # `content` is always a string.
@@ -59,12 +104,17 @@ class TextMessage:
 
     role: Role
     content: str
+    tool_calls: Optional[List[ToolCall]] = None
 
     @staticmethod
     def from_json(json: Dict[str, Any]) -> "TextMessage":
+        tool_calls = json.get("tool_calls")
         return TextMessage(
             role=Role(json["role"]),
             content=json["content"],
+            tool_calls=None
+            if tool_calls is None
+            else [ToolCall.from_json(tool_call) for tool_call in tool_calls],
         )
 
     # In multi-turn conversations the returned TextMessage is part of the chat
@@ -76,6 +126,8 @@ class TextMessage:
             "role": self.role.value,
             "content": _message_content_to_json(self.content),
         }
+        if self.tool_calls is not None:
+            result["tool_calls"] = [t.to_json() for t in self.tool_calls]
         return result
 
 
@@ -123,6 +175,12 @@ class StreamOptions:
 
 
 @dataclass(frozen=True)
+class ToolFunction:
+    type: Literal["function"]
+    function: Any
+
+
+@dataclass(frozen=True)
 class ChatRequest:
     """
     Describes a chat request.
@@ -141,14 +199,23 @@ class ChatRequest:
     steering_concepts: Optional[List[str]] = None
     response_format: Optional[ResponseFormat] = None
 
+    tools: Optional[List[Any]] = None
+    tool_choice: Optional[Union[Literal["auto", "required", "none"], ToolFunction]] = (
+        None
+    )
+    parallel_tool_calls: Optional[bool] = None
+
     def to_json(self) -> Mapping[str, Any]:
         payload = {k: v for k, v in asdict(self).items() if v is not None}
         payload["messages"] = [message.to_json() for message in self.messages]
         if self.response_format:
             # Handle Pydantic models by converting them to JSONSchema first
-            if isinstance(self.response_format, type) and issubclass(self.response_format, BaseModel):
+            if isinstance(self.response_format, type) and issubclass(
+                self.response_format, BaseModel
+            ):
                 # This is a Pydantic model, convert it to JSONSchema
                 from aleph_alpha_client.structured_output import JSONSchema
+
                 json_schema = JSONSchema.from_pydantic(self.response_format)
                 payload["response_format"] = json_schema.to_json()
             else:
@@ -161,7 +228,7 @@ class FinishReason(str, Enum):
     """
     The reason the model stopped generating tokens.
 
-    This will be stop if the model hit a natural stop point or a provided stop
+    This will be `stop` if the model hit a natural stop point or a provided stop
     sequence or length if the maximum number of tokens specified in the request
     was reached. If the API is unable to understand the stop reason emitted by
     one of the workers, content_filter is returned.
@@ -170,6 +237,7 @@ class FinishReason(str, Enum):
     Stop = "stop"
     Length = "length"
     ContentFilter = "content_filter"
+    ToolCalls = "tool_calls"
 
 
 @dataclass(frozen=True)
@@ -235,13 +303,18 @@ class ChatStreamChunk:
 
     content: str
     role: Optional[Role]
+    tool_calls: Optional[List[ToolCall]]
 
     @staticmethod
     def from_json(choice: Dict[str, Any]) -> "ChatStreamChunk":
         delta = choice["delta"]
+        tool_calls = delta.get("tool_calls")
         return ChatStreamChunk(
             content=delta["content"],
             role=Role(delta.get("role")) if delta.get("role") else None,
+            tool_calls=None
+            if tool_calls is None
+            else [ToolCall.from_json(tool_call) for tool_call in tool_calls],
         )
 
 
@@ -263,3 +336,63 @@ def stream_chat_item_from_json(
         return FinishReason(finish_reason)
 
     return ChatStreamChunk.from_json(first_choice)
+
+
+@dataclasses.dataclass
+class ToolCallState:
+    id: str
+    arguments: str
+    type: str
+    function_name: str
+
+
+async def process_chat_stream(
+    s: AsyncGenerator[Dict[str, Any], None],
+) -> AsyncGenerator[Union[ChatStreamChunk, Usage, ToolCall, FinishReason], None]:
+    tool_calls: dict[str, ToolCallState] = {}
+    # This loop collects all tool calls and emits them at the end of the stream *before* the finish reason
+    # We have to do this because tool calls are streamed and distributed over different chunks
+    async for json in s:
+        if (usage := json.get("usage")) is not None:
+            yield Usage.from_json(usage)
+            continue
+
+        first_choice = json["choices"][0]
+        if (finish_reason := first_choice.get("finish_reason")) is not None:
+            # Stream done, we have to yield all tool calls before the finish reason
+            for tool in tool_calls.values():
+                yield ToolCall(
+                    id=tool.id,
+                    type=tool.type,
+                    function=FunctionCall(
+                        name=tool.function_name,
+                        arguments=tool.arguments,
+                    ),
+                )
+            yield FinishReason(finish_reason)
+            continue
+
+        delta = first_choice.get("delta")
+        if (tool_calls_json := delta.pop("tool_calls", None)) is not None:
+            for tool_call in tool_calls_json:
+                # We received a tool call delta, append all deltas to our state
+                # or create the state if it is the first message for this tool call
+                index = tool_call["index"]
+                if index in tool_calls:
+                    tool_calls[index].arguments += tool_call["function"]["arguments"]
+                else:
+                    function = tool_call["function"]
+                    tool_calls[index] = ToolCallState(
+                        id=tool_call["id"],
+                        type=tool_call["type"],
+                        function_name=function["name"],
+                        arguments=function.get("arguments", ""),
+                    )
+
+            content = delta.get("content")
+            if content is None or content == "":
+                # We skip empty content here because our current api always returns content,
+                # even for tool_call messages where this is not needed
+                continue
+
+        yield stream_chat_item_from_json(json)

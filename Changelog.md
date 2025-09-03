@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.4.0
+- Tool calling for chat tasks where the model supports it
+
 ## 11.3.0
 
 - Drop support for python3.9

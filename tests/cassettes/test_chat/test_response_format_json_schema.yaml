@@ -1,31 +1,66 @@
 interactions:
 - request:
-    body: '{"model": "dummy-model", "messages": [{"role": "user", "content": "Give
-      me JSON!"}], "response_format": {"type": "json_schema", "json_schema": {"$schema":
-      "https://json-schema.org/draft/2020-12/schema", "$id": "https://example.com/product.schema.json",
-      "title": "Product", "description": "A product from Acme''s catalog", "type":
-      "object", "properties": {"productId": {"description": "The unique identifier
-      for a product", "type": "integer"}}}}}'
+    body: '{"model": "qwen3-32b-tool", "messages": [{"role": "system", "content":
+      "You are a helpful assistant."}, {"role": "user", "content": "Give me JSON {''type'':
+      ''object'', ''title'': ''Aquarium'', ''properties'': {''nemo'': {''type'': ''string'',
+      ''title'': ''Nemo'', ''description'': ''Name of the fish''}, ''species'': {''type'':
+      ''string'', ''title'': ''Species'', ''description'': ''The species of the fish
+      (e.g., Clownfish, Goldfish)''}, ''color'': {''type'': ''string'', ''title'':
+      ''Color'', ''description'': ''Primary color of the fish''}, ''size_cm'': {''type'':
+      ''number'', ''title'': ''Size in centimeters'', ''description'': ''Length of
+      the fish in centimeters'', ''minimum'': 0.1, ''maximum'': 100.0}}, ''required'':
+      [''nemo'', ''species'', ''color'', ''size_cm'']}! Tell me about nemo"}], "response_format":
+      {"type": "json_schema", "json_schema": {"schema": {"type": "object", "title":
+      "Aquarium", "properties": {"nemo": {"type": "string", "title": "Nemo", "description":
+      "Name of the fish"}, "species": {"type": "string", "title": "Species", "description":
+      "The species of the fish (e.g., Clownfish, Goldfish)"}, "color": {"type": "string",
+      "title": "Color", "description": "Primary color of the fish"}, "size_cm": {"type":
+      "number", "title": "Size in centimeters", "description": "Length of the fish
+      in centimeters", "minimum": 0.1, "maximum": 100.0}}, "required": ["nemo", "species",
+      "color", "size_cm"]}, "name": "aquarium", "description": "Describe nemo", "strict":
+      true}}}'
     headers:
       Content-Length:
-      - '444'
+      - '1409'
       Content-Type:
       - application/json
     method: POST
     uri: https://inference-api.stage.product.pharia.com/chat/completions
   response:
     body:
-      string: '{"error":"Json deserialize error: missing field `schema` at line 1
-        column 444","code":"PAYLOAD_ERROR"}'
+      string: '{"id":"chatcmpl-617a5e05-b12e-4afd-8b4e-33bacc0f238c","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"<think>\nOkay,
+        the user wants a JSON object with specific properties related to an aquarium,
+        particularly about a fish named Nemo. Let me break down the requirements.\n\nFirst,
+        the JSON schema provided has four required fields: ''nemo'', ''species'',
+        ''color'', and ''size_cm''. The ''nemo'' field is a string representing the
+        name of the fish. The ''species'' should be the type of fish, like Clownfish
+        or Goldfish. ''color'' is the primary color, and ''size_cm'' is a number between
+        0.1 and 100.0.\n\nThe user also asked to \"Tell me about Nemo.\" So, after
+        generating the JSON, I need to provide a brief description of Nemo. Since
+        the example mentions Clownfish, I should probably use that as the species.
+        Nemo is a well-known character from the movie \"Finding Nemo,\" which is a
+        Clownfish, so that makes sense. The color would be orange with white stripes,
+        and the size should be typical for a Clownfish, which is usually around 11-15
+        cm. Let me check that. Yes, Clownfish typically grow up to 11.5 cm, so I''ll
+        use 11.5 as the size_cm value.\n\nI need to make sure the JSON is correctly
+        formatted. The keys are ''nemo'', ''species'', ''color'', and ''size_cm''.
+        The description for Nemo should mention the movie and the species, along with
+        some characteristics like color and size. Also, maybe add a bit about their
+        habitat and behavior. Let me structure the JSON first, then write the description.
+        Wait, the user wants the JSON and then the description. So I''ll generate
+        the JSON with the required fields and then explain Nemo based on the data
+        in the JSON. That should cover both parts of the request.\n</think>{\"color\":
+        \"orange with white stripes\", \"nemo\": \"Nemo\", \"size_cm\": 11.5, \"species\":
+        \"Clownfish\"}","tool_calls":[]},"logprobs":null}],"created":1755782232,"model":"qwen3-32b-tool","system_fingerprint":null,"object":"chat.completion","usage":{"prompt_tokens":196,"completion_tokens":419,"total_tokens":615}}'
     headers:
       Connection:
       - keep-alive
       Content-Length:
-      - '102'
+      - '2052'
       Content-Type:
       - application/json
       Date:
-      - Wed, 06 Aug 2025 12:46:17 GMT
+      - Thu, 21 Aug 2025 13:17:23 GMT
       Strict-Transport-Security:
       - max-age=31536000; includeSubDomains
       access-control-allow-credentials:
@@ -35,6 +70,6 @@ interactions:
       vary:
       - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
     status:
-      code: 400
-      message: Bad Request
+      code: 200
+      message: OK
 version: 1

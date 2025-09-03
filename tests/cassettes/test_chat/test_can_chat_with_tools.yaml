@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body:
+      messages:
+      - content: You are a helpful assistant.
+        role: system
+      - content: What is the weather like in Paris today?
+        role: user
+      model: qwen3-32b-tool
+      tools:
+      - function:
+          description: Get current temperature for a given location.
+          name: get_weather
+          parameters:
+            additionalProperties: false
+            properties:
+              location:
+                description: "City and country e.g. Bogot\xE1, Colombia"
+                type: string
+            required:
+            - location
+            type: object
+          strict: true
+        type: function
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/chat/completions
+  response:
+    body:
+      string: '{"id":"chatcmpl-11b3f640-841a-478a-93cb-0c7ac98fc3da","choices":[{"finish_reason":"tool_calls","index":0,"message":{"role":"assistant","content":"\n\n","reasoning_content":"\nOkay,
+        the user is asking about the weather in Paris today. I need to figure out
+        which function to use. The available tool is get_weather, which requires a
+        location parameter. Paris is the city mentioned, and the country is France.
+        So I should format the location as \"Paris, France\". Let me make sure there
+        are no other parameters needed. The function only needs the location, so I''ll
+        construct the tool call with that.\n","tool_calls":[{"id":"chatcmpl-tool-2370633f184e43d8a700b78806cb1083","type":"function","function":{"name":"get_weather","arguments":"{\"location\":
+        \"Paris, France\"}"}}]},"logprobs":null}],"created":1755691940,"model":"qwen3-32b-tool","system_fingerprint":null,"object":"chat.completion","usage":{"prompt_tokens":188,"completion_tokens":114,"total_tokens":302}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Access-Control-Expose-Headers:
+      - content-type
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 20 Aug 2025 12:12:23 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+version: 1

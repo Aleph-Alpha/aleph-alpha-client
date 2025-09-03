@@ -40,8 +40,9 @@ from aleph_alpha_client.chat import (
     ChatResponse,
     ChatStreamChunk,
     Usage,
-    stream_chat_item_from_json,
     FinishReason,
+    process_chat_stream,
+    ToolCall,
 )
 from aleph_alpha_client.evaluation import EvaluationRequest, EvaluationResponse
 from aleph_alpha_client.tokenization import TokenizationRequest, TokenizationResponse
@@ -1085,7 +1086,7 @@ class AsyncClient:
         self,
         request: ChatRequest,
         model: str,
-    ) -> AsyncGenerator[Union[ChatStreamChunk, Usage, FinishReason], None]:
+    ) -> AsyncGenerator[Union[ChatStreamChunk, Usage, ToolCall, FinishReason], None]:
         """Generates streamed chat completions.
 
         The first yielded chunk contains the role, while subsequent chunks only contain the content delta.
@@ -1117,12 +1118,15 @@ class AsyncClient:
             >>> async for stream_item in result:
             >>>     print(stream_item)
         """
-        async for stream_item_json in self._post_request_with_streaming(
-            "chat/completions",
-            request,
-            model,
+
+        async for x in process_chat_stream(
+            self._post_request_with_streaming(
+                "chat/completions",
+                request,
+                model,
+            )
         ):
-            yield stream_chat_item_from_json(stream_item_json)
+            yield x
 
     async def tokenize(
         self,
