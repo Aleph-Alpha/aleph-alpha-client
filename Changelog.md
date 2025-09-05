@@ -1,5 +1,8 @@
 # Changelog
 
+## 11.3.0
+- Add tool calling support
+
 ## 11.2.0
 
 - Add support for pydantic objects for structured output response format
