@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10, <3.14"
 resolution-markers = [
     "python_full_version >= '3.11' and platform_python_implementation == 'PyPy'",
@@ -610,7 +610,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749, upload-time = "2025-05-10T17:42:51.123Z" }
 wheels = [
@@ -1909,7 +1909,7 @@ wheels = [
 
 [[package]]
 name = "python-liquid"
-version = "2.0.1"
+version = "2.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "babel" },
@@ -1917,9 +1917,9 @@ dependencies = [
     { name = "python-dateutil" },
     { name = "pytz" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/82/ac/72697357280e90d27a2cc3b81ee078816b6279d3377933a64ea343b8a86b/python_liquid-2.0.1.tar.gz", hash = "sha256:9bf589ea11c690ed598866929b05f2cacc81bd8a9647a2049d2648a5088cf613", size = 119838, upload-time = "2025-03-17T07:33:04.044Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cc/46/3b2731966bf24a1cab027eae3c87c41e379750a7dd8c7041c37b9a29d168/python_liquid-2.1.0.tar.gz", hash = "sha256:a4c2abb24ac40ded8c9ba844ebbfbe78a3e41c6fe10a7bbe94144582569b73d0", size = 93152, upload-time = "2025-08-15T07:33:26.019Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f9/07/7ab1943f6a337b977042e3855efaa53847363c0e7cbe4d58c2c61ad829e4/python_liquid-2.0.1-py3-none-any.whl", hash = "sha256:8ddbf0b85992f84c4a9680d883a87b170d38af5a820072c980138301cbc5a5e1", size = 197694, upload-time = "2025-03-17T07:33:01.715Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/0d/8c0cc6895ff2ec26b963f055ff2514596e71b509cde3b9ffbbf0f7f59995/python_liquid-2.1.0-py3-none-any.whl", hash = "sha256:d3bbcddff4e1a73287b59218df3471613598271e69ac3d17d97e000f4b984e3e", size = 137984, upload-time = "2025-08-15T07:33:24.274Z" },
 ]
 
 [[package]]
