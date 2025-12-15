@@ -9,7 +9,7 @@ interactions:
       model: llama-3.1-8b-instruct
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
+    uri: https://b.inference.pharia.ai/v1/chat/completions
   response:
     body:
       string: '{"id":"f264b3f7-1da2-4bd4-b751-a43a8631a580","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"I''m

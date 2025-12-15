@@ -8,7 +8,7 @@ interactions:
       - 4
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/detokenize
+    uri: https://b.inference.pharia.ai/v1/detokenize
   response:
     body:
       string: '{"result":"!"}'

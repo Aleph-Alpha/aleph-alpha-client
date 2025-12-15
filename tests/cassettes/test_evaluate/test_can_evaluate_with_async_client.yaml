@@ -11,7 +11,7 @@ interactions:
         type: text
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/evaluate
+    uri: https://b.inference.pharia.ai/v1/evaluate
   response:
     body:
       string: '{"model_version":"2022-04","result":{"log_probability":-11.3125,"log_perplexity":11.3125,"log_perplexity_per_token":11.3125,"log_perplexity_per_character":2.2625,"correct_greedy":false,"token_count":1,"character_count":5,"completion":","},"num_tokens_prompt_total":2}'

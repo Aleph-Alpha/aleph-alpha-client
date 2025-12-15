@@ -31,7 +31,7 @@ interactions:
       use_multiplicative_sequence_penalty: false
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/complete
+    uri: https://b.inference.pharia.ai/v1/complete
   response:
     body:
       string: 'data: {"type":"stream_chunk","index":0,"completion":" The New York

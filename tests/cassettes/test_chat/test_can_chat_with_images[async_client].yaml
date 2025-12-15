@@ -13,7 +13,7 @@ interactions:
       model: dummy-model
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
+    uri: https://b.inference.pharia.ai/v1/chat/completions
   response:
     body:
       string: '{"id":"9e973006-361d-46a9-bc65-01e2d426ef9d","choices":[{"finish_reason":"length","index":0,"message":{"role":"assistant","content":"el

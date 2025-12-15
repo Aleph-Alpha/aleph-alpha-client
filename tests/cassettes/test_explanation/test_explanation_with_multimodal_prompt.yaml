@@ -12,7 +12,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/explain
+    uri: https://b.inference.pharia.ai/v1/explain
   response:
     body:
       string: '{"model_version":"2022-04","explanations":[{"target":" pizza","items":[{"type":"image","scores":[{"rect":{"top":0.0,"left":0.0,"width":0.33333334,"height":0.33333334},"score":0.47431636},{"rect":{"top":0.0,"left":0.33333334,"width":0.33333334,"height":0.33333334},"score":0.0},{"rect":{"top":0.0,"left":0.6666667,"width":0.33333334,"height":0.33333334},"score":0.031239832},{"rect":{"top":0.33333334,"left":0.0,"width":0.33333334,"height":0.33333334},"score":0.1397053},{"rect":{"top":0.33333334,"left":0.33333334,"width":0.33333334,"height":0.33333334},"score":0.0468407},{"rect":{"top":0.33333334,"left":0.6666667,"width":0.33333334,"height":0.33333334},"score":0.062418748},{"rect":{"top":0.6666667,"left":0.0,"width":0.33333334,"height":0.33333334},"score":0.062418748},{"rect":{"top":0.6666667,"left":0.33333334,"width":0.33333334,"height":0.33333334},"score":0.062418748},{"rect":{"top":0.6666667,"left":0.6666667,"width":0.33333334,"height":0.33333334},"score":0.20037672}]},{"type":"text","scores":[{"start":0,"length":29,"score":0.97099286},{"start":30,"length":20,"score":0.10894093}]},{"type":"token_ids","scores":[0.4981744,0.015623728,0.1397053,0.077966444]},{"type":"target","scores":[]}]},{"target":"

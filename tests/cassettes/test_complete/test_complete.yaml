@@ -17,7 +17,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/complete
+    uri: https://b.inference.pharia.ai/v1/complete
   response:
     body:
       string: "{\"completions\":[{\"index\":0,\"log_probs\":[{\"\\n\":-1.9561074},{\"\\n\":-1.436927},{\"I\":-2.6334932},{\"\u2019\":-1.8650526},{\"m\":-0.55210376},{\"

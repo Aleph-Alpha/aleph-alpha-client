@@ -58,7 +58,7 @@ interactions:
       target_language: de
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/translate
+    uri: https://b.inference.pharia.ai/v1/translate
   response:
     body:
       string: "{\"translation\":\"Frage: Was sind einige Vorteile der Oberfl\xE4chenmikrobearbeitung?

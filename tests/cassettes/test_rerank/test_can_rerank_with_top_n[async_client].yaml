@@ -10,7 +10,7 @@ interactions:
       top_n: 2
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/rerank
+    uri: https://b.inference.pharia.ai/v1/rerank
   response:
     body:
       string: '{"results":[{"index":1,"relevance_score":0.999966025352478},{"index":0,"relevance_score":0.001092187943868339}],"usage":{"prompt_tokens":0,"completion_tokens":0,"total_tokens":57}}'
