@@ -25,7 +25,7 @@ interactions:
         type: function
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/chat/completions
+    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
   response:
     body:
       string: 'data: {"id":"chatcmpl-8555d08a-3b64-4461-aaa3-0ec91514e766","choices":[{"finish_reason":null,"index":0,"delta":{"role":"assistant","content":""},"logprobs":null}],"created":1755767531,"model":"qwen3-32b-tool","system_fingerprint":null,"object":"chat.completion.chunk","usage":null}

@@ -7,7 +7,7 @@ interactions:
       tokens: true
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/tokenize
+    uri: https://inference-api.stage.product.pharia.com/v1/tokenize
   response:
     body:
       string: "{\"tokens\":[\"\u0120hello\"],\"token_ids\":[94051]}"

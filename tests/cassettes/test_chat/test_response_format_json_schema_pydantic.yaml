@@ -15,7 +15,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/chat/completions
+    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
   response:
     body:
       string: '{"id":"chatcmpl-3fbbd1ba-43f7-4d1f-98ce-126e3da93077","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"<think>\nOkay,

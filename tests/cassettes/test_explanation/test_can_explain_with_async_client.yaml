@@ -21,7 +21,7 @@ interactions:
       target_granularity: token
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/explain
+    uri: https://inference-api.stage.product.pharia.com/v1/explain
   response:
     body:
       string: '{"model_version":"2022-04","explanations":[{"target":" pizza","items":[{"type":"text","scores":[{"start":0,"length":17,"score":1.875},{"start":20,"length":11,"score":-0.125},{"start":34,"length":18,"score":0.625},{"start":55,"length":20,"score":-0.7109375}]},{"type":"token_ids","scores":[0.140625,-0.15625,0.203125,-0.1875]},{"type":"target","scores":[]}]},{"target":"

@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/tokenize
+    uri: https://inference-api.stage.product.pharia.com/v1/tokenize
   response:
     body:
       string: "{\"tokens\":[\"\u0120Hello\"],\"token_ids\":[49222]}"

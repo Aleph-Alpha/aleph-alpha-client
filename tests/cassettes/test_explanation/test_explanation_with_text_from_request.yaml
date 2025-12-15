@@ -10,7 +10,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/explain
+    uri: https://inference-api.stage.product.pharia.com/v1/explain
   response:
     body:
       string: '{"model_version":"2022-04","explanations":[{"target":" pizza","items":[{"type":"text","scores":[{"start":0,"length":1,"score":0.71875},{"start":2,"length":2,"score":-0.046875},{"start":5,"length":1,"score":-0.015625},{"start":7,"length":10,"score":0.40625},{"start":18,"length":3,"score":0.078125},{"start":22,"length":6,"score":-0.5625},{"start":28,"length":1,"score":0.25},{"start":30,"length":2,"score":0.046875},{"start":33,"length":9,"score":0.484375},{"start":43,"length":4,"score":-0.203125},{"start":48,"length":2,"score":0.109375}]},{"type":"token_ids","scores":[-0.328125,0.296875,0.15625,-0.03125]},{"type":"target","scores":[]}]},{"target":"

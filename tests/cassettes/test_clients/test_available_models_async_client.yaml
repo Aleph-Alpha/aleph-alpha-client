@@ -3,7 +3,7 @@ interactions:
     body: null
     headers: {}
     method: GET
-    uri: https://inference-api.stage.product.pharia.com/models_available
+    uri: https://inference-api.stage.product.pharia.com/v1/models_available
   response:
     body:
       string: "[{\"name\":\"gemma-4b-it-translation-v0.1\",\"description\":\"Gemma-4B-IT

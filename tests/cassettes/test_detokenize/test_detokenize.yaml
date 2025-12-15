@@ -7,7 +7,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/detokenize
+    uri: https://inference-api.stage.product.pharia.com/v1/detokenize
   response:
     body:
       string: '{"result":"tiss"}'
