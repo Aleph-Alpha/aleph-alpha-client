@@ -8,7 +8,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
+    uri: https://b.inference.pharia.ai/v1/chat/completions
   response:
     body:
       string: '{"id":"10a59fb4-9322-4875-8280-9cad53811e99","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"I''m

@@ -58,7 +58,7 @@ interactions:
       target_language: it
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/translate
+    uri: https://b.inference.pharia.ai/v1/translate
   response:
     body:
       string: "{\"translation\":\"Domanda: Quali sono alcuni vantaggi della micro-lavorazione
@@ -180,7 +180,7 @@ interactions:
       target_language: de
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/translate
+    uri: https://b.inference.pharia.ai/v1/translate
   response:
     body:
       string: "{\"translation\":\"Frage: Was sind einige Vorteile der Oberfl\xE4chenmikrobearbeitung?
@@ -302,7 +302,7 @@ interactions:
       target_language: nl
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/translate
+    uri: https://b.inference.pharia.ai/v1/translate
   response:
     body:
       string: "{\"translation\":\"Vraag: Wat zijn enkele voordelen van oppervlaktebewerking?
@@ -425,7 +425,7 @@ interactions:
       target_language: es
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/translate
+    uri: https://b.inference.pharia.ai/v1/translate
   response:
     body:
       string: "{\"translation\":\"Pregunta: \xBFCu\xE1les son algunos de los beneficios
@@ -548,7 +548,7 @@ interactions:
       target_language: fr
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/translate
+    uri: https://b.inference.pharia.ai/v1/translate
   response:
     body:
       string: "{\"translation\":\"Question: Quels sont les avantages du micro-usinage

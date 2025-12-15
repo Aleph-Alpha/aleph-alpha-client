@@ -10,7 +10,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/steering_concepts
+    uri: https://b.inference.pharia.ai/v1/steering_concepts
   response:
     body:
       string: '{"id":"bc31b0c184ef8d14aef7654ad0fd3b80b3ed90e13290b05b42bbb23620ee08b2"}'
@@ -43,7 +43,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
+    uri: https://b.inference.pharia.ai/v1/chat/completions
   response:
     body:
       string: '{"id":"45e93378-420e-441a-bf6d-18027e10b775","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"I''m
@@ -79,7 +79,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
+    uri: https://b.inference.pharia.ai/v1/chat/completions
   response:
     body:
       string: '{"id":"cfe503eb-4211-45ca-b471-7a8282d4ee52","choices":[{"finish_reason":"stop","index":0,"message":{"role":"assistant","content":"I''m

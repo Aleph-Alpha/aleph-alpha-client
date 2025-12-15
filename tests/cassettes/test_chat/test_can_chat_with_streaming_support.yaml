@@ -8,7 +8,7 @@ interactions:
       stream: true
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
+    uri: https://b.inference.pharia.ai/v1/chat/completions
   response:
     body:
       string: 'data: {"id":"76f82911-1a9f-46c5-b1a0-0d5490bc4972","choices":[{"finish_reason":null,"index":0,"delta":{"role":"assistant","content":""},"logprobs":null}],"created":1754484240,"model":"llama-3.1-8b-instruct","system_fingerprint":null,"object":"chat.completion.chunk","usage":null}

@@ -10,7 +10,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/v1/explain
+    uri: https://b.inference.pharia.ai/v1/explain
   response:
     body:
       string: '{"model_version":"2022-04","explanations":[{"target":" pizza with cheese","items":[{"type":"image","scores":[{"rect":{"top":0.0,"left":0.0,"width":0.33333334,"height":0.33333334},"score":0.84375},{"rect":{"top":0.0,"left":0.33333334,"width":0.33333334,"height":0.33333334},"score":-0.015625},{"rect":{"top":0.0,"left":0.6666667,"width":0.33333334,"height":0.33333334},"score":0.015625},{"rect":{"top":0.33333334,"left":0.0,"width":0.33333334,"height":0.33333334},"score":0.109375},{"rect":{"top":0.33333334,"left":0.33333334,"width":0.33333334,"height":0.33333334},"score":0.046875},{"rect":{"top":0.33333334,"left":0.6666667,"width":0.33333334,"height":0.33333334},"score":-0.03125},{"rect":{"top":0.6666667,"left":0.0,"width":0.33333334,"height":0.33333334},"score":-0.03125},{"rect":{"top":0.6666667,"left":0.33333334,"width":0.33333334,"height":0.33333334},"score":-0.015625},{"rect":{"top":0.6666667,"left":0.6666667,"width":0.33333334,"height":0.33333334},"score":0.1875}]},{"type":"text","scores":[{"start":0,"length":29,"score":2.015625},{"start":30,"length":20,"score":-0.453125}]},{"type":"token_ids","scores":[-0.90625,-0.1875,-0.4375,0.46875]},{"type":"target","scores":[]}]}]}'
