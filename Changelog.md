@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.5.0
+
+- Add reranking support
+
 ## 11.4.0
 - Tool calling for chat tasks where the model supports it
 

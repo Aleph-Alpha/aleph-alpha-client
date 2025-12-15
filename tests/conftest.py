@@ -18,6 +18,7 @@ from aleph_alpha_client.steering import (
     SteeringConceptCreationResponse,
 )
 from aleph_alpha_client.translation import TranslationRequest, TranslationResponse
+from aleph_alpha_client.reranking import RerankRequest, RerankResponse
 
 
 @pytest.fixture(scope="session")
@@ -79,6 +80,13 @@ class SyncClientShim:
     ) -> TranslationResponse:
         return await asyncio.to_thread(self.client.translate, request)
 
+    async def rerank(
+        self,
+        request: RerankRequest,
+        model: str,
+    ) -> RerankResponse:
+        return await asyncio.to_thread(self.client.rerank, request, model)
+
 
 GenericClient = Union[AsyncClient, SyncClientShim]
 
@@ -129,6 +137,11 @@ def dummy_model_name() -> str:
 @pytest.fixture(scope="session")
 def translation_model_name() -> str:
     return "pharia-1-mt-translation"
+
+
+@pytest.fixture(scope="session")
+def rerank_model_name() -> str:
+    return "bge-reranker-v2-m3"
 
 
 @pytest.fixture(scope="session")
