@@ -36,7 +36,7 @@ def test_from_image_source_on_local_file_path_str():
 
 
 def test_from_image_source_on_url():
-    image_source_url = "https://docs.aleph-alpha.com/assets/images/room-8bc67118ba9576eaba51f284cb193394.jpg"
+    image_source_url = "https://docs.aleph-alpha.com/COMMON/_images/pharia-inference-complete-endpoint-1.jpg"
     img_1 = Image.from_image_source(image_source=image_source_url)
     img_2 = Image.from_url(url=image_source_url)
     assert img_1.base_64 == img_2.base_64
