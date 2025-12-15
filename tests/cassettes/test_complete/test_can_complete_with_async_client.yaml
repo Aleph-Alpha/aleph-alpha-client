@@ -30,7 +30,7 @@ interactions:
       use_multiplicative_sequence_penalty: false
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/complete
+    uri: https://inference-api.stage.product.pharia.com/v1/complete
   response:
     body:
       string: '{"completions":[{"index":0,"completion":" The New York Times, May 15","finish_reason":"maximum_tokens"}],"model_version":"2022-04","num_tokens_prompt_total":1,"num_tokens_generated":7}'

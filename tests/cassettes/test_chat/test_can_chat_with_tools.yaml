@@ -24,7 +24,7 @@ interactions:
         type: function
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/chat/completions
+    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
   response:
     body:
       string: '{"id":"chatcmpl-836d84d3-289c-4ad1-bb78-2b8b39d32eb5","choices":[{"finish_reason":"tool_calls","index":0,"message":{"role":"assistant","content":"<think>\nOkay,
@@ -106,7 +106,7 @@ interactions:
         type: function
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/chat/completions
+    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
   response:
     body:
       string: "{\"id\":\"chatcmpl-d49e86c8-156b-4007-bfda-b97278aedd16\",\"choices\":[{\"finish_reason\":\"stop\",\"index\":0,\"message\":{\"role\":\"assistant\",\"content\":\"<think>\\nOkay,

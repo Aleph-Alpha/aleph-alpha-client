@@ -18,7 +18,7 @@ interactions:
       Content-Type:
       - application/json
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/complete
+    uri: https://inference-api.stage.product.pharia.com/v1/complete
   response:
     body:
       string: '{"completions":[{"index":0,"completion":" of the cat and dog","finish_reason":"maximum_tokens"}],"model_version":"2022-04","optimized_prompt":[{"type":"text","data":"Hello  world!

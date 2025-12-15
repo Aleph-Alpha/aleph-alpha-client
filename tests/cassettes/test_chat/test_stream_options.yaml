@@ -10,7 +10,7 @@ interactions:
         include_usage: true
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/chat/completions
+    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
   response:
     body:
       string: 'data: {"id":"d207a5e4-e118-414b-aa61-d50904b41b3b","choices":[{"finish_reason":null,"index":0,"delta":{"role":"assistant","content":""},"logprobs":null}],"created":1754484242,"model":"llama-3.1-8b-instruct","system_fingerprint":null,"object":"chat.completion.chunk","usage":null}

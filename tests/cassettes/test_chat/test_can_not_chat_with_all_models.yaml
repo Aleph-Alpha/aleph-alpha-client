@@ -8,7 +8,7 @@ interactions:
       model: luminous-base
     headers: {}
     method: POST
-    uri: https://inference-api.stage.product.pharia.com/chat/completions
+    uri: https://inference-api.stage.product.pharia.com/v1/chat/completions
   response:
     body:
       string: '{"error":"Sadly the model you chose does not provide that capability:
