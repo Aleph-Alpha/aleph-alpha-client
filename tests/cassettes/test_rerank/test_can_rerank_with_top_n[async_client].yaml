@@ -1,0 +1,38 @@
+interactions:
+- request:
+    body:
+      documents:
+      - The capital of Brazil is Brasilia.
+      - The capital of France is Paris.
+      - Horses and cows are both animals.
+      model: bge-reranker-v2-m3
+      query: What is the capital of France?
+      top_n: 2
+    headers: {}
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/v1/rerank
+  response:
+    body:
+      string: '{"results":[{"index":1,"relevance_score":0.999966025352478},{"index":0,"relevance_score":0.001092187943868339}],"usage":{"prompt_tokens":0,"completion_tokens":0,"total_tokens":57}}'
+    headers:
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 15 Dec 2025 11:54:34 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - origin, access-control-request-method, access-control-request-headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+version: 1

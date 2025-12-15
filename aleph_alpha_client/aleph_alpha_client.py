@@ -69,6 +69,7 @@ from aleph_alpha_client.steering import (
 )
 from aleph_alpha_client.version import MIN_API_VERSION, user_agent_headers
 from aleph_alpha_client.translation import TranslationRequest, TranslationResponse
+from aleph_alpha_client.reranking import RerankRequest, RerankResponse
 
 POOLING_OPTIONS = ["mean", "max", "last_token", "abs_max"]
 RETRY_STATUS_CODES = frozenset({408, 429, 500, 502, 503, 504})
@@ -126,6 +127,7 @@ AnyRequest = Union[
     ExplanationRequest,
     SteeringConceptCreationRequest,
     TranslationRequest,
+    RerankRequest,
 ]
 
 
@@ -741,6 +743,40 @@ class Client:
         """
         response = self._post_request("translate", request)
         return TranslationResponse.from_json(response)
+
+    def rerank(
+        self,
+        request: RerankRequest,
+        model: str,
+    ) -> RerankResponse:
+        """Reranks documents against a query.
+
+        This endpoint takes in a query and a list of documents and produces an array
+        with each document assigned a relevance score.
+
+        Parameters:
+            request (RerankRequest, required):
+                Parameters for the requested reranking.
+
+            model (string, required):
+                Name of the model to use for reranking.
+
+        Examples:
+            >>> request = RerankRequest(
+                    query="What is the capital of France?",
+                    documents=[
+                        "The capital of Brazil is Brasilia.",
+                        "The capital of France is Paris.",
+                        "Horses and cows are both animals.",
+                    ],
+                    top_n=2,
+                )
+            >>> response = client.rerank(request, model="your-reranker-model")
+            >>> for result in response.results:
+            >>>     print(f"Document {result.index}: {result.relevance_score}")
+        """
+        response = self._post_request("rerank", request, model)
+        return RerankResponse.from_json(response)
 
 
 class AsyncClient:
@@ -1526,6 +1562,40 @@ class AsyncClient:
         """
         response = await self._post_request("translate", request)
         return TranslationResponse.from_json(response)
+
+    async def rerank(
+        self,
+        request: RerankRequest,
+        model: str,
+    ) -> RerankResponse:
+        """Reranks documents against a query.
+
+        This endpoint takes in a query and a list of documents and produces an array
+        with each document assigned a relevance score.
+
+        Parameters:
+            request (RerankRequest, required):
+                Parameters for the requested reranking.
+
+            model (string, required):
+                Name of the model to use for reranking.
+
+        Examples:
+            >>> request = RerankRequest(
+                    query="What is the capital of France?",
+                    documents=[
+                        "The capital of Brazil is Brasilia.",
+                        "The capital of France is Paris.",
+                        "Horses and cows are both animals.",
+                    ],
+                    top_n=2,
+                )
+            >>> response = await client.rerank(request, model="your-reranker-model")
+            >>> for result in response.results:
+            >>>     print(f"Document {result.index}: {result.relevance_score}")
+        """
+        response = await self._post_request("rerank", request, model)
+        return RerankResponse.from_json(response)
 
 
 def _generate_semantic_embedding_batches(

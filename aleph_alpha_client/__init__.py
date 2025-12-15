@@ -50,6 +50,7 @@ from .explanation import (
     TokenScore,
 )
 from .tokenization import TokenizationRequest, TokenizationResponse
+from .reranking import RerankRequest, RerankResponse, RerankResult, RerankUsage
 from .utils import load_base64_from_file, load_base64_from_url
 from .version import __version__
 
@@ -90,6 +91,10 @@ __all__ = [
     "PromptTemplate",
     "PromptGranularity",
     "QuotaError",
+    "RerankRequest",
+    "RerankResponse",
+    "RerankResult",
+    "RerankUsage",
     "SemanticEmbeddingRequest",
     "SemanticEmbeddingResponse",
     "SemanticRepresentation",

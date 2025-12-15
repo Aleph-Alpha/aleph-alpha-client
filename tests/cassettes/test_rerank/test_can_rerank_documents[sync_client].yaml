@@ -1,0 +1,35 @@
+interactions:
+- request:
+    body: '{"query": "What is the capital of France?", "documents": ["The capital
+      of Brazil is Brasilia.", "The capital of France is Paris.", "Horses and cows
+      are both animals."], "model": "bge-reranker-v2-m3"}'
+    headers:
+      Content-Length:
+      - '199'
+      Content-Type:
+      - application/json
+    method: POST
+    uri: https://inference-api.stage.product.pharia.com/v1/rerank
+  response:
+    body:
+      string: '{"results":[{"index":1,"relevance_score":0.999966025352478},{"index":0,"relevance_score":0.001092187943868339},{"index":2,"relevance_score":0.000016116848200908862}],"usage":{"prompt_tokens":0,"completion_tokens":0,"total_tokens":57}}'
+    headers:
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '234'
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 15 Dec 2025 11:54:33 GMT
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      access-control-allow-credentials:
+      - 'true'
+      vary:
+      - origin, access-control-request-method, access-control-request-headers
+      - accept-encoding
+    status:
+      code: 200
+      message: OK
+version: 1
