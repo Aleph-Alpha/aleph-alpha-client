@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.5.1
+
+- Add `limit` parameter for `AsyncClient`, defaults to 100. This controls the maximum number of concurrent connections to the API.
+
 ## 11.5.0
 
 - Add reranking support
